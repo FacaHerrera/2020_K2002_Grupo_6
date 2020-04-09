@@ -92,9 +92,6 @@ void guardar(int base, char *cadena){
 	archivo = fopen("RESULTADOS.txt", "at");
 	fputs(cadena, archivo);
 	switch(base){
-		case 6:
-			fputs(" - INCORRECTO\n", archivo);
-			break;
 		case 2:
 		case 5:
 			fputs(" - OCTAL\n", archivo);
@@ -108,6 +105,8 @@ void guardar(int base, char *cadena){
 		case 0: 
 			fputs(" - PALABRA NULA\n", archivo);
 			break;	
+		default:
+			fputs(" - INCORRECTO\n", archivo);
 	}
 	
  	fclose (archivo);

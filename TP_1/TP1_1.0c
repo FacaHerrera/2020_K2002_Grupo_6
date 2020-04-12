@@ -9,7 +9,7 @@ void escribirBase(FILE* resultados, int estado);
 int main(int argc, char const *argv[])
 {
     char archivo[100];
-    printf("Trabajo Practico Nro 1 - Automata Finito Deterministico para Constantes Enteras\nIngrese el nombre del archivo a escanear perri: ");
+    printf("Trabajo Practico Nro 1 - Automata Finito Deterministico para Constantes Enteras\nIngrese el nombre del archivo a escanear: ");
     scanf("%s", archivo);
     verificar_txt(&archivo);
     FILE* datos = fopen(archivo, "rt");

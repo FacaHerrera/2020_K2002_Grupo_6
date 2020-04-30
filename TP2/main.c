@@ -4,7 +4,7 @@
 #define ERROR 0
 #define OK 1
 
-typedef struct nodo{
+typedef struct{
 	char dato;
 	struct nodo *siguiente;
 }Nodo;
@@ -19,70 +19,82 @@ typedef Nodo *Pila;
 
 void mostrar_menu(void);
 int verificar_txt(char *);
-int escanear_archivo(char *, FILE*);
-void guardar(int, char *, FILE*);
-int automata(char *);
-int mostrar_consigna(FILE*);
+int escanear_archivo(char *);
+int guardar(int);
+int automata(char *, char *);
+int mostrar_consigna(char *);
 void escribirPila(Pila *, char);
 char leerPila(Pila *);
+void evaluaError(int, int, int, int, int, char *, char *);
 
 int main() {
-	FILE *archivo;
-	archivo = fopen("RESULTADOS.txt", "wt");
-	if (mostrar_consigna(archivo)){
-		printf("\n\nProceso satisfactorio.\n\n");
-	}
-	else{
-		printf("\n\nEl Proceso no se pudo realizar porque el archivo no existe.\n");
-	}
-	fclose(archivo);
+	char condicion = 'S', error[50];
+	strcpy(error, "");
+	while (condicion == 'S' || condicion == 's'){
+		system("CLS");
+		if (mostrar_consigna(error)){
+			printf("\n\nLa expresion es CORECTA\n\n");
+		}
+		else{
+			printf("%s\n", error);
+			printf("\nLa expresion es INCORRECTA\n");
+		}
+		printf("\nDesea ingresar una nueva expresion? (S para si | CUALQUIERO OTRA para no)\n\n");
+		fflush(stdin);
+		scanf("%c", &condicion);
+	}	
 	return 0;
 }
 
-int mostrar_consigna(FILE * archivoSalida){
-	char archivo[20];
-	printf("Trabajo Practico Nro 2 - Automata Finito de Pila para Constantes Enteras Decimales\n\nIngrese el nombre del archivo a escanear: ");
-	scanf("%s", archivo);
-	verificar_txt(archivo);
-	return escanear_archivo(archivo, archivoSalida);
+int mostrar_consigna(char *error){
+	char expresion[120];//70 son para el detalle del error
+	printf("Trabajo Practico Nro 2 - Automata Finito de Pila para Constantes Enteras Decimales\n\nIngrese la expresion a escanear: \n\n");
+	fflush(stdin);
+	scanf("%49[^\n]", expresion);
+	
+	return guardar(automata(expresion, error));
 }
 
-int escanear_archivo(char *archivo, FILE* archivoSalida){
-	FILE *datos;
-	datos=fopen(archivo, "rt");
-	char caracter, cadena[50];
-	int len;
-	if (datos==NULL) return ERROR;
-	do{	
-		strcpy(cadena, "");
-		len = 0;
-		caracter = fgetc(datos);
-		while(caracter != ',' && caracter != EOF){
-			cadena[len] = caracter;
-			caracter = fgetc(datos);
-			len++;
-		}
-		cadena[len] = '\0';
-		guardar(automata(cadena), cadena, archivoSalida);
-	}while(caracter!=EOF);
-	fclose(datos);
-	return OK;	
-}
-
-int verificar_txt(char *archivo){
-	if (strstr(archivo, ".txt") == NULL){
-		strcat(archivo, ".txt");
-	}
-}
-
-int automata(char *cadena){
-	int len = 0, inicio = 0, estado = 0, columna = 0;
+int automata(char *expresion, char *error){
+	char tipoError[70];
+	int len = 0, inicio = 0, estado = 0, estadoAnterior = 0,columna = 0;
 	struct recorrido default0 = {3,0}, default1 = {3,1}, estado00 = {0,0}, estado01 = {0,1}, estado10 = {1,0}, estado11 = {1,1}, estado02 = {0,2}, estado03 = {0,3}, estado24 = {2,4};
 	struct recorrido automata[2][4][6]={{{default0,estado10,default0,estado02,default0,default0},{estado10,estado10,estado00,default0,default0,default0},{default0,default0,estado00,default0,default0,default0},{default0,default0,default0,default0,default0,default0}},
 							  			{{default1,estado11,default1,estado03,default1,default1},{estado11,estado11,estado01,default1,estado24,default1},{default1,default1,estado01,default1,estado24,default1},{default1,default1,default1,default1,default1,default1}}};
 	Pila pila = NULL;
 	escribirPila(&pila,'$');
-	while(cadena[len] != '\0'){
+	while(expresion[len] != '\0'){
+		if (expresion[len]==' ') {
+			if (error[len-1] == '^' || error[len-1] == '-'){
+				error[len]='-';
+			}
+			else{
+				error[len]=' ';
+			}
+			len++;
+			continue;
+		}
+		evaluaError(len, columna, estado, estadoAnterior, inicio, tipoError, error);
+		estadoAnterior = estado;
+		if(expresion[len] == '0'){
+			columna = 0;
+		}
+		else if(expresion[len]>='1' && expresion[len]<='9'){
+			columna = 1;
+		}
+		else if(expresion[len]=='+' || expresion[len]=='-' || expresion[len]=='*' || expresion[len]=='/'){
+			columna = 2;
+		}
+		else if(expresion[len]=='('){
+			columna = 3;
+		}
+		else if(expresion[len]==')'){
+			columna = 4;
+		}
+		else{
+			columna = 5;
+		}
+		estado = automata[inicio][estado][columna].estado;
 		switch(leerPila(&pila)){
 			case '$':
 				inicio = 0;
@@ -91,25 +103,6 @@ int automata(char *cadena){
 				inicio = 1;
 				break;
 		}
-		if(cadena[len] == '0'){
-			columna = 0;
-		}
-		else if(cadena[len]>='1' && cadena[len]<='9'){
-			columna = 1;
-		}
-		else if(cadena[len]=='+' || cadena[len]=='-' || cadena[len]=='*' || cadena[len]=='/'){
-			columna = 2;
-		}
-		else if(cadena[len]=='('){
-			columna = 3;
-		}
-		else if(cadena[len]==')'){
-			columna = 4;
-		}
-		else{
-			columna = 5;
-		}
-		estado = automata[inicio][estado][columna].estado;
 		switch (automata[inicio][estado][columna].pila){
 			case 0:
 				escribirPila(&pila, '$');
@@ -128,30 +121,34 @@ int automata(char *cadena){
 		}
 		len++;
 	}
+	evaluaError(len, columna, estado, estadoAnterior, inicio, tipoError, error);
+	error[len]='\0';
+	
 	if (leerPila(&pila) == '$'){
 		free(pila);
+		strcat(error, tipoError);
 		return estado;
 	}
 	else{
+		strcpy(tipoError,"^-Se esperaba un ')' (Parentesis de cierre)");
+		strcat(error, tipoError);
 		return ERROR;
 	}
 }
 
-void guardar(int estado, char *cadena, FILE* archivoSalida){
-	fputs(cadena, archivoSalida);
+int guardar(int estado){
 	switch (estado){
-		case 0:
-		case 3:
-			fputs(" - EXPRESION INCORRECTA\n", archivoSalida);
+		case 1:
+		case 2:
+			return OK;
 			break;	
 		default:
-			fputs(" - EXPRESION CORRECTA\n", archivoSalida);
+			return ERROR;
 	}
 }
 
 void escribirPila(Pila *pila, char valor){
 	punteroNodo nodo;
-
 	nodo = (Nodo *)malloc(sizeof(Nodo));
 	nodo->dato = valor;
 	nodo->siguiente = *pila;
@@ -167,4 +164,75 @@ char leerPila(Pila *pila){
 	valor = nodo->dato;
 	free(nodo);
 	return valor;
+}
+
+void evaluaError (int len, int columna, int estado, int estadoAnterior, int inicio, char *tipoError, char *error){
+	if (estado == 3 && ((error[len-2] != '^' && error[len-2] != '-') || len == 0 || error[len-2] == ' ')){
+		error[len-1]='^';
+		switch(columna){
+			case 0:
+				if (estadoAnterior){
+					strcpy(tipoError,"Se esperaba un operador.");
+				}
+				else{
+					strcpy(tipoError,"No se puede comenzar con 0.");
+				}
+			break;
+			case 1:
+				if (inicio){
+					strcpy(tipoError,"Se esperaba un operador o un ')' (Parentesis de cierre).");
+				}
+				else{
+					strcpy(tipoError,"Se esperaba un operador.");
+				}
+			break;
+			case 2:
+				strcpy(tipoError,"Se esperaba un numero o un '(' (Parentesis de apertura).");
+
+			break;
+			case 3:
+				if (estadoAnterior == 1){
+					if (inicio){
+						strcpy(tipoError,"Se esperaba un operador o un numero o un ')' (Parentesis de cierre).");
+					}
+					else{
+						strcpy(tipoError,"Se esperaba un operador o un numero.");
+					}
+				}
+				else if (estadoAnterior == 2){
+					if (inicio){
+						strcpy(tipoError,"Se esperaba un operador o un ')' (Parentesis de cierre).");
+					}
+					else{
+						strcpy(tipoError,"Se esperaba un operador o un numero.");
+					}
+				}
+			break;
+			case 4:
+				if (inicio){
+					strcpy(tipoError,"Se esperaba un numero o un '(' (Parentesis de apertura).");
+				}
+				else{
+					if (estadoAnterior == 0){
+						strcpy(tipoError,"Se esperaba un numero o un '(' (Parentesis de apertura).");
+					}
+					else if (estadoAnterior == 1){
+						strcpy(tipoError,"Se esperaba un operador o un numero.");
+					}
+					else if (estadoAnterior == 2){
+						strcpy(tipoError,"Se esperaba un operador.");
+					}
+				}
+			break;
+			case 5:
+				strcpy(tipoError,"Caracter no valido.");
+			break;
+		}
+	}	
+	else if (error[len-2] == '^' || error[len-2] == '-'){
+		error[len-1]='-';
+	}
+	else{
+		error[len-1]=' ';
+	}
 }

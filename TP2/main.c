@@ -18,26 +18,25 @@ typedef Nodo *punteroNodo;
 typedef Nodo *Pila;
 
 void mostrar_menu(void);
-int verificar_txt(char *);
-int escanear_archivo(char *);
 int guardar(int);
 int automata(char *, char *);
-int mostrar_consigna(char *);
+int mostrar_consigna(char *, char *);
 void escribirPila(Pila *, char);
 char leerPila(Pila *);
 void evaluaError(int, int, int, int, int, char *, char *);
+void suprimirEspacios (char *);
 
 int main() {
-	char condicion = 'S', error[50];
+	char condicion = 'S', error[120], expresion[120]; //70 son para el detalle del error
 	strcpy(error, "");
 	while (condicion == 'S' || condicion == 's'){
 		system("CLS");
-		if (mostrar_consigna(error)){
+		if (mostrar_consigna(error, expresion)){
 			printf("\n\nLa expresion es CORECTA\n\n");
 		}
 		else{
-			printf("%s\n", error);
-			printf("\nLa expresion es INCORRECTA\n");
+			printf("\n-----------------------------------------------------------------------------\n\n%s\n%s", expresion, error);
+			printf("\n\nLa expresion es INCORRECTA\n");
 		}
 		printf("\nDesea ingresar una nueva expresion? (S para si | CUALQUIERO OTRA para no)\n\n");
 		fflush(stdin);
@@ -46,13 +45,28 @@ int main() {
 	return 0;
 }
 
-int mostrar_consigna(char *error){
-	char expresion[120]; //70 son para el detalle del error
+int mostrar_consigna(char *error, char *expresion){
 	printf("Trabajo Practico Nro 2 - Automata Finito de Pila para Constantes Enteras Decimales\n\nIngrese la expresion a escanear: \n\n");
 	fflush(stdin);
 	scanf("%49[^\n]", expresion);
-	
+	suprimirEspacios(expresion);
 	return guardar(automata(expresion, error));
+}
+
+void suprimirEspacios(char *expresion){
+	int len = 0, lenAux = 0;
+	char auxiliar[50];
+	
+	while(expresion[len] != '\0'){
+		if (expresion[len] != ' '){
+			auxiliar[lenAux] = expresion[len];
+			lenAux++;
+		} 
+		len++;	
+	}
+	auxiliar[lenAux] = '\0';
+	strcpy(expresion, auxiliar);
+
 }
 
 int automata(char *expresion, char *error){
@@ -65,11 +79,11 @@ int automata(char *expresion, char *error){
 	escribirPila(&pila,'$');
 	while(expresion[len] != '\0'){
 		if (expresion[len]==' ') {
-			if (error[len-1] == '^' || error[len-1] == '-'){
-				error[len]='-';
+			if (error[len-2] == '^' || error[len-2] == '-'){
+				error[len-1]='-';
 			}
 			else{
-				error[len]=' ';
+				error[len-1]=' ';
 			}
 			len++;
 			continue;
@@ -233,6 +247,6 @@ void evaluaError (int len, int columna, int estado, int estadoAnterior, int inic
 		error[len-1]='-';
 	}
 	else{
-		error[len-1]=' ';
+		if (len != 0) error[len-1]=' ';
 	}
 }

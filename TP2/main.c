@@ -47,7 +47,7 @@ int main() {
 }
 
 int mostrar_consigna(char *error){
-	char expresion[120];//70 son para el detalle del error
+	char expresion[120]; //70 son para el detalle del error
 	printf("Trabajo Practico Nro 2 - Automata Finito de Pila para Constantes Enteras Decimales\n\nIngrese la expresion a escanear: \n\n");
 	fflush(stdin);
 	scanf("%49[^\n]", expresion);

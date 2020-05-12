@@ -32,7 +32,7 @@ int main() {
 	while (condicion == 'S' || condicion == 's'){
 		system("CLS");
 		if (mostrar_consigna(error, expresion)){
-			printf("\n\nLa expresion es CORECTA\n\n");
+			printf("\n\nLa expresion es CORRECTA\n\n");
 		}
 		else{
 			printf("\n-----------------------------------------------------------------------------\n\n%s\n%s", expresion, error);

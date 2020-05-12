@@ -23,7 +23,7 @@ int automata(char *, char *);
 int mostrar_consigna(char *, char *);
 void escribirPila(Pila *, char);
 char leerPila(Pila *);
-void evaluaError(int, int, int, int, int, char *, char *);
+void evaluaError(int, int, int, char *, char *);
 void suprimirEspacios (char *);
 
 int main() {
@@ -71,83 +71,87 @@ void suprimirEspacios(char *expresion){
 
 int automata(char *expresion, char *error){
 	char tipoError[70];
-	int len = 0, inicio = 0, estado = 0, estadoAnterior = 0,columna = 0;
-	struct recorrido default0 = {3,0}, default1 = {3,1}, estado00 = {0,0}, estado01 = {0,1}, estado10 = {1,0}, estado11 = {1,1}, estado02 = {0,2}, estado03 = {0,3}, estado24 = {2,4};
-	struct recorrido automata[2][4][6]={{{default0,estado10,default0,estado02,default0,default0},{estado10,estado10,estado00,default0,default0,default0},{default0,default0,estado00,default0,default0,default0},{default0,default0,default0,default0,default0,default0}},
-							  			{{default1,estado11,default1,estado03,default1,default1},{estado11,estado11,estado01,default1,estado24,default1},{default1,default1,estado01,default1,estado24,default1},{default1,default1,default1,default1,default1,default1}}};
+	int len = 0, inicio = 0, estado = 0, vPila = 0,columna = 0;
+	struct recorrido 	estado00 = {0,0}, estado01 = {0,1}, 
+						estado10 = {1,0}, estado11 = {1,1}, 
+						estado02 = {0,2}, estado03 = {0,3}, 
+						estado24 = {2,4}, 
+						error1 = {3,1}, 
+						error2 = {3,2}, 
+						error3 = {3,3}, 
+						error4 = {3,4}, 
+						error5 = {3,5}, 
+						error6 = {3,6}, 
+						error7 = {3,7};
+	struct recorrido automata[2][3][6]={{{error1,estado10,error2,estado02,error2,error3},{estado10,estado10,estado00,error4,error4,error3},{error5,error5,estado00,error5,error5,error3}},
+							  			{{error1,estado11,error2,estado03,error2,error3},{estado11,estado11,estado01,error6,estado24,error3},{error7,error7,estado01,error7,estado24,error3}}};
 	Pila pila = NULL;
 	escribirPila(&pila,'$');
 	while(expresion[len] != '\0'){
-		if (expresion[len]==' ') {
-			if (error[len-2] == '^' || error[len-2] == '-'){
-				error[len-1]='-';
+		if (estado!=3){
+		
+			switch(leerPila(&pila)){
+				case '$':
+					inicio = 0;
+					break;
+				case 'R':
+					inicio = 1;
+					break;
+			}
+			switch (vPila){
+				case 0:
+					escribirPila(&pila, '$');
+				break;
+				case 1:
+					escribirPila(&pila, 'R');
+				break;
+				case 2:
+					escribirPila(&pila, '$');
+					escribirPila(&pila, 'R');
+				break;
+				case 3:
+					escribirPila(&pila, 'R');
+					escribirPila(&pila, 'R');
+				break;
+			}
+			if(expresion[len] == '0'){
+				columna = 0;
+			}
+			else if(expresion[len]>='1' && expresion[len]<='9'){
+				columna = 1;
+			}
+			else if(expresion[len]=='+' || expresion[len]=='-' || expresion[len]=='*' || expresion[len]=='/'){
+				columna = 2;
+			}
+			else if(expresion[len]=='('){
+				columna = 3;
+			}
+			else if(expresion[len]==')'){
+				columna = 4;
 			}
 			else{
-				error[len-1]=' ';
+				columna = 5;
 			}
-			len++;
-			continue;
+			vPila = automata[inicio][estado][columna].pila;
+			estado = automata[inicio][estado][columna].estado;
 		}
-		evaluaError(len, columna, estado, estadoAnterior, inicio, tipoError, error);
-		estadoAnterior = estado;
-		if(expresion[len] == '0'){
-			columna = 0;
-		}
-		else if(expresion[len]>='1' && expresion[len]<='9'){
-			columna = 1;
-		}
-		else if(expresion[len]=='+' || expresion[len]=='-' || expresion[len]=='*' || expresion[len]=='/'){
-			columna = 2;
-		}
-		else if(expresion[len]=='('){
-			columna = 3;
-		}
-		else if(expresion[len]==')'){
-			columna = 4;
-		}
-		else{
-			columna = 5;
-		}
-		estado = automata[inicio][estado][columna].estado;
-		switch(leerPila(&pila)){
-			case '$':
-				inicio = 0;
-				break;
-			case 'R':
-				inicio = 1;
-				break;
-		}
-		switch (automata[inicio][estado][columna].pila){
-			case 0:
-				escribirPila(&pila, '$');
-			break;
-			case 1:
-				escribirPila(&pila, 'R');
-			break;
-			case 2:
-				escribirPila(&pila, '$');
-				escribirPila(&pila, 'R');
-			break;
-			case 3:
-				escribirPila(&pila, 'R');
-				escribirPila(&pila, 'R');
-			break;
-		}
+		evaluaError(len, estado, vPila, tipoError, error);
 		len++;
 	}
-	evaluaError(len, columna, estado, estadoAnterior, inicio, tipoError, error);
 	error[len]='\0';
 	
-	if (leerPila(&pila) == '$'){
+	if (leerPila(&pila) == '$' || estado==3){
 		free(pila);
 		strcat(error, tipoError);
 		return estado;
 	}
 	else{
+		free(pila);
 		strcpy(tipoError,"^-Se esperaba un ')' (Parentesis de cierre)");
 		strcat(error, tipoError);
 		return ERROR;
 	}
+	
 }
 
 int guardar(int estado){
@@ -180,73 +184,43 @@ char leerPila(Pila *pila){
 	return valor;
 }
 
-void evaluaError (int len, int columna, int estado, int estadoAnterior, int inicio, char *tipoError, char *error){
-	if (estado == 3 && ((error[len-2] != '^' && error[len-2] != '-') || len == 0 || error[len-2] == ' ')){
-		error[len-1]='^';
-		switch(columna){
-			case 0:
-				if (estadoAnterior){
-					strcpy(tipoError,"Se esperaba un operador.");
-				}
-				else{
-					strcpy(tipoError,"No se puede comenzar con 0.");
-				}
-			break;
-			case 1:
-				if (inicio){
-					strcpy(tipoError,"Se esperaba un operador o un ')' (Parentesis de cierre).");
-				}
-				else{
-					strcpy(tipoError,"Se esperaba un operador.");
-				}
-			break;
-			case 2:
-				strcpy(tipoError,"Se esperaba un numero o un '(' (Parentesis de apertura).");
-
-			break;
-			case 3:
-				if (estadoAnterior == 1){
-					if (inicio){
-						strcpy(tipoError,"Se esperaba un operador o un numero o un ')' (Parentesis de cierre).");
-					}
-					else{
-						strcpy(tipoError,"Se esperaba un operador o un numero.");
-					}
-				}
-				else if (estadoAnterior == 2){
-					if (inicio){
-						strcpy(tipoError,"Se esperaba un operador o un ')' (Parentesis de cierre).");
-					}
-					else{
-						strcpy(tipoError,"Se esperaba un operador o un numero.");
-					}
-				}
-			break;
-			case 4:
-				if (inicio){
-					strcpy(tipoError,"Se esperaba un numero o un '(' (Parentesis de apertura).");
-				}
-				else{
-					if (estadoAnterior == 0){
-						strcpy(tipoError,"Se esperaba un numero o un '(' (Parentesis de apertura).");
-					}
-					else if (estadoAnterior == 1){
-						strcpy(tipoError,"Se esperaba un operador o un numero.");
-					}
-					else if (estadoAnterior == 2){
-						strcpy(tipoError,"Se esperaba un operador.");
-					}
-				}
-			break;
-			case 5:
-				strcpy(tipoError,"Caracter no valido.");
-			break;
+void evaluaError (int len, int estado, int vPila, char *tipoError, char *error){
+	if (estado == 3 && len > 0){
+		if (error[len-1]=='^' || error[len-1]=='-'){
+			error[len] = '-';
 		}
-	}	
-	else if (error[len-2] == '^' || error[len-2] == '-'){
-		error[len-1]='-';
+		else{
+			error[len] = '^';
+		}
+	}
+	else if (estado == 3 && len == 0){
+		error[len] = '^';
 	}
 	else{
-		if (len != 0) error[len-1]=' ';
+		error[len] = ' ';
 	}
+	switch(vPila){
+		case 1:
+			strcpy(tipoError,"-No se puede comenzar con 0.");
+		break;
+		case 2:
+			strcpy(tipoError,"-Se esperaba un numero o un '(' (Parentesis de apertura).");
+		break;
+		case 3:
+			strcpy(tipoError,"-Caracter no valido.");
+		break;
+		case 4:
+			strcpy(tipoError,"-Se esperaba un operador o un numero.");
+		break;
+		case 5:
+			strcpy(tipoError,"-Se esperaba un operador.");
+		break;
+		case 6:
+			strcpy(tipoError,"-Se esperaba un operador o un numero o un ')' (Parentesis de cierre).");
+		break;
+		case 7:
+			strcpy(tipoError,"-Se esperaba un operador o un ')' (Parentesis de cierre).");
+		break;
+	}
+
 }

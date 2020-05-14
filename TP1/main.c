@@ -6,37 +6,37 @@
 
 void mostrar_menu(void);
 int verificar_txt(char *);
-int escanear_archivo(char *);
-void guardar(int, char *);
+int escanear_archivo(char *, FILE*);
+void guardar(int, char *, FILE*);
 int automata(char *);
-int mostrar_consigna(void);
+int mostrar_consigna(FILE*);
 
 int main() {
 	FILE *archivo;
 	archivo = fopen("RESULTADOS.txt", "wt");
-	fclose(archivo);
-	if (mostrar_consigna()){
+	if (mostrar_consigna(archivo)){
 		printf("\n\nProceso satisfactorio.\n\n");
 	}
 	else{
 		printf("\n\nEl Proceso no se pudo realizar porque el archivo no existe.\n");
 	}
+	fclose(archivo);
 	return 0;
 }
 
-int mostrar_consigna(){
+int mostrar_consigna(FILE * archivoSalida){
 	char archivo[20];
 	printf("Trabajo Practico Nro 1 - Automata Finito Deterministico para Constantes Enteras\n\nIngrese el nombre del archivo a escanear: ");
 	scanf("%s", archivo);
 	verificar_txt(archivo);
-	return escanear_archivo(archivo);
+	return escanear_archivo(archivo, archivoSalida);
 }
 
-int escanear_archivo(char *archivo){
+int escanear_archivo(char *archivo, FILE* archivoSalida){
 	FILE *datos;
+	datos=fopen(archivo, "rt");
 	char caracter, cadena[50];
 	int len;
-	datos=fopen(archivo, "rt");
 	if (datos==NULL) return ERROR;
 	do{	
 		strcpy(cadena, "");
@@ -48,8 +48,9 @@ int escanear_archivo(char *archivo){
 			len++;
 		}
 		cadena[len] = '\0';
-		guardar(automata(cadena), cadena);
+		guardar(automata(cadena), cadena, archivoSalida);
 	}while(caracter!=EOF);
+	fclose(datos);
 	return OK;	
 }
 
@@ -87,27 +88,23 @@ int automata(char *cadena){
 	return inicio;
 }
 
-void guardar(int base, char *cadena){
-	FILE *archivo;
-	archivo = fopen("RESULTADOS.txt", "at");
-	fputs(cadena, archivo);
+void guardar(int base, char *cadena, FILE* archivoSalida){
+	fputs(cadena, archivoSalida);
 	switch(base){
 		case 2:
 		case 5:
-			fputs(" - OCTAL\n", archivo);
+			fputs(" - OCTAL\n", archivoSalida);
 			break;	
 		case 1:
-			fputs(" - DECIMAL\n", archivo);
+			fputs(" - DECIMAL\n", archivoSalida);
 			break;
 		case 4:
-			fputs(" - HEXADECIMAL\n", archivo);
+			fputs(" - HEXADECIMAL\n", archivoSalida);
 			break;	
 		case 0: 
-			fputs(" - PALABRA NULA\n", archivo);
+			fputs(" - PALABRA NULA\n", archivoSalida);
 			break;	
 		default:
-			fputs(" - INCORRECTO\n", archivo);
+			fputs(" - INCORRECTO\n", archivoSalida);
 	}
-	
- 	fclose (archivo);
 }

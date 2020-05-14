@@ -17,7 +17,7 @@ typedef struct
 typedef Nodo *Pila;
 typedef Nodo *punteroNodo;
 
-void escanearArchivoYescribirResultados();
+void escanearExpresionYescribirResultados();
 int determinarColumna(char);
 char pop(Pila* );
 void push(Pila* , char );
@@ -31,12 +31,12 @@ int main(int argc, char const *argv[])
 {
     printf("Trabajo Practico Nro 2 - Automata Finito de Pila para Expresiones\n");
     fflush(stdin);
-    escanearArchivoYescribirResultados();
+    escanearExpresionYescribirResultados();
     system("pause");
     return 0;
 }
 
-void escanearArchivoYescribirResultados()
+void escanearExpresionYescribirResultados()
 {
     char expresion[50];
     int condicion = 1, i = 0, estadoActual = 0, error=0;

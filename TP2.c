@@ -23,7 +23,7 @@ char pop(Pila* );
 void push(Pila* , char );
 int determinarCima(char );
 void suprimirEspacios(char*);
-void calcularError(int,struct estado, char*);
+void calcularLugarError(int,char*);
 int len(char*);
 
 
@@ -39,7 +39,8 @@ int main(int argc, char const *argv[])
 void escanearExpresionYescribirResultados()
 {
     char expresion[50];
-    int condicion = 1, i = 0, estadoActual = 0, error=0;
+    char lugarError[50];
+    int condicion = 1, i = 0, x = 0, estadoActual = 0, error=0;
     char c, cima;
     struct estado est;
     Pila pila = NULL;
@@ -64,34 +65,34 @@ void escanearExpresionYescribirResultados()
             if(est.estadoSig == 3)
             {
                 estadoActual = 3;
-                printf("%s%d\n","Error en posicion: ", i);
+                calcularLugarError(i,expresion);
                 if(est.cadPush == 'A')
                 {
-                    printf("%s\n","Caracter no reconocido.");
+                    printf("%s","Caracter no reconocido.");
                 }
                 if(est.cadPush == 'B')
                 {
-                    printf("%s\n","No se puede empezar un numero con '0'.");
+                    printf("%s","No se puede empezar un numero con '0'.");
                 }
                 if(est.cadPush == 'C')
                 {
-                    printf("%s\n","No se puede empezar con una operacion.");
+                    printf("%s","Se espera un numero o un '('.");
                 }
                 if(est.cadPush == 'D')
                 {
-                    printf("%s\n","Se esperaba un numero despues de '('.");
+                    printf("%s","Se esperaba un numero despues de '('.");
                 }
                 if(est.cadPush == 'E')
                 {
-                    printf("%s\n","Falta '('.");
+                    printf("%s","Falta '('.");
                 }
                 if(est.cadPush == 'F')
                 {
-                    printf("%s\n","Se espera una operacion antes de '('.");
+                    printf("%s","Se espera una operacion antes de '('.");
                 }
                 if(est.cadPush == 'G')
                 {
-                    printf("%s\n","Se espera una operacion despues de ')'.");
+                    printf("%s","Se espera una operacion despues de ')'.");
                 }
                 i = len(expresion);
             }
@@ -114,7 +115,7 @@ void escanearExpresionYescribirResultados()
         {
             printf("La expresion es correcta\n");
         }
-        printf("Si quiere escribir otra expresion oprima 1, sino 0: ");
+        printf("\nSi quiere escribir otra expresion oprima 1, sino 0: ");
         fflush(stdin);
         scanf("%d",&condicion);
     }
@@ -179,4 +180,26 @@ int len(char* expresion)
         i++;
     }
     return i-1;
+}
+
+void calcularLugarError(int i, char* expresion)
+{
+    char lugarError[50];
+    int x = 0;
+    while(x<i)
+    {
+        lugarError[x] = ' ';
+        x++;
+    }
+    lugarError[x] = '^';
+    x++;
+    while(expresion[x]!='\0')
+    {
+        lugarError[x] = '-';
+        x++;
+    }
+    lugarError[x] = '>';
+    x++;
+    lugarError[x] = '\0';
+    printf("%s",lugarError);
 }

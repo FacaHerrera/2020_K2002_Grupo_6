@@ -27,7 +27,7 @@ void evaluaError(int, int, int, char *, char *);
 void suprimirEspacios (char *);
 
 int main() {
-	char condicion = 'S', error[120], expresion[120]; //70 son para el detalle del error
+	char condicion = 'S', error[120], expresion[50]; //70 son para el detalle del error
 	strcpy(error, "");
 	while (condicion == 'S' || condicion == 's'){
 		system("CLS");
@@ -38,7 +38,7 @@ int main() {
 			printf("\n-----------------------------------------------------------------------------\n\n%s\n%s", expresion, error);
 			printf("\n\nLa expresion es INCORRECTA\n");
 		}
-		printf("\nDesea ingresar una nueva expresion? (S para si | CUALQUIERO OTRA para no)\n\n");
+		printf("\nDesea ingresar una nueva expresion? (S para si | CUALQUIER OTRA para no)\n\n");
 		fflush(stdin);
 		scanf("%c", &condicion);
 	}	
@@ -66,12 +66,11 @@ void suprimirEspacios(char *expresion){
 	}
 	auxiliar[lenAux] = '\0';
 	strcpy(expresion, auxiliar);
-
 }
 
 int automata(char *expresion, char *error){
 	char tipoError[70];
-	int len = 0, inicio = 0, estado = 0, vPila = 0,columna = 0;
+	int len = 0, inicio = 0, estado = 0, columna = 0, vPila = 0;
 	struct recorrido 	estado00 = {0,0}, estado01 = {0,1}, 
 						estado10 = {1,0}, estado11 = {1,1}, 
 						estado02 = {0,2}, estado03 = {0,3}, 
@@ -89,7 +88,6 @@ int automata(char *expresion, char *error){
 	escribirPila(&pila,'$');
 	while(expresion[len] != '\0'){
 		if (estado!=3){
-		
 			switch(leerPila(&pila)){
 				case '$':
 					inicio = 0;

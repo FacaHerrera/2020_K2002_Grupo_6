@@ -2,115 +2,138 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct
+struct estado
 {
     int estadoSig;
-    char cadPush[3];
-}estado;
+    char cadPush;
+};
 
 typedef struct 
 {
     char info;
-    struct Nodo *sig;
+    struct nodo *sig;
 } Nodo;
 
 typedef Nodo *Pila;
 typedef Nodo *punteroNodo;
 
-void escanearArchivoYescribirResultados(char expresion[]);
-int determinarColumna(char c);
-char pop(Pila* pila);
-void push(Pila* pila, char cadena[]);
-int determinarCima(Pila* pila);
+void escanearArchivoYescribirResultados();
+int determinarColumna(char);
+char pop(Pila* );
+void push(Pila* , char );
+int determinarCima(char );
+void suprimirEspacios(char*);
+void calcularError(int,struct estado, char*);
+int len(char*);
 
 
 int main(int argc, char const *argv[])
 {
-    char expresion[50];
-    printf("Trabajo Practico Nro 2 - Automata Finito de Pila para Expresiones\n Escriba la expresion: \n");
-    scanf("%s",&expresion);
-    escanearArchivoYescribirResultados(expresion);
+    printf("Trabajo Practico Nro 2 - Automata Finito de Pila para Expresiones\n");
+    fflush(stdin);
+    escanearArchivoYescribirResultados();
+    system("pause");
+    return 0;
 }
 
-struct Estado 
+void escanearArchivoYescribirResultados()
 {
-    int estado;
-    char cadena[3];
-};
-
-void escanearArchivoYescribirResultados(char expresion[])
-{
-    int estadoActual = 0;
-    int i = 0;
-    char c;
-    estado error = {3,"$"};
-    Pila p = NULL;
-    push(p,"$");
-    estado tablaTransicion[4][2][6] = {{{{3,"$"},{1,"$"},{3,"$"},{0,"R$"},{3,"$"},{3,"$"}},{{3,"R"},{1,"R"},{3,"R"},{0,"RR"},{3,"R"},{3,"R"}}},
-                                       {{{1,"$"},{1,"$"},{0,"$"},{3,"$"},{3,"$"},{3,"$"}},{{1,"R"},{1,"R"},{0,"R"},{3,"R"},{2,""},{3,"R"}}},
-                                       {{{3,"$"},{3,"$"},{0,"$"},{3,"$"},{3,"$"},{3,"$"}},{{3,"R"},{3,"R"},{0,"R"},{3,"R"},{2,""},{3,"R"}}},
-                                       {{{3,"$"},{3,"$"},{3,"$"},{3,"$"},{3,"$"},{3,"$"}},{{3,"$"},{3,"$"},{3,"$"},{3,"$"},{3,"$"},{3,"$"}}}} ;
-    while(expresion[i] != '\0')
+    char expresion[50];
+    int condicion = 1, i = 0, estadoActual = 0, error=0;
+    char c, cima;
+    struct estado est;
+    Pila pila = NULL;
+    push(&pila,'$');
+    struct estado tablaTransicion[4][2][6] = {{{{3,'B'},{1,'S'},{3,'C'},{0,'R'},{3,'E'},{3,'A'}},{{3,'B'},{1,'S'},{3,'D'},{0,'R'},{3,'E'},{3,'A'}}},
+                                              {{{1,'S'},{1,'S'},{0,'S'},{3,'F'},{3,'E'},{3,'A'}},{{1,'S'},{1,'S'},{0,'S'},{3,'F'},{2,'N'},{3,'A'}}},
+                                              {{{3,'G'},{3,'G'},{0,'S'},{3,'F'},{3,'E'},{3,'A'}},{{3,'G'},{3,'G'},{0,'S'},{3,'F'},{2,'N'},{3,'A'}}},
+                                              {{{3,'I'},{3,'I'},{3,'I'},{3,'I'},{3,'I'},{3,'I'}},{{3,'I'},{3,'I'},{3,'I'},{3,'I'},{3,'I'},{3,'I'}}}};
+    while(condicion == 1)
     {
-        c = expresion[i];
-        if(tablaTransicion[estadoActual][determinarCima(p)][determinarColumna(c)].estadoSig == 3)
+        printf("Escriba la expresion: \n");
+        fflush(stdin);
+        scanf("%49[^\n]",&expresion);
+        suprimirEspacios(expresion);
+        i = 0;
+        estadoActual = 0;
+        while(expresion[i] != '\0')
         {
-            estadoActual = 3;
-        }
-        else
-        {
-            estadoActual = tablaTransicion[estadoActual][determinarCima(p)][determinarColumna(c)].estadoSig;
+            c = expresion[i];
+            cima = pop(&pila);
+            est = tablaTransicion[estadoActual][determinarCima(cima)][determinarColumna(c)];
+            if(est.estadoSig == 3)
+            {
+                estadoActual = 3;
+                printf("%s%d\n","Error en posicion: ", i);
+                if(est.cadPush == 'A')
+                {
+                    printf("%s\n","Caracter no reconocido.");
+                }
+                if(est.cadPush == 'B')
+                {
+                    printf("%s\n","No se puede empezar un numero con '0'.");
+                }
+                if(est.cadPush == 'C')
+                {
+                    printf("%s\n","No se puede empezar con una operacion.");
+                }
+                if(est.cadPush == 'D')
+                {
+                    printf("%s\n","Se esperaba un numero despues de '('.");
+                }
+                if(est.cadPush == 'E')
+                {
+                    printf("%s\n","Falta '('.");
+                }
+                if(est.cadPush == 'F')
+                {
+                    printf("%s\n","Se espera una operacion antes de '('.");
+                }
+                if(est.cadPush == 'G')
+                {
+                    printf("%s\n","Se espera una operacion despues de ')'.");
+                }
+                i = len(expresion);
+            }
+            else
+            {
+                estadoActual = est.estadoSig;
+                if(est.cadPush == 'R')
+                {
+                    push(&pila, cima);
+                    push(&pila, 'R');
+                }
+                if(est.cadPush == 'S')
+                {
+                    push(&pila, cima);
+                }
+            }
             i++;
         }
-    }
-    if(estadoActual == 3)
-    {
-        printf("La expresion es incorrecta");
-    }
-    else
-    {
-        printf("La expresion es correcta");
+        if(estadoActual != 3)
+        {
+            printf("La expresion es correcta\n");
+        }
+        printf("Si quiere escribir otra expresion oprima 1, sino 0: ");
+        fflush(stdin);
+        scanf("%d",&condicion);
     }
 }
 
 int determinarColumna(char c)
 {
-        if(c=='0')
-        {
-            return 0;
-        }
-        if(c>='1' && c<='9')
-        {
-            return 1;
-        }
-        if(c == '+' || c == '-' || c == '*' || c == '/')
-        {
-            return 2;
-        }
-        if(c == '(')
-        {
-            return 3;
-        }
-        if(c == ')')
-        {
-            return 4;
-        }
-        else
-        {
-            return 5;
-        }
+        if(c=='0') return 0;
+        if(c>='1' && c<='9') return 1;
+        if(c == '+' || c == '-' || c == '*' || c == '/') return 2;
+        if(c == '(') return 3;
+        if(c == ')') return 4;
+        if(c<40 || c == 44 || c == 46 || c>57) return 5;
 }
 
-int determinarCima(Pila *pila)
+int determinarCima(char cima)
 {
-    if(pop(pila) == '$')
-    {
-        return 0;
-    }
-    else
-    {
-        return 1;
-    }
+    if(cima == '$')return 0;
+    if(cima == 'R')return 1;
 }
 
 char pop(Pila* pila)
@@ -124,11 +147,36 @@ char pop(Pila* pila)
    free(nodo);
    return v;
 }
-void push(Pila* pila, char cadena[])
+
+void push(Pila *pila, char cadena)
 {
     punteroNodo nuevo;
     nuevo = (Nodo *)malloc(sizeof(Nodo));
     nuevo->info = cadena;
     nuevo->sig = *pila;
     *pila = nuevo;
+}
+
+void suprimirEspacios(char *expresion){
+	int len = 0, lenAux = 0;
+	char auxiliar[50];
+	while(expresion[len] != '\0'){
+		if (expresion[len] != ' '){
+			auxiliar[lenAux] = expresion[len];
+			lenAux++;
+		} 
+		len++;	
+	}
+	auxiliar[lenAux] = '\0';
+	strcpy(expresion, auxiliar);
+}
+
+int len(char* expresion)
+{
+    int i =0;
+    while(expresion[i] != '\0')
+    {
+        i++;
+    }
+    return i-1;
 }

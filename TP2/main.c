@@ -18,7 +18,6 @@ typedef Nodo *punteroNodo;
 typedef Nodo *Pila;
 
 void mostrar_menu(void);
-int guardar(int);
 int automata(char *, char *);
 int mostrar_consigna(char *, char *);
 void escribirPila(Pila *, char);

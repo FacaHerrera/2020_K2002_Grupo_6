@@ -117,13 +117,13 @@ void escanearExpresionYescribirResultados()
             }
             i++;
         }
-        if((estadoActual == 0 && est.cadPush == '$') || (estadoActual == 0 && est.cadPush == 'R'))
-        {
-            printf("La expresion esta incompleta.\n");
-        }
         if((estadoActual == 1 && est.cadPush == '$') || (estadoActual == 2 && est.cadPush == '$'))
         {
             printf("La expresion es correcta\n");
+        }
+        else
+        {
+            printf("La expresion esta incompleta.\n");
         }
         printf("\nSi quiere escribir otra expresion oprima 1, sino 0: ");
         fflush(stdin);

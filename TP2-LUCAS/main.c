@@ -97,22 +97,6 @@ int automata(char *expresion, char *error){
 					inicio = 1;
 					break;
 			}
-			switch (vPila){
-				case 0:
-					escribirPila(&pila, '$');
-				break;
-				case 1:
-					escribirPila(&pila, 'R');
-				break;
-				case 2:
-					escribirPila(&pila, '$');
-					escribirPila(&pila, 'R');
-				break;
-				case 3:
-					escribirPila(&pila, 'R');
-					escribirPila(&pila, 'R');
-				break;
-			}
 			if(expresion[len] == '0'){
 				columna = 0;
 			}
@@ -132,6 +116,22 @@ int automata(char *expresion, char *error){
 				columna = 5;
 			}
 			vPila = automata[inicio][estado][columna].pila;
+			switch (vPila){
+				case 0:
+					escribirPila(&pila, '$');
+				break;
+				case 1:
+					escribirPila(&pila, 'R');
+				break;
+				case 2:
+					escribirPila(&pila, '$');
+					escribirPila(&pila, 'R');
+				break;
+				case 3:
+					escribirPila(&pila, 'R');
+					escribirPila(&pila, 'R');
+				break;
+			}
 			estado = automata[inicio][estado][columna].estado;
 		}
 		evaluaError(len, estado, vPila, tipoError, error);

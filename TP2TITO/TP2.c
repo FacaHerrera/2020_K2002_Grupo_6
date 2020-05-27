@@ -120,13 +120,17 @@ void escanearExpresionYescribirResultados()
         }
         if((esEstadoFinal(est) == 0 && estadoActual != 3) || determinarCima(cima) == 1)
         {
+            for(int x = 0; x < len(expresion); x++)
+            {
+                printf("%s"," ");
+            }
             if(determinarCima(cima) != 0)
             {
-                printf("Falta parentesis de Cierre.\n");
+                printf("^>Falta parentesis de Cierre.\n");
             }
             else
             {
-                printf("La expresion esta incompleta.\n");
+                printf("^>La expresion esta incompleta.\n");
             }
         }
         pila = NULL;

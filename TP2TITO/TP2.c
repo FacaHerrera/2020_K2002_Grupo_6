@@ -52,7 +52,7 @@ void escanearExpresionYescribirResultados()
     struct estado est;
     Pila pila = NULL;
     push(&pila,'$');
-    struct estado tablaTransicion[4][2][6] = {{{{3,ERROR2},{1,'$'}   ,{3,ERROR3},{0,'R'}   ,{3,ERROR5},{3,ERROR1}},{{3,ERROR2},{1,'$'}   ,{3,ERROR4},{0,'R'}   ,{3,ERROR5},{3,ERROR1}}},
+    struct estado tablaTransicion[4][2][6] = {{{{3,ERROR2},{1,'$'}   ,{3,ERROR3},{0,'R'}   ,{3,ERROR3},{3,ERROR1}},{{3,ERROR2},{1,'$'}   ,{3,ERROR4},{0,'R'}   ,{3,ERROR5},{3,ERROR1}}},
                                               {{{1,'$'}   ,{1,'$'}   ,{0,'$'}   ,{3,ERROR6},{3,ERROR5},{3,ERROR1}},{{1,'$'}   ,{1,'$'}   ,{0,'$'}   ,{3,ERROR6},{2,'N'}   ,{3,ERROR1}}},
                                               {{{3,ERROR7},{3,ERROR7},{0,'$'}   ,{3,ERROR6},{3,ERROR5},{3,ERROR1}},{{3,ERROR7},{3,ERROR7},{0,'$'}   ,{3,ERROR6},{2,'N'}   ,{3,ERROR1}}},
                                               {{{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}}   ,{{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}}}};
@@ -114,14 +114,27 @@ void escanearExpresionYescribirResultados()
             }
             i++;
         }
-        if(esEstadoFinal(est))
+        if(esEstadoFinal(est) && determinarCima(cima) == 0)
         {
             printf("La expresion es correcta\n");
         }
-        if(esEstadoFinal(est) == 0 && estadoActual != 3)
+        if((esEstadoFinal(est) == 0 && estadoActual != 3) || determinarCima(cima) == 1)
         {
-            printf("La expresion esta incompleta.\n");
+            for(int x = 0; x < len(expresion); x++)
+            {
+                printf("%s"," ");
+            }
+            if(determinarCima(cima) != 0)
+            {
+                printf("^>Falta parentesis de Cierre.\n");
+            }
+            else
+            {
+                printf("^>La expresion esta incompleta.\n");
+            }
         }
+        pila = NULL;
+        push(&pila,'$');
         printf("\nSi quiere escribir otra expresion oprima 1, sino 0: ");
         fflush(stdin);
         scanf("%d",&condicion);

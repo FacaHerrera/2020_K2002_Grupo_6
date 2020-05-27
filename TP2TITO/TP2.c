@@ -114,14 +114,23 @@ void escanearExpresionYescribirResultados()
             }
             i++;
         }
-        if(esEstadoFinal(est))
+        if(esEstadoFinal(est) && determinarCima(cima) == 0)
         {
             printf("La expresion es correcta\n");
         }
-        if(esEstadoFinal(est) == 0 && estadoActual != 3)
+        if((esEstadoFinal(est) == 0 && estadoActual != 3) || determinarCima(cima) != 0)
         {
-            printf("La expresion esta incompleta.\n");
+            if(determinarCima(cima) != 0)
+            {
+                printf("Falta parentesis de Cierre.\n");
+            }
+            else
+            {
+                printf("La expresion esta incompleta.\n");
+            }
         }
+        pila = NULL;
+        push(&pila,'$');
         printf("\nSi quiere escribir otra expresion oprima 1, sino 0: ");
         fflush(stdin);
         scanf("%d",&condicion);

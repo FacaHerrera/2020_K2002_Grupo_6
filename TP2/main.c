@@ -199,25 +199,25 @@ void evaluaError (int len, int estado, int vPila, char *tipoError, char *error){
 	}
 	switch(vPila){
 		case 1:
-			strcpy(tipoError,"-No se puede comenzar con 0.");
+			strcpy(tipoError,"->No se puede comenzar con 0.");
 		break;
 		case 2:
-			strcpy(tipoError,"-Se esperaba un numero o un '(' (Parentesis de apertura).");
+			strcpy(tipoError,"->Se esperaba un numero o un '(' (Parentesis de apertura).");
 		break;
 		case 3:
-			strcpy(tipoError,"-Caracter no valido.");
+			strcpy(tipoError,"->Caracter no valido.");
 		break;
 		case 4:
-			strcpy(tipoError,"-Se esperaba un operador o un numero.");
+			strcpy(tipoError,"->Se esperaba un operador o un numero.");
 		break;
 		case 5:
-			strcpy(tipoError,"-Se esperaba un operador.");
+			strcpy(tipoError,"->Se esperaba un operador.");
 		break;
 		case 6:
-			strcpy(tipoError,"-Se esperaba un operador o un numero o un ')' (Parentesis de cierre).");
+			strcpy(tipoError,"->Se esperaba un operador o un numero o un ')' (Parentesis de cierre).");
 		break;
 		case 7:
-			strcpy(tipoError,"-Se esperaba un operador o un ')' (Parentesis de cierre).");
+			strcpy(tipoError,"->Se esperaba un operador o un ')' (Parentesis de cierre).");
 		break;
 	}
 

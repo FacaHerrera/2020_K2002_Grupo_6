@@ -52,7 +52,7 @@ void escanearExpresionYescribirResultados()
     struct estado est;
     Pila pila = NULL;
     push(&pila,'$');
-    struct estado tablaTransicion[4][2][6] = {{{{3,ERROR2},{1,'$'}   ,{3,ERROR3},{0,'R'}   ,{3,ERROR5},{3,ERROR1}},{{3,ERROR2},{1,'$'}   ,{3,ERROR4},{0,'R'}   ,{3,ERROR5},{3,ERROR1}}},
+    struct estado tablaTransicion[4][2][6] = {{{{3,ERROR2},{1,'$'}   ,{3,ERROR3},{0,'R'}   ,{3,ERROR3},{3,ERROR1}},{{3,ERROR2},{1,'$'}   ,{3,ERROR4},{0,'R'}   ,{3,ERROR5},{3,ERROR1}}},
                                               {{{1,'$'}   ,{1,'$'}   ,{0,'$'}   ,{3,ERROR6},{3,ERROR5},{3,ERROR1}},{{1,'$'}   ,{1,'$'}   ,{0,'$'}   ,{3,ERROR6},{2,'N'}   ,{3,ERROR1}}},
                                               {{{3,ERROR7},{3,ERROR7},{0,'$'}   ,{3,ERROR6},{3,ERROR5},{3,ERROR1}},{{3,ERROR7},{3,ERROR7},{0,'$'}   ,{3,ERROR6},{2,'N'}   ,{3,ERROR1}}},
                                               {{{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}}   ,{{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}}}};
@@ -118,7 +118,7 @@ void escanearExpresionYescribirResultados()
         {
             printf("La expresion es correcta\n");
         }
-        if((esEstadoFinal(est) == 0 && estadoActual != 3) || determinarCima(cima) != 0)
+        if((esEstadoFinal(est) == 0 && estadoActual != 3) || determinarCima(cima) == 1)
         {
             if(determinarCima(cima) != 0)
             {

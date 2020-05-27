@@ -32,6 +32,7 @@ int determinarCima(char );
 void suprimirEspacios(char*);
 void calcularLugarError(int,char*);
 int len(char*);
+int esEstadoFinal(struct estado);
 
 int main(int argc, char const *argv[])
 {
@@ -72,33 +73,29 @@ void escanearExpresionYescribirResultados()
             {
                 estadoActual = 3;
                 calcularLugarError(i,expresion);
-                if(est.cadPush == ERROR1)
+                switch (est.cadPush)
                 {
+                case ERROR1:
                     printf("%s","Caracter no reconocido.");
-                }
-                if(est.cadPush == ERROR2)
-                {
+                    break;
+                case ERROR2:
                     printf("%s","No se puede empezar un numero con '0'.");
-                }
-                if(est.cadPush == ERROR3)
-                {
+                    break;
+                case ERROR3:
                     printf("%s","Se espera un numero o un '('.");
-                }
-                if(est.cadPush == ERROR4)
-                {
+                    break;
+                case ERROR4:
                     printf("%s","Se esperaba un numero despues de '('.");
-                }
-                if(est.cadPush == ERROR5)
-                {
+                    break;
+                case ERROR5:
                     printf("%s","Falta '('.");
-                }
-                if(est.cadPush == ERROR6)
-                {
+                    break;
+                case ERROR6:
                     printf("%s","Se espera una operacion antes de '('.");
-                }
-                if(est.cadPush == ERROR7)
-                {
+                    break;
+                case ERROR7:
                     printf("%s","Se espera una operacion despues de ')'.");
+                    break;
                 }
                 i = len(expresion);
             }
@@ -117,11 +114,11 @@ void escanearExpresionYescribirResultados()
             }
             i++;
         }
-        if((estadoActual == 1 && est.cadPush == '$') || (estadoActual == 2 && est.cadPush == '$'))
+        if(esEstadoFinal(est))
         {
             printf("La expresion es correcta\n");
         }
-        else
+        if(esEstadoFinal(est) == 0 && estadoActual != 3)
         {
             printf("La expresion esta incompleta.\n");
         }
@@ -212,4 +209,10 @@ void calcularLugarError(int i, char* expresion)
     x++;
     lugarError[x] = '\0';
     printf("%s",lugarError);
+}
+
+int esEstadoFinal(struct estado est)
+{
+    if((est.estadoSig == 1 && est.cadPush == '$') || (est.estadoSig == 2 && est.cadPush == '$')) return 1;
+    return 0;
 }

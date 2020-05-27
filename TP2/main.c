@@ -31,12 +31,14 @@ int main() {
 	strcpy(error, "");
 	while (condicion == 'S' || condicion == 's'){
 		system("CLS");
-		if (mostrar_consigna(error, expresion)){
-			printf("\n\nLa expresion es CORRECTA\n\n");
-		}
-		else{
-			printf("\n-----------------------------------------------------------------------------\n\n%s\n%s", expresion, error);
-			printf("\n\nLa expresion es INCORRECTA\n");
+		switch(mostrar_consigna(error, expresion)){
+			case 0:
+			case 3:
+				printf("\n-----------------------------------------------------------------------------\n\n%s\n%s", expresion, error);
+				printf("\n\nLa expresion es INCORRECTA\n");
+				break;
+			default:
+				printf("\n\nLa expresion es CORRECTA\n\n");
 		}
 		printf("\nDesea ingresar una nueva expresion? (S para si | CUALQUIER OTRA para no)\n\n");
 		fflush(stdin);
@@ -50,7 +52,7 @@ int mostrar_consigna(char *error, char *expresion){
 	fflush(stdin);
 	scanf("%49[^\n]", expresion);
 	suprimirEspacios(expresion);
-	return guardar(automata(expresion, error));
+	return automata(expresion, error);
 }
 
 void suprimirEspacios(char *expresion){
@@ -138,29 +140,22 @@ int automata(char *expresion, char *error){
 	}
 	error[len]='\0';
 	
-	if (leerPila(&pila) == '$' || estado==3){
-		free(pila);
-		strcat(error, tipoError);
-		return estado;
-	}
-	else{
-		free(pila);
-		strcpy(tipoError,"^-Se esperaba un ')' (Parentesis de cierre)");
-		strcat(error, tipoError);
-		return ERROR;
-	}
-	
-}
 
-int guardar(int estado){
 	switch (estado){
+		case 0:
+			strcpy(tipoError,"^->Se esperaba un numero o un '(' (Parentesis de apertura).");
+			break;
 		case 1:
 		case 2:
-			return OK;
+			if (leerPila(&pila) == 'R'){
+				strcpy(tipoError,"^->Se esperaba un ')' (Parentesis de cierre).");
+				estado = 3;
+			} 
 			break;	
-		default:
-			return ERROR;
 	}
+	free(pila);
+	strcat(error, tipoError);
+	return estado;
 }
 
 void escribirPila(Pila *pila, char valor){

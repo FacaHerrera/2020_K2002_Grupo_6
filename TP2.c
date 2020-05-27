@@ -1,6 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define ERROR1 'A'
+#define ERROR2 'B'
+#define ERROR3 'C'
+#define ERROR4 'D'
+#define ERROR5 'E'
+#define ERROR6 'F'
+#define ERROR7 'G'
 
 struct estado
 {
@@ -26,7 +33,6 @@ void suprimirEspacios(char*);
 void calcularLugarError(int,char*);
 int len(char*);
 
-
 int main(int argc, char const *argv[])
 {
     printf("Trabajo Practico Nro 2 - Automata Finito de Pila para Expresiones\n");
@@ -45,10 +51,10 @@ void escanearExpresionYescribirResultados()
     struct estado est;
     Pila pila = NULL;
     push(&pila,'$');
-    struct estado tablaTransicion[4][2][6] = {{{{3,'B'},{1,'S'},{3,'C'},{0,'R'},{3,'E'},{3,'A'}},{{3,'B'},{1,'S'},{3,'D'},{0,'R'},{3,'E'},{3,'A'}}},
-                                              {{{1,'S'},{1,'S'},{0,'S'},{3,'F'},{3,'E'},{3,'A'}},{{1,'S'},{1,'S'},{0,'S'},{3,'F'},{2,'N'},{3,'A'}}},
-                                              {{{3,'G'},{3,'G'},{0,'S'},{3,'F'},{3,'E'},{3,'A'}},{{3,'G'},{3,'G'},{0,'S'},{3,'F'},{2,'N'},{3,'A'}}},
-                                              {{{3,'I'},{3,'I'},{3,'I'},{3,'I'},{3,'I'},{3,'I'}},{{3,'I'},{3,'I'},{3,'I'},{3,'I'},{3,'I'},{3,'I'}}}};
+    struct estado tablaTransicion[4][2][6] = {{{{3,ERROR2},{1,'$'}   ,{3,ERROR3},{0,'R'}   ,{3,ERROR5},{3,ERROR1}},{{3,ERROR2},{1,'$'}   ,{3,ERROR4},{0,'R'}   ,{3,ERROR5},{3,ERROR1}}},
+                                              {{{1,'$'}   ,{1,'$'}   ,{0,'$'}   ,{3,ERROR6},{3,ERROR5},{3,ERROR1}},{{1,'$'}   ,{1,'$'}   ,{0,'$'}   ,{3,ERROR6},{2,'N'}   ,{3,ERROR1}}},
+                                              {{{3,ERROR7},{3,ERROR7},{0,'$'}   ,{3,ERROR6},{3,ERROR5},{3,ERROR1}},{{3,ERROR7},{3,ERROR7},{0,'$'}   ,{3,ERROR6},{2,'N'}   ,{3,ERROR1}}},
+                                              {{{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}}   ,{{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}}}};
     while(condicion == 1)
     {
         printf("Escriba la expresion: \n");
@@ -66,31 +72,31 @@ void escanearExpresionYescribirResultados()
             {
                 estadoActual = 3;
                 calcularLugarError(i,expresion);
-                if(est.cadPush == 'A')
+                if(est.cadPush == ERROR1)
                 {
                     printf("%s","Caracter no reconocido.");
                 }
-                if(est.cadPush == 'B')
+                if(est.cadPush == ERROR2)
                 {
                     printf("%s","No se puede empezar un numero con '0'.");
                 }
-                if(est.cadPush == 'C')
+                if(est.cadPush == ERROR3)
                 {
                     printf("%s","Se espera un numero o un '('.");
                 }
-                if(est.cadPush == 'D')
+                if(est.cadPush == ERROR4)
                 {
                     printf("%s","Se esperaba un numero despues de '('.");
                 }
-                if(est.cadPush == 'E')
+                if(est.cadPush == ERROR5)
                 {
                     printf("%s","Falta '('.");
                 }
-                if(est.cadPush == 'F')
+                if(est.cadPush == ERROR6)
                 {
                     printf("%s","Se espera una operacion antes de '('.");
                 }
-                if(est.cadPush == 'G')
+                if(est.cadPush == ERROR7)
                 {
                     printf("%s","Se espera una operacion despues de ')'.");
                 }
@@ -104,14 +110,18 @@ void escanearExpresionYescribirResultados()
                     push(&pila, cima);
                     push(&pila, 'R');
                 }
-                if(est.cadPush == 'S')
+                if(est.cadPush == '$')
                 {
                     push(&pila, cima);
                 }
             }
             i++;
         }
-        if(estadoActual != 3)
+        if((estadoActual == 0 && est.cadPush == '$') || (estadoActual == 0 && est.cadPush == 'R'))
+        {
+            printf("La expresion esta incompleta.\n");
+        }
+        if((estadoActual == 1 && est.cadPush == '$') || (estadoActual == 2 && est.cadPush == '$'))
         {
             printf("La expresion es correcta\n");
         }

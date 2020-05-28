@@ -138,8 +138,6 @@ int automata(char *expresion, char *error){
 		len++;
 	}
 	error[len]='\0';
-	
-
 	switch (estado){
 		case 0:
 			strcpy(tipoError,"^->Se esperaba un numero o un '(' (Parentesis de apertura).");
@@ -214,5 +212,4 @@ void evaluaError (int len, int estado, int vPila, char *tipoError, char *error){
 			strcpy(tipoError,"->Se esperaba un operador o un ')' (Parentesis de cierre).");
 		break;
 	}
-
 }

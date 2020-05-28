@@ -21,15 +21,15 @@ int automata(char *, char *);
 char pop (Pila*);
 void push (Pila*, char);
 void suprimir_espacios(char *);
-void evaluar_error(int, int, char *, char *, int, int);
+void evaluar_error(int, int, char *, char *, int);
 
 int main(){
     
     char expresion[50], error[120], condicion = 'S';
     
-    strcpy (error, "");
-
     while(condicion == 'S' || condicion == 's'){
+        
+        strcpy (error, "");
         
         system("CLS");
         printf("Trabajo Practico N 2 de SSL\n\n");
@@ -41,8 +41,8 @@ int main(){
     
         switch (automata(expresion, error)){
             case 1:
-            case 5:
-                printf("La expresion es sintacticamente correcta.\n\n");
+            case 2:
+                printf("La expresion es correcta.\n\n");
                 break;
             default:
                 printf("La expresion no es correcta.\n\n");
@@ -77,7 +77,7 @@ void suprimir_espacios(char *expresion){
     strcpy(expresion, expaux);
 }
 
-void evaluar_error(int c, int estado_anterior, char *error, char *expresion, int cpushaux, int incompleto){
+void evaluar_error(int c, int estado_anterior, char *error, char *expresion, int cpushaux){
     
     int contError = 0;
 
@@ -98,6 +98,7 @@ void evaluar_error(int c, int estado_anterior, char *error, char *expresion, int
         if((expresion[c] == '0' || (expresion[c] >= '1' && expresion[c] <= '9') || expresion[c] == '(') && estado_anterior == 2){
             strcat(error, "-> ERROR! - Se esperaba un operador o un parentesis de cierre!\n");
         }
+        else strcat(error, "-> ERROR! - Caracter no valido\n");
     }
     else{
         if((expresion[c] == '0' || (expresion[c] == '+' || expresion[c] == '-' || expresion[c] == '*' || expresion[c] == '/') || expresion[c] == ')') && estado_anterior == 0){
@@ -109,9 +110,8 @@ void evaluar_error(int c, int estado_anterior, char *error, char *expresion, int
         if((expresion[c] == '0' || (expresion[c] >= '1' && expresion[c] <= '9') || expresion[c] == '(' || expresion[c] == ')') && estado_anterior == 2){
             strcat(error, "-> ERROR! - Se esperaba un operador!\n");
         }
+        else strcat(error, "-> ERROR! - Caracter no valido\n");
     }
-
-    if(incompleto == 1) strcat (error, "-> ERROR! - Expresion incompleta!\n");
     
 }
 
@@ -130,7 +130,7 @@ int automata (char *expresion, char*error){
     
 	struct tipo_tt tabla_transicion[2][4][6]={{{e8,e1,e8,e5,e8,e8}, {e1,e1,e3,e8,e8,e8}, {e8,e8,e3,e8,e8,e8}, {e8,e8,e8,e8,e8,e8}},{{e9,e2,e9,e6,e9,e9},{e2,e2,e4,e9,e7,e9},{e9,e9,e4,e9,e7,e9},{e9,e9,e9,e9,e9,e9}}};
     
-    int estado = 0, estado_anterior = 0, n = 0, c = 0, queMatriz = 0, cpushaux = 0, incompleto = 0;
+    int estado = 0, estado_anterior = 0, n = 0, c = 0, queMatriz = 0, cpushaux = 0, cont = 0;
     
     nodo1*pila = NULL;
     push(&pila, '$');
@@ -174,7 +174,7 @@ int automata (char *expresion, char*error){
         cpushaux = tabla_transicion[queMatriz][estado][n].cpush;
 
         if(estado == 3) {
-            evaluar_error(c, estado_anterior, error, expresion, cpushaux, incompleto);
+            evaluar_error(c, estado_anterior, error, expresion, cpushaux);
             return estado;
         }
         
@@ -202,17 +202,39 @@ int automata (char *expresion, char*error){
         c++;
     
     };
-    
-    //if(pop(&pila)=='$') return estado;
-    //return ERROR;
 
-    if(pop(&pila) == '$' && (estado == 1 || estado == 5)) return estado;
-    else{
-        incompleto = 1;
-        evaluar_error(c, estado_anterior, error, expresion, cpushaux, incompleto);
-        return ERROR;
+    switch (estado){
+        case 0: 
+            
+            while(cont < c){
+            error[cont] = '-';
+            cont++;
+            }
+            error[cont] = '^';
+            error[cont + 1] = '\0';
+            
+            strcat (error,"-> Se esperaba un numero o un parentesis de apertura!\n");
+            break;
+        case 1:
+        case 2:
+            if(pop(&pila) == 'R'){
+                estado = 3;
+                
+                while(cont < c){
+                error[cont] = '-';
+                cont++;
+                }
+                error[cont] = '^';
+                error[cont + 1] = '\0';
+
+                strcat (error, "-> Se esperaba un parentesis de cierre!\n");
+            }
+            break;
     }
+
+    return estado;
 }
+
 
 void push (Pila *pila, char valor){
 	

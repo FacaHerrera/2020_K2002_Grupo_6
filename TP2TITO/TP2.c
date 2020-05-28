@@ -76,25 +76,25 @@ void escanearExpresionYescribirResultados()
                 switch (est.cadPush)
                 {
                 case ERROR1:
-                    printf("%s","Caracter no reconocido.");
+                    printf("%s","ERROR: Caracter no reconocido.");
                     break;
                 case ERROR2:
-                    printf("%s","No se puede empezar un numero con '0'.");
+                    printf("%s","ERROR: No se puede empezar un numero con '0'.");
                     break;
                 case ERROR3:
-                    printf("%s","Se espera un numero o un '('.");
+                    printf("%s","ERROR: Se espera un numero o un '('.");
                     break;
                 case ERROR4:
-                    printf("%s","Se esperaba un numero despues de '('.");
+                    printf("%s","ERROR: Se esperaba un numero despues de '('.");
                     break;
                 case ERROR5:
-                    printf("%s","Falta '('.");
+                    printf("%s","ERROR: Falta '('.");
                     break;
                 case ERROR6:
-                    printf("%s","Se espera una operacion antes de '('.");
+                    printf("%s","ERROR: Se espera una operacion antes de '('.");
                     break;
                 case ERROR7:
-                    printf("%s","Se espera una operacion despues de ')'.");
+                    printf("%s","ERROR: Se espera una operacion despues de ')'.");
                     break;
                 }
                 i = len(expresion);
@@ -124,13 +124,17 @@ void escanearExpresionYescribirResultados()
             {
                 printf("%s"," ");
             }
-            if(determinarCima(cima) != 0)
+            if(determinarCima(cima) == 1 && estadoActual == 1)
             {
-                printf("^>Falta parentesis de Cierre.\n");
+                printf("^>ERROR: Falta ')'.\n");
+            }
+            else if(determinarCima(cima) == 1 && estadoActual == 0)
+            {
+                printf("^>ERROR: Se esperaba un numero o un '('.\n");
             }
             else
             {
-                printf("^>La expresion esta incompleta.\n");
+                printf("^>ERROR: La expresion esta incompleta.\n");
             }
         }
         pila = NULL;

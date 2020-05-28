@@ -52,7 +52,7 @@ void escanearExpresionYescribirResultados()
     struct estado est;
     Pila pila = NULL;
     push(&pila,'$');
-    struct estado tablaTransicion[4][2][6] = {{{{3,ERROR2},{1,'$'}   ,{3,ERROR3},{0,'R'}   ,{3,ERROR3},{3,ERROR1}},{{3,ERROR2},{1,'$'}   ,{3,ERROR4},{0,'R'}   ,{3,ERROR5},{3,ERROR1}}},
+    struct estado tablaTransicion[4][2][6] = {{{{3,ERROR2},{1,'$'}   ,{3,ERROR3},{0,'R'}   ,{3,ERROR3},{3,ERROR1}},{{3,ERROR2},{1,'$'}   ,{3,ERROR4},{0,'R'}   ,{3,ERROR3},{3,ERROR1}}},
                                               {{{1,'$'}   ,{1,'$'}   ,{0,'$'}   ,{3,ERROR6},{3,ERROR5},{3,ERROR1}},{{1,'$'}   ,{1,'$'}   ,{0,'$'}   ,{3,ERROR6},{2,'N'}   ,{3,ERROR1}}},
                                               {{{3,ERROR7},{3,ERROR7},{0,'$'}   ,{3,ERROR6},{3,ERROR5},{3,ERROR1}},{{3,ERROR7},{3,ERROR7},{0,'$'}   ,{3,ERROR6},{2,'N'}   ,{3,ERROR1}}},
                                               {{{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}}   ,{{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}   ,{3,'I'}}}};
@@ -111,6 +111,10 @@ void escanearExpresionYescribirResultados()
                 {
                     push(&pila, cima);
                 }
+                if(est.cadPush == 'N')
+                {
+                    cima = pop(&pila);
+                }
             }
             i++;
         }
@@ -132,7 +136,7 @@ void escanearExpresionYescribirResultados()
             {
                 printf("^>ERROR: Se esperaba un numero o un '('.\n");
             }
-            else
+            else if(estadoActual != 3)
             {
                 printf("^>ERROR: La expresion esta incompleta.\n");
             }
@@ -230,6 +234,6 @@ void calcularLugarError(int i, char* expresion)
 
 int esEstadoFinal(struct estado est)
 {
-    if((est.estadoSig == 1 && est.cadPush == '$') || (est.estadoSig == 2 && est.cadPush == '$')) return 1;
+    if((est.estadoSig == 1 && (est.cadPush == '$' || est.cadPush == 'N')) || (est.estadoSig == 2 && (est.cadPush == '$' || est.cadPush == 'N'))) return 1;
     return 0;
 }

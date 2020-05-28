@@ -27,8 +27,6 @@ int main(){
     
     char expresion[50], error[120], condicion = 'S';
     
-    
-
     while(condicion == 'S' || condicion == 's'){
         
         strcpy (error, "");
@@ -100,6 +98,7 @@ void evaluar_error(int c, int estado_anterior, char *error, char *expresion, int
         if((expresion[c] == '0' || (expresion[c] >= '1' && expresion[c] <= '9') || expresion[c] == '(') && estado_anterior == 2){
             strcat(error, "-> ERROR! - Se esperaba un operador o un parentesis de cierre!\n");
         }
+        else strcat(error, "-> ERROR! - Caracter no valido\n");
     }
     else{
         if((expresion[c] == '0' || (expresion[c] == '+' || expresion[c] == '-' || expresion[c] == '*' || expresion[c] == '/') || expresion[c] == ')') && estado_anterior == 0){
@@ -111,6 +110,7 @@ void evaluar_error(int c, int estado_anterior, char *error, char *expresion, int
         if((expresion[c] == '0' || (expresion[c] >= '1' && expresion[c] <= '9') || expresion[c] == '(' || expresion[c] == ')') && estado_anterior == 2){
             strcat(error, "-> ERROR! - Se esperaba un operador!\n");
         }
+        else strcat(error, "-> ERROR! - Caracter no valido\n");
     }
     
 }
@@ -202,9 +202,6 @@ int automata (char *expresion, char*error){
         c++;
     
     };
-    
-    //if(pop(&pila)=='$') return estado;
-    //return ERROR;
 
     switch (estado){
         case 0: 

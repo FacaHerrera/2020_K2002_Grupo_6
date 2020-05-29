@@ -124,7 +124,7 @@ void escanearExpresionYescribirResultados()
         }
         if((esEstadoFinal(est) == 0 && estadoActual != 3) || determinarCima(cima) == 1)
         {
-            for(int x = 0; x < len(expresion); x++)
+            for(x = 0; x < len(expresion); x++)
             {
                 printf("%s"," ");
             }

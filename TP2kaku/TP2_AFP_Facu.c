@@ -91,24 +91,30 @@ void evaluar_error(int c, int estado_anterior, char *error, char *expresion, int
     if(cpushaux == 1){
         if((expresion[c] == '0' || (expresion[c] == '+' || expresion[c] == '-' || expresion[c] == '*' || expresion[c] == '/') || expresion[c] == ')') && estado_anterior == 0){
             strcat(error, "-> ERROR! - Se esperaba un numero del 1 y 9 o un parentesis de apertura!\n");
+            return;
         }
         if(expresion[c] == '(' && estado_anterior == 1 ){
             strcat(error, "-> ERROR! - Se esperaba un 0, un numero del 1 al 9, un operador o un parentesis de cierre!\n");
+            return;
         }
         if((expresion[c] == '0' || (expresion[c] >= '1' && expresion[c] <= '9') || expresion[c] == '(') && estado_anterior == 2){
             strcat(error, "-> ERROR! - Se esperaba un operador o un parentesis de cierre!\n");
+            return;
         }
         else strcat(error, "-> ERROR! - Caracter no valido\n");
     }
     else{
         if((expresion[c] == '0' || (expresion[c] == '+' || expresion[c] == '-' || expresion[c] == '*' || expresion[c] == '/') || expresion[c] == ')') && estado_anterior == 0){
             strcat(error, "-> ERROR! - Se esperaba un numero del 1 al 9 o un parentesis de apertura!\n");
+            return;
         }
         if((expresion[c] == '(' || expresion[c] == ')') && estado_anterior == 1){
             strcat(error, "-> ERROR! - Se esperaba un 0, un numero del 1 al 9 o un operador!\n");
+            return;
         }
         if((expresion[c] == '0' || (expresion[c] >= '1' && expresion[c] <= '9') || expresion[c] == '(' || expresion[c] == ')') && estado_anterior == 2){
             strcat(error, "-> ERROR! - Se esperaba un operador!\n");
+            return;
         }
         else strcat(error, "-> ERROR! - Caracter no valido\n");
     }

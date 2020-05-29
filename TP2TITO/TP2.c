@@ -29,7 +29,6 @@ int determinarColumna(char);
 char pop(Pila* );
 void push(Pila* , char );
 int determinarCima(char );
-void suprimirEspacios(char*);
 void calcularLugarError(int,char*);
 int len(char*);
 int esEstadoFinal(struct estado);
@@ -47,7 +46,7 @@ void escanearExpresionYescribirResultados()
 {
     char expresion[50];
     char lugarError[50];
-    int condicion = 1, i = 0, x = 0, estadoActual = 0, error=0;
+    int condicion = 1, i = 0, x = 0, columna = 0, estadoActual = 0, error=0;
     char c, cima;
     struct estado est;
     Pila pila = NULL;
@@ -61,14 +60,16 @@ void escanearExpresionYescribirResultados()
         printf("Escriba la expresion: \n");
         fflush(stdin);
         scanf("%49[^\n]",&expresion);
-        suprimirEspacios(expresion);
         i = 0;
         estadoActual = 0;
         while(expresion[i] != '\0')
         {
             c = expresion[i];
             cima = pop(&pila);
-            est = tablaTransicion[estadoActual][determinarCima(cima)][determinarColumna(c)];
+            if(c != ' ')
+            {
+                est = tablaTransicion[estadoActual][determinarCima(cima)][determinarColumna(c)];
+            }
             if(est.estadoSig == 3)
             {
                 estadoActual = 3;
@@ -152,11 +153,11 @@ void escanearExpresionYescribirResultados()
 int determinarColumna(char c)
 {
         if(c=='0') return 0;
-        if(c>='1' && c<='9') return 1;
-        if(c == '+' || c == '-' || c == '*' || c == '/') return 2;
-        if(c == '(') return 3;
-        if(c == ')') return 4;
-        if(c<40 || c == 44 || c == 46 || c>57) return 5;
+        else if(c>='1' && c<='9') return 1;
+        else if(c == '+' || c == '-' || c == '*' || c == '/') return 2;
+        else if(c == '(') return 3;
+        else if(c == ')') return 4;
+        else{return 5;}
 }
 
 int determinarCima(char cima)
@@ -184,20 +185,6 @@ void push(Pila *pila, char cadena)
     nuevo->info = cadena;
     nuevo->sig = *pila;
     *pila = nuevo;
-}
-
-void suprimirEspacios(char *expresion){
-	int len = 0, lenAux = 0;
-	char auxiliar[50];
-	while(expresion[len] != '\0'){
-		if (expresion[len] != ' '){
-			auxiliar[lenAux] = expresion[len];
-			lenAux++;
-		} 
-		len++;	
-	}
-	auxiliar[lenAux] = '\0';
-	strcpy(expresion, auxiliar);
 }
 
 int len(char* expresion)

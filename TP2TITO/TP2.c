@@ -46,7 +46,7 @@ void escanearExpresionYescribirResultados()
 {
     char expresion[50];
     char lugarError[50];
-    int condicion = 1, i = 0, x = 0, columna = 0, estadoActual = 0, error=0;
+    int condicion = 1, i = 0, x = 0, estadoActual = 0, error=0;
     char c, cima;
     struct estado est;
     Pila pila = NULL;

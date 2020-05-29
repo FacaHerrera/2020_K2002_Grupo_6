@@ -139,7 +139,7 @@ void escanearExpresionYescribirResultados()
             }
             else if(estadoActual != 3)
             {
-                printf("^>ERROR: La expresion esta incompleta.\n");
+                printf("^>AVISO: La expresion esta incompleta.\n");
             }
         }
         pila = NULL;

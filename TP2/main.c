@@ -26,7 +26,7 @@ void evaluaError(int, int, int, char *, char *);
 void suprimirEspacios (char *);
 
 int main() {
-	char condicion = 'S', error[120], expresion[50]; //70 son para el detalle del error
+	char condicion = 'S', expresion[50], error[120]; //70 son para el detalle del error
 	strcpy(error, "");
 	while (condicion == 'S' || condicion == 's'){
 		system("CLS");

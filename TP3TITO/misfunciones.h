@@ -4,101 +4,20 @@
 
 typedef struct Nodo{
     char info[500];
+    int info2;
     struct Nodo *sig;
 } Nodo;
 
-typedef struct NodoCaracter{
-    char caracter;
-    int acum;
-    struct NodoCaracter *sig;
-} NodoCaracter;
-
-typedef struct NodoIdentificador{
-    char identificador[200];
-    int acum;
-    struct NodoIdentificador *sig;
-} NodoIdentificador;
-
-typedef struct NodoNoReconocido{
-    char noReconocido[50];
-    int linea;
-    struct NodoNoReconocido *sig;
-} NodoNoReconocido;
-
-typedef NodoNoReconocido *ListaNoReconocido;
-typedef NodoNoReconocido *punteroNodoNoReconocido;
-typedef NodoIdentificador *ListaIdentificador;
-typedef NodoIdentificador *punteroNodoIdentificador;
-typedef NodoCaracter *ListaCaracter;
-typedef NodoCaracter *punteroNodoCaracter;
 typedef Nodo *Lista;
 typedef Nodo *punteroNodo;
 
-int octalADecimal(int);
-int hexadecimalADecimal(char*);
-void reconocerLibreria(char*);
-void reconocerDefinicion(char*, char*);
-int calcularSaltoDeLinea(char*);
-void insertarPrincipio(Lista*, char*);
-void insertarFinal(Lista*, char*);
-void insertarFinalNoReconocido(ListaNoReconocido*, char*,int);
-void insertarPrincipioCaracter(ListaCaracter*, char*);
-void insertarOrdenado(ListaIdentificador*, char*);
-void reporteIncludes(FILE*,Lista);
-void reporteDefiniciones(FILE*, Lista);
-void reporteIdentificadores(FILE*, ListaIdentificador);
-void reporteLiteralesCadena(FILE*, Lista);
-void reportePalabrasReservadas(FILE*, Lista);
-void reporteDecimales(FILE*, Lista, int);
-void reporteOctales(FILE*, Lista);
-void reporteHexadecimales(FILE*, Lista);
-void reporteConstantesNumericas(FILE*, Lista, int, Lista, Lista, Lista);
-void reporteCaracteresYOperadores(FILE*, ListaCaracter);
-void reporteComentarios(FILE*, Lista);
-void reporteComentariosMultiples(FILE*, Lista);
-void reporteNoReconocidos(FILE*, ListaNoReconocido);
-
-
-void insertarPrincipioCaracter(ListaCaracter* listaCaracteres, char* caracterPuntuacion){
-    punteroNodoCaracter nodo;
-    punteroNodoCaracter aux;
-    nodo = (NodoCaracter *)malloc(sizeof(NodoCaracter));
-    aux = (NodoCaracter *)malloc(sizeof(NodoCaracter));
-    nodo->caracter = caracterPuntuacion[0];
-    nodo->acum = 1;
-    aux = *listaCaracteres;
-    if(aux == NULL){
-        nodo->sig = *listaCaracteres;
-        *listaCaracteres = nodo;
-    }
-    else{
-        while(aux != NULL){
-            if(aux->caracter == caracterPuntuacion[0])
-            {
-                aux->acum++;
-                return 0;
-            }
-            aux = aux->sig;
-        }
-        nodo->sig = *listaCaracteres;
-        *listaCaracteres = nodo;
-    }
-}
-
-void insertarPrincipio(Lista* lista, char* elemento){
-    punteroNodo nodo;
-    nodo = (Nodo *)malloc(sizeof(Nodo));
-    strncpy(nodo->info,elemento,400);
-    nodo->sig = *lista;
-    *lista = nodo; 
-}
-
-void insertarFinal(Lista* lista, char* elemento){
+void insertarFinal(Lista* lista, char* cadena, int entero){
     punteroNodo nodo;
     punteroNodo aux;
     nodo = (Nodo *)malloc(sizeof(Nodo));
     aux = (Nodo *)malloc(sizeof(Nodo));
-    strncpy(nodo->info,elemento,50);
+    strncpy(nodo->info,cadena,500);
+    nodo->info2 = entero;
     nodo->sig = NULL;
     aux = *lista;
     if(aux == NULL){
@@ -111,75 +30,56 @@ void insertarFinal(Lista* lista, char* elemento){
         aux->sig = nodo;
     }
 }
-void insertarFinalNoReconocido(ListaNoReconocido* listaNoReconocido, char* caracter, int lineaEncontrado){
-    punteroNodoNoReconocido nodo;
-    punteroNodoNoReconocido aux;
-    nodo = (NodoNoReconocido *)malloc(sizeof(NodoNoReconocido));
-    aux = (NodoNoReconocido *)malloc(sizeof(NodoNoReconocido));
-    strncpy(nodo->noReconocido,caracter,50);
-    nodo->linea = lineaEncontrado;
-    nodo->sig = NULL;
-    aux = *listaNoReconocido;
-    if(aux == NULL){
-        *listaNoReconocido = nodo; 
-    }
-    else{
-        while(aux->sig != NULL){
-            aux = aux->sig;
-        }
-        aux->sig = nodo;
-    }
-}
 
-void insertarOrdenado(ListaIdentificador* listaIdentificadores, char* elemento){
-    punteroNodoIdentificador nodo;
-    punteroNodoIdentificador aux;
-    nodo = (NodoIdentificador *)malloc(sizeof(NodoIdentificador));
-    aux = (NodoIdentificador *)malloc(sizeof(NodoIdentificador));
-    strncpy(nodo->identificador,elemento,200);
-    nodo->acum = 1;
-    aux = *listaIdentificadores;
+void insertarOrdenado(Lista* lista, char* cadena){
+    punteroNodo nodo;
+    punteroNodo aux;
+    nodo = (Nodo *)malloc(sizeof(Nodo));
+    aux = (Nodo *)malloc(sizeof(Nodo));
+    strncpy(nodo->info,cadena,500);
+    nodo->info2 = 1;
+    aux = *lista;
     if(aux == NULL){
-        nodo->sig = *listaIdentificadores;
-        *listaIdentificadores = nodo;
+        nodo->sig = *lista;
+        *lista = nodo;
     }
     else{
         if(aux->sig == NULL){
-            if(strcmp(elemento,aux->identificador) == -1){
+            if(strcmp(cadena,aux->info) == -1){
                 nodo->sig = aux;
-                *listaIdentificadores = nodo;
+                *lista = nodo;
             }
-            else if(strcmp(elemento,aux->identificador) == 0){
-                aux->acum++;
+            else if(strcmp(cadena,aux->info) == 0){
+                aux->info2++;
             }
-            else if(strcmp(elemento,aux->identificador) == 1){
+            else if(strcmp(cadena,aux->info) == 1){
                 nodo->sig = NULL;
                 aux->sig = nodo;
             }
         }
         else{
-            while((strcmp(elemento,aux->identificador) != -1) && (aux->sig !=NULL)){
-                if(strcmp(elemento,aux->identificador) == 0){
-                    aux->acum++;
+            while((strcmp(cadena,aux->info) != -1) && (aux->sig !=NULL)){
+                if(strcmp(cadena,aux->info) == 0){
+                    aux->info2++;
                 }
-                if((strcmp(elemento,aux->identificador) == 1) && strcmp(elemento,aux->sig->identificador) == -1){
+                if((strcmp(cadena,aux->info) == 1) && strcmp(cadena,aux->sig->info) == -1){
                     nodo->sig = aux->sig;
                     aux->sig = nodo;
                     return 0;
                 }
                 aux = aux->sig;
             }
-            if(strcmp(elemento,aux->identificador) == 0){
-                aux->acum++;
+            if(strcmp(cadena,aux->info) == 0){
+                aux->info2++;
             }
-            else if(strcmp(elemento,aux->identificador) == 1){
+            else if(strcmp(cadena,aux->info) == 1){
                 nodo->sig = NULL;
                 aux->sig = nodo;
             }
             else{
-                if(*listaIdentificadores == aux){
+                if(*lista == aux){
                     nodo->sig = aux;
-                    *listaIdentificadores = nodo;
+                    *lista = nodo;
                 }
             }
         }
@@ -267,6 +167,17 @@ int calcularSaltoDeLinea(char* info){
     }
 }
 
+int calcularSaltosDeLineaComentariosMultiples(char* info){
+    int i = 0, acum = 0;
+    while(info[i] != '\0'){
+        if(info[i] == '\n'){
+            acum++;
+        }
+        i++;
+    }
+    return acum;
+}
+
 void reporteIncludes(FILE* reporte, Lista listaIncludes){
     fputs("==========================================================================================================================\n",reporte);
     fputs("INCLUDES encontrados: \n",reporte);
@@ -299,11 +210,11 @@ void reporteDefiniciones(FILE* reporte, Lista listaDefiniciones){
     fputs("==========================================================================================================================\n",reporte);
 }
 
-void reporteIdentificadores(FILE* reporte, ListaIdentificador listaIdentificadores){
+void reporteIdentificadores(FILE* reporte, Lista listaIdentificadores){
     fputs("IDENTIFICADORES encontrados: \n", reporte);
     if(listaIdentificadores != NULL){
         while(listaIdentificadores != NULL){
-            fprintf(reporte,"%s%s%s%d%s\n","El identificador ",listaIdentificadores->identificador, " fue encontrado ", listaIdentificadores->acum, " veces.");
+            fprintf(reporte,"%s%s%s%d%s\n","El identificador ",listaIdentificadores->info, " fue encontrado ", listaIdentificadores->info2, " veces.");
             listaIdentificadores = listaIdentificadores->sig;
         }
     }
@@ -409,11 +320,11 @@ void reporteConstantesNumericas(FILE* reporte, Lista listaDecimales, int acumDec
     fputs("==========================================================================================================================\n",reporte);
 }
 
-void reporteCaracteresYOperadores(FILE* reporte, ListaCaracter listaCaracteres){
+void reporteCaracteresYOperadores(FILE* reporte, Lista listaCaracteres){
     fputs("OPERADORES/CARACTERES DE PUNTUACION encontradas: \n", reporte);
     if(listaCaracteres !=NULL){
         while(listaCaracteres != NULL){
-            fprintf(reporte,"%s%c%s%d%s\n","El Caracter '",listaCaracteres->caracter,"' se encontro ",listaCaracteres->acum," veces.");
+            fprintf(reporte,"%s%s%s%d%s\n","El Caracter '",listaCaracteres->info,"' se encontro ",listaCaracteres->info2," veces.");
             listaCaracteres = listaCaracteres->sig;
         }
     }
@@ -451,12 +362,12 @@ void reporteComentariosMultiples(FILE* reporte, Lista listaComentariosMultiples)
     fputs("==========================================================================================================================\n",reporte);
 }
 
-void reporteNoReconocidos(FILE* reporte, ListaNoReconocido listaNoReconocidos){
+void reporteNoReconocidos(FILE* reporte, Lista listaNoReconocidos){
     fputs("CARACTERES NO RECONOCIDOS encontrados: \n",reporte);
     if(listaNoReconocidos != NULL){
         while(listaNoReconocidos != NULL){
-            if(listaNoReconocidos->noReconocido[0] != '\n'){
-                fprintf(reporte,"%s%s%s%d\n","El caracter no reconocido '",listaNoReconocidos->noReconocido,"' fue encontrado en la linea ",listaNoReconocidos->linea);
+            if(listaNoReconocidos->info[0] != '\n'){
+                fprintf(reporte,"%s%s%s%d\n","El caracter no reconocido '",listaNoReconocidos->info,"' fue encontrado en la linea ",listaNoReconocidos->info2);
             }
             listaNoReconocidos = listaNoReconocidos->sig;
         }

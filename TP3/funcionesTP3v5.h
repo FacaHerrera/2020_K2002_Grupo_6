@@ -1,3 +1,5 @@
+//LIBRERIAS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,36 +7,34 @@
 #include <math.h>
 #include <ctype.h>
 
-////////////////////////////////////////////////////////////////////////////////////
+//DIFINICION DE TIPOS Y ESTRUCTURAS
 
-typedef struct{
+typedef struct{ //ESTRUCTURA CON EL CONTENIDO DE CADA NODO
 	char *dato;
 	double numero1;
 	double numero2;
 }Contenido;
 
-typedef struct nodo{
+typedef struct nodo{ //ESTRUCTURA DEL NODO
 	Contenido datos;
 	struct nodo *siguiente;
 }Nodo;
 
-typedef Nodo *PunteroNodo;
+typedef Nodo *PunteroNodo; //NUEVO TIPO QUE APUNTA A UN NODO
 
-typedef struct pilaUbicacion{
+typedef struct{ //ESTRUCTURA DE LA PILA - NODOS Y TAMAÑO
 	PunteroNodo inicio;
 	int tamanio;
 }Pila;
 
+//FUNCIONES
 
-
-////////////////////////////////////////////////////////////////////////////////////
-
-void inicializar(Pila *pila){
+void inicializar(Pila *pila){ //INICIALIZA LA PILA
 	pila->inicio = NULL;
 	pila->tamanio = 0;
 }
 
-int octADec(int dato){
+int octADec(int dato){ //RECIBE UN OCTAL Y DEVUELVE UN DECIMAL
 	int acum = 0, i = 0;
 	do{
 		acum += (dato%10)*(pow(8,i));
@@ -44,7 +44,7 @@ int octADec(int dato){
 	return acum;
 }
 
-int hexADec(char *dato){
+int hexADec(char *dato){ //RECIVE UN HEXADECIMAL Y DEVUELE UN DECIMAL
 	int i, j = 0, acum = 0, a;
 	dato ++;
 	dato ++;
@@ -67,10 +67,10 @@ int hexADec(char *dato){
 	return acum;
 }
 
-void escribirPila(Pila *pila, char *dato, double valor1, double valor2){
+void escribirPila(Pila *pila, char *dato, double valor1, double valor2){ //CARGA UN NUEVO NODO EN LA PILA
 	PunteroNodo nodo;
-	nodo = (Nodo *)malloc(sizeof(Nodo));
-	nodo->datos.dato = strdup(dato);
+	nodo = (Nodo *)malloc(sizeof(Nodo)); 	// SE RESERVA ESPACIO PARA ALMACENAR EL NODO
+	nodo->datos.dato = strdup(dato);		//SE RESERVA ESPACIO PARA GUARDAR LA CADENA Y SE GUARDA DICHA CADENA
 	nodo->datos.numero1 = valor1;
 	nodo->datos.numero2 = valor2;
 	nodo->siguiente = pila->inicio;
@@ -78,11 +78,11 @@ void escribirPila(Pila *pila, char *dato, double valor1, double valor2){
 	pila->tamanio++;
 }
 
-Contenido leerPila(Pila *pila){
+Contenido leerPila(Pila *pila){ //LEE EL ULTIMO NODO DE LA PILA
 	PunteroNodo nodo;
 	nodo = (Nodo *)malloc(sizeof(Nodo));
 	Contenido estado;
-	if (pila->tamanio!=0){
+	if (pila->tamanio!=0){ //SI HAY DATOS, SE DEVUELVE EL VALOR DE LA CIMA DE LA PILA
 		nodo = pila->inicio;	
 		pila->inicio = pila->inicio->siguiente;
 		estado.numero1 = nodo->datos.numero1;
@@ -90,7 +90,7 @@ Contenido leerPila(Pila *pila){
 		estado.dato = strdup(nodo->datos.dato);
 		pila->tamanio--;
 	}
-	else{
+	else{ //SI NO HAY DATOS, SE RETORNA LA ESTRUCTURA VACIA
 		estado.numero1 = 0;
 		estado.numero2 = 0;
 		estado.dato = strdup("");
@@ -99,17 +99,17 @@ Contenido leerPila(Pila *pila){
 	return estado;
 }
 
-void agregarOrdenado(Pila *pila, char *dato){
-	Pila auxiliar;
+void agregarOrdenado(Pila *pila, char *dato){ 	//CARGA UN NUEVO NODO EN UNA PILA DE FORMA ORDENADA
+	Pila auxiliar;								//EL MENOR VA EN LA CIMA
 	Contenido variable;
 	inicializar(&auxiliar);
 	if(pila->inicio!=NULL){
 		while (pila->inicio!=NULL) {
-			if(strcmp(pila->inicio->datos.dato, dato)<0){
+			if(strcmp(pila->inicio->datos.dato, dato)>0){
 				escribirPila(pila,dato,1,0);
 				break;
 			}
-			else if(strcmp(pila->inicio->datos.dato, dato)>0){
+			else if(strcmp(pila->inicio->datos.dato, dato)<0){
 				escribirPila(&auxiliar,pila->inicio->datos.dato,pila->inicio->datos.numero1, pila->inicio->datos.numero2);
 				pila->tamanio--;
 				pila->inicio = pila->inicio->siguiente;
@@ -131,7 +131,7 @@ void agregarOrdenado(Pila *pila, char *dato){
 	}
 }
 
-void darVuelta(Pila *pila){
+void darVuelta(Pila *pila){ //INVIERTE EL SENTIDO DE LA PILA
 	Pila auxiliar;
 	while (pila->inicio!=NULL) {
 		escribirPila(&auxiliar,pila->inicio->datos.dato,pila->inicio->datos.numero1, pila->inicio->datos.numero2);
@@ -140,7 +140,7 @@ void darVuelta(Pila *pila){
 	pila->inicio = auxiliar.inicio;
 }
 
-char *centrar(char *dato, int ancho){
+char *centrar(char *dato, int ancho){ //CENTRA UNA CADENA DADA EN UN ANCHO DADO
 	int i, j=0, espacios;
 	char *auxiliar=(char *)malloc(1000);
 	
@@ -163,7 +163,7 @@ char *centrar(char *dato, int ancho){
 	return auxiliar;
 }
 
-void imprimir1(Pila *pila, FILE *r, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){
+void imprimir1(Pila *pila, FILE *r, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){ //IMPRIME UNA LISTA SIGUIENDO UN FORMATO (TITULO DE TABLA, TITULOS DE COLUMNAS, ANCHO DE COLUMNAS) - PARA ARCHIVOS
 	int i, columnas, acum = 0, ancho = f1dato + f1valor1 + f2valor1 + f1valor2 + f2valor2;
 	PunteroNodo nodo;
 	char *aux;
@@ -268,7 +268,7 @@ void imprimir1(Pila *pila, FILE *r, char *titulo, char *titulo0, int f1dato, cha
 	}
 }
 
-void imprimir(Pila *pila, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){
+void imprimir(Pila *pila, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){ //IMPRIME UNA LISTA SIGUIENDO UN FORMATO (TITULO DE TABLA, TITULOS DE COLUMNAS, ANCHO DE COLUMNAS) - PARA CONSOLA
 	int i, columnas, acum = 0, ancho = f1dato + f1valor1 + f2valor1 + f1valor2 + f2valor2;
 	PunteroNodo nodo;
 	char *aux;
@@ -398,7 +398,7 @@ void imprimir(Pila *pila, char *titulo, char *titulo0, int f1dato, char *titulo1
 	}
 }
 
-int suma(Pila *pila){
+int suma(Pila *pila){ //DEVUELVE LA SUMATORIA DE LOS ELEMENTOS DE UNA LISTA
 	int i, acum=0;
 	PunteroNodo nodo;
 	nodo = pila->inicio;
@@ -409,7 +409,7 @@ int suma(Pila *pila){
 	return acum;
 }
 
-int evalua(char *dato, char v1, char v2){
+int evalua(char *dato, char v1, char v2){ //DEVUELVE LA CANTIDAD DE \N QUE POSEE UNA CADENA
 	int i=0;
 	while(1){
 		if(*dato=='*'){
@@ -425,17 +425,17 @@ int evalua(char *dato, char v1, char v2){
 	return i;
 }
 
-int verificar_txt(char *archivo){
+int verificar_txt(char *archivo){ //COMPRUEBA SI UNA CADENA DADA POSEE EXTENSION .TXT. DE NO SERLO, SE LO AGREGA
 	if (strstr(archivo, ".txt") == NULL){
 		strcat(archivo, ".txt");
 	}
 }
 
-int mostrarMenu(char *archivoE, char *archivoS){
+int mostrarMenu(char *archivoE, char *archivoS){ //MUESTRA EL MENU EN PANTALLA
 	int opcion;
 	while(1){
 		system("CLS");
-		printf("TP3 - ANALIZADOR LEXICO\n\nQUE DESEA HACER?\n\n\t1-VER/MODIFICAR ARCHIVO DE ENTRADA (Actual: %s)\n\t2-VER/MODIFICAR ARCHIVO DE SALIDA (Actual: %s)\n\t3-CORRER EN CONSOLA\n\t4-EXPORTAR ARCHIVO\n\t5-SALIR\n", archivoE, archivoS);
+		printf("TP3 - ANALIZADOR LEXICO\n\n(RECOMENDADO: USAR CON PANTALLA MAXIMIZADA)\n\nQUE DESEA HACER?\n\n\t1-VER/MODIFICAR ARCHIVO DE ENTRADA (Actual: %s)\n\t2-VER/MODIFICAR ARCHIVO DE SALIDA (Actual: %s)\n\t3-CORRER EN CONSOLA\n\t4-EXPORTAR ARCHIVO\n\t5-SALIR\n", archivoE, archivoS);
 		fflush(stdin);
 		scanf("%d", &opcion);
 		if(opcion>=1&&opcion<=5){
@@ -447,7 +447,7 @@ int mostrarMenu(char *archivoE, char *archivoS){
 	}
 }
 
-void modificarArchivo(char *archivo){
+void modificarArchivo(char *archivo){ //MUESTRA Y MODIFICA UNA CADENA. (EN ESTE CADO EL NOMBRE DE UN ARCHIVO)
 	char opcion[50];
 	system("CLS");
 	if(strcmp(archivo, "VACIO")!=0){

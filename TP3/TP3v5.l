@@ -18,7 +18,7 @@ Pila include;
 Pila define;
 Pila noReconocido;
 
-double fractpart, intpart, linea = 1;
+double fractpart, intpart, linea;
 
 void inicializarPilas();
 

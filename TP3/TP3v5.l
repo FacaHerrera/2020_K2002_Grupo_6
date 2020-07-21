@@ -1,6 +1,7 @@
 %option noyywrap
 
 %{
+
 #include "funcionesTP3v5.h"
 
 Pila identificadores;
@@ -18,13 +19,15 @@ Pila include;
 Pila define;
 Pila noReconocido;
 
-double fractpart, intpart, linea;
+double fractpart, intpart, linea = 1;
 
 void inicializarPilas();
 
 %}
 
-LETRA [a-zA-Z]
+LETRA_MINUSCULA [a-z]
+LETRA_MAYUSCULA [A-Z]
+LETRA {LETRA_MINUSCULA}|{LETRA_MAYUSCULA}
 GUION_BAJO "_"
 NUMERO_DECIMAL 0|{NUMERO_DECIMAL_SIN_CERO}
 NUMERO_DECIMAL_SIN_CERO [1-9]
@@ -47,26 +50,29 @@ ESCAPE_HEXADECIMAL \\x{NUMERO_HAXADECIMAL}{1,2}
 CONSTANTE_CARACTER {CARACTER_C}|{SECUENCIA_DE_ESCAPE}
 CONSTANTE_CADENA {CARACTER_S}|{SECUENCIA_DE_ESCAPE}
 CARACTER_DE_PUNTUACION [\[\]\(\)\{\}\.\&\*\+\-\!\/\%\<\>\^\|\=\:\,\;\#]|(\-\>)|(\+\+)|(\-\-)|(\<\<)|(\>\>)|(\<\=)|(\>\=)|(\=\=)|(\!\=)|(\&\&)|(\|\|)|(\*\=)|(\/\=)|(\%\=)|(\+\=)|(\-\=)|(\<\<\=)|(\>\>\=)|(\&\=)|(\^\=)|(\|\=)|(\.\.\.)|(\#\#)
-PALABRA_RESERVADA (auto)|(auto)|(break)|(case)|(char)|(const)|(continue)|(default)|(do)|(double)|(else)|(enum)|(extern)|(float)|(for)|(goto)|(if)|(int)|(long)|(register)|(return)|(short)|(signed)|(sizeof)|(static)|(struct)|(switch)|(typedef)|(union)|(unsigned)|(void)|(volatile)|(while)
+TIPOS_DE_DATO (char)|(const)|(double)|(enum)|(float)|(int)|(long)|(short)|(signed)|(struct)|(typedef)|(union)|(unsigned)|(void)
+ESTRUCTURAS_DE_CONTROL (break)|(case)|(continue)|(default)|(do)|(else)|(for)|(goto)|(if)|(return)|(switch)|(while)
+OTRAS (auto)|(extern)|(register)|(static)|(volatile)|(sizeof)
+PALABRA_RESERVADA {TIPOS_DE_DATO}|{ESTRUCTURAS_DE_CONTROL}|{OTRAS}
 IDENTIFICADOR ({LETRA}|{GUION_BAJO})({LETRA}|{NUMERO_DECIMAL}|{GUION_BAJO})*
 CONSTANTE {CONSTANTE_DECIMAL}|{CONSTANTE_HEXADECIMAL}|{CONSTANTE_OCTAL}|\'{CONSTANTE_CARACTER}?\'|\"{CONSTANTE_CADENA}*\"
 CONSTANTE_DECIMAL {NUMERO_DECIMAL_SIN_CERO}{NUMERO_DECIMAL}*{SUFIJO_ENTERO}?
 CONSTANTE_HEXADECIMAL {PREFIJO_HEXADECIMAL}{NUMERO_HAXADECIMAL}+{SUFIJO_ENTERO}? 
 CONSTANTE_OCTAL 0{NUMERO_OCTAL}*{SUFIJO_ENTERO}?
+COMENTARIO_MULTILINEA \/\*(\*+[^\*\/]|[^\*])*\*+\/
+COMENTARIO_SIMPLE \/\/.*
 
-/* ALTERNATIVAS */
-/* \'{CONSTANTE_CARACTER}?\'|{ESCAPE_SIMPLE_1} { */  
 %%
 
 #define(" ")+{IDENTIFICADOR}(" ")*({PALABRA_RESERVADA}|{CONSTANTE})? {
     escribirPila(&define, yytext, 0, 0);
     //printf("Encontre un DEFINE: %s \n", yytext);
 }
-#include(" ")+\<([\\\/\.]*{IDENTIFICADOR}[\\\/]*)+\.[a-z]*\> {
+#include(" ")+\<([\\\/\.]*{IDENTIFICADOR}[\\\/]*)+\.{LETRA_MINUSCULA}*\> {
     escribirPila(&include, yytext, 0, 0);
     //printf("Encontre un INCLUDE: %s \n", yytext);
 }
-#include(" ")+\"([\\\/\.]*{IDENTIFICADOR}[\\\/]*)+\.[a-z]*\" {
+#include(" ")+\"([\\\/\.]*{IDENTIFICADOR}[\\\/]*)+\.{LETRA_MINUSCULA}*\" {
     escribirPila(&include, yytext, 0, 0);
     //printf("Encontre un INCLUDE: %s \n", yytext);
 }
@@ -107,11 +113,11 @@ CONSTANTE_OCTAL 0{NUMERO_OCTAL}*{SUFIJO_ENTERO}?
     agregarOrdenado(&constantePuntuacion,yytext);
     //printf("Encontre un caracter de puntuacion / operador: %s \n", yytext);
     }
-\/\/.* {
+{COMENTARIO_SIMPLE} {
     escribirPila(&comentarioSimple, yytext, 0, 0);
     //printf("Encontre un comentario simple \n");
     }
-\/\*(\*+[^\*\/]|[^\*])*\*+\/ {
+{COMENTARIO_MULTILINEA} {
     linea += evalua(yytext,'\n',' ');
     escribirPila(&comentarioMultiple, yytext, 0, 0);
     //printf("Encontre un comentario multiple \n");
@@ -133,7 +139,6 @@ CONSTANTE_OCTAL 0{NUMERO_OCTAL}*{SUFIJO_ENTERO}?
     escribirPila(&noReconocido, yytext, linea, 0);
     //printf("Encontre un caracter o cadena no reconocida \n");
 }
-
 
 %%
 
@@ -170,24 +175,24 @@ int main() {
                     inicializarPilas();
                     yylex();
 
-                    imprimir(&identificadores, "IDENTIFICADORES", "IDENTIFICADOR", 30, "VECES ENCONTRADO", 20, 0, "", 0, 0);
-                    imprimir(&literalCadena, "LITERALES CADENA", "CADENA", 130, "LONGITUD", 10, 0, "", 0, 0);
+                    imprimirConsola(&identificadores, "IDENTIFICADORES", "IDENTIFICADOR", 30, "VECES ENCONTRADO", 20, 0, "", 0, 0);
+                    imprimirConsola(&literalCadena, "LITERALES CADENA", "CADENA", 130, "LONGITUD", 10, 0, "", 0, 0);
                     darVuelta(&palabrasReservadas);
-                    imprimir(&palabrasReservadas, "PALABRAS RESERVADAS", "PALABRA", 20, "", 0, 0, "", 0, 0);
+                    imprimirConsola(&palabrasReservadas, "PALABRAS RESERVADAS", "PALABRA", 20, "", 0, 0, "", 0, 0);
                     escribirPila(&constanteDecimal, "TOTAL DE LA SUMA", suma(&constanteDecimal), 0);
                     darVuelta(&constanteDecimal);
-                    imprimir(&constanteDecimal, "CONSTANTES", "DECIMAL", 20, "VALOR", 20, 0, "", 0, 0);
-                    imprimir(&constanteOctal, "CONSTANTES", "OCTAL", 20, "VALOR DECIMAL", 20, 0, "", 0, 0);
-                    imprimir(&constanteHexa, "CONSTANTES", "HEXADECIMAL", 20, "VALOR DECIMAL", 20, 0, "", 0, 0);
-                    imprimir(&constanteReal, "CONSTANTES", "REAL", 20, "PARTE ENTERA", 50, 0, "MANTISA", 2, 50);
-                    imprimir(&constanteCaracter, "CONSTANTES", "CARACTER", 10, "", 0, 0, "", 0, 0);
-                    imprimir(&constantePuntuacion, "OPERADORES / C. PUNTUACION", "OPERADOR / CARACTER", 30, "VECES ENCONTRADO", 20, 0, "", 0, 0);
-                    imprimir(&comentarioSimple, "COMENTARIOS", "C. SIMPLE", 100, "", 0, 0, "", 0, 0);
-                    imprimir(&comentarioMultiple, "COMENTARIOS", "C. MULTIPLE", 150, "", 0, 0, "", 0, 0);
-                    imprimir(&include, "DIRECTIVAS PRE-PROCESADOR", "INCLUDE", 30, "", 0, 0, "", 0, 0);
-                    imprimir(&define, "DIRECTIVAS PRE-PROCESADOR", "DEFINE", 30, "", 0, 0, "", 0, 0);
+                    imprimirConsola(&constanteDecimal, "CONSTANTES", "DECIMAL", 20, "VALOR", 20, 0, "", 0, 0);
+                    imprimirConsola(&constanteOctal, "CONSTANTES", "OCTAL", 20, "VALOR DECIMAL", 20, 0, "", 0, 0);
+                    imprimirConsola(&constanteHexa, "CONSTANTES", "HEXADECIMAL", 20, "VALOR DECIMAL", 20, 0, "", 0, 0);
+                    imprimirConsola(&constanteReal, "CONSTANTES", "REAL", 20, "PARTE ENTERA", 50, 0, "MANTISA", 2, 50);
+                    imprimirConsola(&constanteCaracter, "CONSTANTES", "CARACTER", 10, "", 0, 0, "", 0, 0);
+                    imprimirConsola(&constantePuntuacion, "OPERADORES / C. PUNTUACION", "OPERADOR / CARACTER", 30, "VECES ENCONTRADO", 20, 0, "", 0, 0);
+                    imprimirConsola(&comentarioSimple, "COMENTARIOS", "C. SIMPLE", 100, "", 0, 0, "", 0, 0);
+                    imprimirConsola(&comentarioMultiple, "COMENTARIOS", "C. MULTIPLE", 150, "", 0, 0, "", 0, 0);
+                    imprimirConsola(&include, "DIRECTIVAS PRE-PROCESADOR", "INCLUDE", 30, "", 0, 0, "", 0, 0);
+                    imprimirConsola(&define, "DIRECTIVAS PRE-PROCESADOR", "DEFINE", 30, "", 0, 0, "", 0, 0);
                     darVuelta(&noReconocido);
-                    imprimir(&noReconocido, "CARACTERES", "NO RECONOCIDOS", 150, "LINEA", 6, 0, "", 0, 0);
+                    imprimirConsola(&noReconocido, "CARACTERES", "NO RECONOCIDOS", 150, "LINEA", 6, 0, "", 0, 0);
                 }
                 fclose(yyin);
                 break;
@@ -207,24 +212,24 @@ int main() {
                     FILE *r;
                     r = fopen(archivoS, "w+");
 
-                    imprimir1(&identificadores, r, "IDENTIFICADORES", "IDENTIFICADOR", 30, "VECES ENCONTRADO", 20, 0, "", 0, 0);
-                    imprimir1(&literalCadena, r, "LITERALES CADENA", "CADENA", 130, "LONGITUD", 10, 0, "", 0, 0);
+                    imprimirArchivo(&identificadores, r, "IDENTIFICADORES", "IDENTIFICADOR", 30, "VECES ENCONTRADO", 20, 0, "", 0, 0);
+                    imprimirArchivo(&literalCadena, r, "LITERALES CADENA", "CADENA", 130, "LONGITUD", 10, 0, "", 0, 0);
                     darVuelta(&palabrasReservadas);
-                    imprimir1(&palabrasReservadas, r, "PALABRAS RESERVADAS", "PALABRA", 20, "", 0, 0, "", 0, 0);
+                    imprimirArchivo(&palabrasReservadas, r, "PALABRAS RESERVADAS", "PALABRA", 20, "", 0, 0, "", 0, 0);
                     escribirPila(&constanteDecimal, "TOTAL DE LA SUMA", suma(&constanteDecimal), 0);
                     darVuelta(&constanteDecimal);
-                    imprimir1(&constanteDecimal, r, "CONSTANTES", "DECIMAL", 20, "VALOR", 20, 0, "", 0, 0);
-                    imprimir1(&constanteOctal, r, "CONSTANTES", "OCTAL", 20, "VALOR DECIMAL", 20, 0, "", 0, 0);
-                    imprimir1(&constanteHexa, r, "CONSTANTES", "HEXADECIMAL", 20, "VALOR DECIMAL", 20, 0, "", 0, 0);
-                    imprimir1(&constanteReal, r, "CONSTANTES", "REAL", 20, "PARTE ENTERA", 50, 0, "MANTISA", 2, 50);
-                    imprimir1(&constanteCaracter, r, "CONSTANTES", "CARACTER", 10, "", 0, 0, "", 0, 0);
-                    imprimir1(&constantePuntuacion, r, "OPERADORES / C. PUNTUACION", "OPERADOR / CARACTER", 30, "VECES ENCONTRADO", 20, 0, "", 0, 0);
-                    imprimir1(&comentarioSimple, r, "COMENTARIOS", "C. SIMPLE", 100, "", 0, 0, "", 0, 0);
-                    imprimir1(&comentarioMultiple, r, "COMENTARIOS", "C. MULTIPLE", 150, "", 0, 0, "", 0, 0);
-                    imprimir1(&include, r, "DIRECTIVAS PRE-PROCESADOR", "INCLUDE", 30, "", 0, 0, "", 0, 0);
-                    imprimir1(&define, r, "DIRECTIVAS PRE-PROCESADOR", "DEFINE", 30, "", 0, 0, "", 0, 0);
+                    imprimirArchivo(&constanteDecimal, r, "CONSTANTES", "DECIMAL", 20, "VALOR", 20, 0, "", 0, 0);
+                    imprimirArchivo(&constanteOctal, r, "CONSTANTES", "OCTAL", 20, "VALOR DECIMAL", 20, 0, "", 0, 0);
+                    imprimirArchivo(&constanteHexa, r, "CONSTANTES", "HEXADECIMAL", 20, "VALOR DECIMAL", 20, 0, "", 0, 0);
+                    imprimirArchivo(&constanteReal, r, "CONSTANTES", "REAL", 20, "PARTE ENTERA", 50, 0, "MANTISA", 2, 50);
+                    imprimirArchivo(&constanteCaracter, r, "CONSTANTES", "CARACTER", 10, "", 0, 0, "", 0, 0);
+                    imprimirArchivo(&constantePuntuacion, r, "OPERADORES / C. PUNTUACION", "OPERADOR / CARACTER", 30, "VECES ENCONTRADO", 20, 0, "", 0, 0);
+                    imprimirArchivo(&comentarioSimple, r, "COMENTARIOS", "C. SIMPLE", 100, "", 0, 0, "", 0, 0);
+                    imprimirArchivo(&comentarioMultiple, r, "COMENTARIOS", "C. MULTIPLE", 150, "", 0, 0, "", 0, 0);
+                    imprimirArchivo(&include, r, "DIRECTIVAS PRE-PROCESADOR", "INCLUDE", 30, "", 0, 0, "", 0, 0);
+                    imprimirArchivo(&define, r, "DIRECTIVAS PRE-PROCESADOR", "DEFINE", 30, "", 0, 0, "", 0, 0);
                     darVuelta(&noReconocido);
-                    imprimir1(&noReconocido, r, "CARACTERES", "NO RECONOCIDOS", 150, "LINEA", 6, 0, "", 0, 0);
+                    imprimirArchivo(&noReconocido, r, "CARACTERES", "NO RECONOCIDOS", 150, "LINEA", 6, 0, "", 0, 0);
                     fclose(r);
 
                     printf("SU ARCHIVO DE SALIDA ES: %s\n", archivoS);

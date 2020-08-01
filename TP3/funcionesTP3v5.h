@@ -32,39 +32,6 @@ void inicializar(Pila *pila){
 	pila->tamanio = 0;
 }
 
-int octADec(int dato){
-	int acum = 0, i = 0;
-	do{
-		acum += (dato%10)*(pow(8,i));
-		i++;
-		dato/=10;
-	}while(dato!=0);
-	return acum;
-}
-
-int hexADec(char *dato){
-	int i, j = 0, acum = 0, a;
-	dato ++;
-	dato ++;
-	for(i=strlen(dato)-1;i>=0;i--){
-		switch (dato[i]){
-			case 'x':
-			case 'X':
-			case 'L':
-			case 'l':
-			case 'U':
-			case 'u':
-				break;
-			default:
-				if(isdigit(dato[i])) acum+=((dato[i] - '0')*pow(16,j));
-				else acum+=((toupper(dato[i])- 55)*pow(16,j));
-				j++;
-				break;
-		}
-	}
-	return acum;
-}
-
 void escribirPila(Pila *pila, char *dato, double valor1, double valor2){
 	PunteroNodo nodo;
 	nodo = (Nodo *)malloc(sizeof(Nodo));

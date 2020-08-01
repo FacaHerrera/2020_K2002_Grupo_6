@@ -35,7 +35,7 @@ NUMERO_HAXADECIMAL ({NUMERO_DECIMAL}|{LETRA})
 PREFIJO_HEXADECIMAL 0[xX]
 NUMERO_OCTAL [0-7]
 SECUENCIA_DE_DIGITOS {NUMERO_DECIMAL}+
-SUFIJO_ENTERO ([uU][lL]?)|([lL][uU]?)
+SUFIJO_ENTERO ([uU][lL]?[lL]?)|([lL][lL]?[uU]?)
 FRACCION {SECUENCIA_DE_DIGITOS}?\.{SECUENCIA_DE_DIGITOS}|{SECUENCIA_DE_DIGITOS}\.
 EXPONENTE [eE]{SIGNO}?{SECUENCIA_DE_DIGITOS}
 SIGNO [+-]
@@ -90,11 +90,11 @@ COMENTARIO_SIMPLE \/\/.*
     //printf("Encontre una constante entera decimal \n");
     }
 {CONSTANTE_OCTAL} {
-    escribirPila(&constanteOctal, yytext, octADec(atoi(yytext)), 0);
+    escribirPila(&constanteOctal, yytext, strtol(yytext, NULL, 8), 0);
     //printf("Encontre una constante entera octal \n");
     }
 {CONSTANTE_HEXADECIMAL} {
-    escribirPila(&constanteHexa, yytext, hexADec(yytext), 0);
+    escribirPila(&constanteHexa, yytext, strtol(yytext, NULL, 16), 0);
     //printf("Encontre una constante entera hexadecimal \n");
     }
 {FRACCION}{EXPONENTE}?{SUFIJO_REAL}?|{SECUENCIA_DE_DIGITOS}{EXPONENTE}{SUFIJO_REAL}? {
@@ -144,7 +144,7 @@ COMENTARIO_SIMPLE \/\/.*
 
 int main() {
     int salida = 1, opcion;
-    char archivoE[50] = "main.c", archivoS[50] = "default.txt", condicion = 'S';
+    char archivoE[50] = "VACIO", archivoS[50] = "default.txt", condicion = 'S';
 
     while(toupper(condicion) == 'S'){
         system("CLS");

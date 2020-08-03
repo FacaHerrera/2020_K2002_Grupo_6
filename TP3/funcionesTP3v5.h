@@ -438,7 +438,7 @@ int mostrarMenu(char *archivoE, char *archivoS){	//MUESTRA EL MENU PRINCIPAL
 }
 
 void modificarArchivo(char *archivo){	//CAMBIA EL NOMBRE DE UNA CADENA (EN ESTE CASO EL NOMBRE DEL ARCHIVO)
-	char opcion[50];
+	char opcion[200];
 	system("CLS");
 	if(strcmp(archivo, "VACIO")!=0){
 		printf("El siguiente es el archivo actual: \n");
@@ -459,8 +459,10 @@ void modificarArchivo(char *archivo){	//CAMBIA EL NOMBRE DE UNA CADENA (EN ESTE 
 	system("CLS");
 	printf("Ingrese el nombre del archivo o la ruta (1 para cancelar y 2 para borrar): ");
 	fflush(stdin);
-	scanf("%s", opcion);
+	scanf("%[^\n]", opcion);
 	if(strcmp(opcion,"2")==0) strcpy(archivo, "VACIO");
-	else if (strcmp(opcion,"1")!=0) strcpy(archivo, opcion);
+	else if (strcmp(opcion,"1")!=0){
+		 strcpy(archivo, opcion);
+	}
 }
 

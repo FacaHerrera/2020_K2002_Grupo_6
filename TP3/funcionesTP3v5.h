@@ -1,3 +1,7 @@
+////////////////////////////
+//Declaracion de LIBRERIAS//
+////////////////////////////
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,34 +9,38 @@
 #include <math.h>
 #include <ctype.h>
 
-////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////
+//Definicion de TIPOS y ESTRUCTURAS//
+/////////////////////////////////////
 
-typedef struct{
+typedef struct{	//NUEVA ESTRUCTURA DE DATOS CON EL CONTENIDO DE LAS PILAS
 	char *dato;
 	double numero1;
 	double numero2;
 }Contenido;
 
-typedef struct nodo{
+typedef struct nodo{	//NUEVO NODO
 	Contenido datos;
 	struct nodo *siguiente;
 }Nodo;
 
-typedef Nodo *PunteroNodo;
+typedef Nodo *PunteroNodo;	//NUEVO PUNTERO A NODO
 
-typedef struct pilaUbicacion{
+typedef struct pilaUbicacion{	//NUEVA PILA
 	PunteroNodo inicio;
 	int tamanio;
 }Pila;
 
-////////////////////////////////////////////////////////////////////////////////////
+/////////////
+//FUNCIONES//
+/////////////
 
-void inicializar(Pila *pila){
+void inicializar(Pila *pila){	//INICIALIZA UNA NUEVA PILA
 	pila->inicio = NULL;
 	pila->tamanio = 0;
 }
 
-void escribirPila(Pila *pila, char *dato, double valor1, double valor2){
+void escribirPila(Pila *pila, char *dato, double valor1, double valor2){	//AGREGA NUEVO NODO A LA PILA
 	PunteroNodo nodo;
 	nodo = (Nodo *)malloc(sizeof(Nodo));
 	nodo->datos.dato = strdup(dato);
@@ -43,7 +51,22 @@ void escribirPila(Pila *pila, char *dato, double valor1, double valor2){
 	pila->tamanio++;
 }
 
-Contenido leerPila(Pila *pila){
+void escribirPilaNR(Pila *pila, char *dato, double valor1, char r){	//AGREGA NUEVO NODO A LA PILA O CONCATENA EN CASO DE SER 
+	if(pila->tamanio > 0 && strstr(pila->inicio->datos.dato,"\\n") == 0 && r==0){	//UNA CADENA DE CARACTERES NO RECONOCIDOS
+		char *aux;
+		aux = (char *)malloc(strlen(dato)+strlen(pila->inicio->datos.dato)+2);
+		strcpy(aux, pila->inicio->datos.dato);
+		strcat(aux, " ");
+		strcat(aux, dato);
+		pila->inicio->datos.dato = (char *)realloc(pila->inicio->datos.dato, strlen(aux)+1);
+		strcpy(pila->inicio->datos.dato, aux);
+	}
+	else{
+		escribirPila(pila, dato, valor1, 0);
+	}
+}
+
+Contenido leerPila(Pila *pila){	//Devuelve el primer elemento de la pila
 	PunteroNodo nodo;
 	nodo = (Nodo *)malloc(sizeof(Nodo));
 	Contenido estado;
@@ -64,39 +87,39 @@ Contenido leerPila(Pila *pila){
 	return estado;
 }
 
-void agregarOrdenado(Pila *pila, char *dato){
-	Pila auxiliar;
+void agregarOrdenado(Pila *pila, char *dato){ 	//AGREGA UN NODO A LA PILA DE FORMA ORDENADA
+	Pila auxiliar;								//EL MENOR VA ARRIBA
 	Contenido variable;
 	inicializar(&auxiliar);
 	if(pila->inicio!=NULL){
 		while (pila->inicio!=NULL) {
-			if(strcmp(pila->inicio->datos.dato, dato)<0){
+			if(strcmp(pila->inicio->datos.dato, dato)<0){	//SI EL DATO INGRESADO ES MENOR QUE EL DE LA PILA, LO AGREGA
 				escribirPila(pila,dato,1,0);
 				break;
 			}
-			else if(strcmp(pila->inicio->datos.dato, dato)>0){
+			else if(strcmp(pila->inicio->datos.dato, dato)>0){	//SI ES MAYOR, PONE EL NODO DE LA PILA EN UNA PILA AUXILIAR
 				escribirPila(&auxiliar,pila->inicio->datos.dato,pila->inicio->datos.numero1, pila->inicio->datos.numero2);
 				pila->tamanio--;
 				pila->inicio = pila->inicio->siguiente;
 			}
-			else{
+			else{	//SI SON IGUALES, INCREMENTA EL NUMERO DE APARICIONES DE ESE NODO
 				variable = leerPila(pila);
 				escribirPila(pila,variable.dato,variable.numero1 + 1, variable.numero2);
 				break;
 			}
 		}
 		if(pila->inicio == NULL) escribirPila(pila,dato,1, 0);
-		while (auxiliar.inicio!=NULL){
+		while (auxiliar.inicio!=NULL){	//SE VUELVE A CARGAR LA PILA CON LO QUE SE SACO EN LA AUXILIAR
 			escribirPila(pila,auxiliar.inicio->datos.dato,auxiliar.inicio->datos.numero1, auxiliar.inicio->datos.numero2);
 			auxiliar.inicio = auxiliar.inicio->siguiente;
 		}
 	}
 	else{
-		escribirPila(pila,dato,1, 0);
+		escribirPila(pila,dato,1, 0);	//SI LA PILA ESTA VACIA, DIRECTAMENTE SE CARGA EL NODO
 	}
 }
 
-void darVuelta(Pila *pila){
+void darVuelta(Pila *pila){	//INVIERTE EL SENTIDO DE LA PILA
 	Pila auxiliar;
 	while (pila->inicio!=NULL) {
 		escribirPila(&auxiliar,pila->inicio->datos.dato,pila->inicio->datos.numero1, pila->inicio->datos.numero2);
@@ -105,7 +128,7 @@ void darVuelta(Pila *pila){
 	pila->inicio = auxiliar.inicio;
 }
 
-char *centrar(char *dato, int ancho){
+char *centrar(char *dato, int ancho){	//CENTRA UNA CADENA EN UN ANCHO DADO
 	int i, j=0, espacios;
 	char *auxiliar=(char *)malloc(1000);
 	
@@ -128,7 +151,8 @@ char *centrar(char *dato, int ancho){
 	return auxiliar;
 }
 
-void imprimirArchivo(Pila *pila, FILE *r, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){
+//GENERA LAS TABLAS DEL INFORME SEGUN UN FORMATO ESPECIFICADO (CANTIDAD DE COLUMNAS Y ANCHO DE CADA UNA). PARA ARCHIVOS
+void imprimir1(Pila *pila, FILE *r, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){
 	int i, columnas, acum = 0, ancho = f1dato + f1valor1 + f2valor1 + f1valor2 + f2valor2;
 	PunteroNodo nodo;
 	char *aux;
@@ -233,7 +257,8 @@ void imprimirArchivo(Pila *pila, FILE *r, char *titulo, char *titulo0, int f1dat
 	}
 }
 
-void imprimirConsola(Pila *pila, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){
+//GENERA LAS TABLAS DEL INFORME SEGUN UN FORMATO ESPECIFICADO (CANTIDAD DE COLUMNAS Y ANCHO DE CADA UNA). PARA CONSOLA
+void imprimir(Pila *pila, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){
 	int i, columnas, acum = 0, ancho = f1dato + f1valor1 + f2valor1 + f1valor2 + f2valor2;
 	PunteroNodo nodo;
 	char *aux;
@@ -363,7 +388,7 @@ void imprimirConsola(Pila *pila, char *titulo, char *titulo0, int f1dato, char *
 	}
 }
 
-int suma(Pila *pila){
+int suma(Pila *pila){	//SUMA TODOS LOS ELEMENTOS DE UNA PILA
 	int i, acum=0;
 	PunteroNodo nodo;
 	nodo = pila->inicio;
@@ -374,8 +399,8 @@ int suma(Pila *pila){
 	return acum;
 }
 
-int evalua(char *dato, char v1, char v2){
-	int i=0;
+int evalua(char *dato, char v1, char v2){	//CALCULA LA CANTIDAD DE '\n' QUE TIENE UN COMENTARIO, DEVUELVE ESA CANTIDAD Y LOS SACA.
+	int i=0;								//SIRVE PARA MOSTRAR EL COMENTARIO EN UNA SOLA LINEA
 	while(1){
 		if(*dato=='*'){
 			dato++;
@@ -390,13 +415,13 @@ int evalua(char *dato, char v1, char v2){
 	return i;
 }
 
-int verificar_txt(char *archivo){
+int verificar_txt(char *archivo){	//VERIFICA SI UN ARCHIVO TIENE EXTENCION .TXT. DE NO SER ASI, SE LA AGREGA
 	if (strstr(archivo, ".txt") == NULL){
 		strcat(archivo, ".txt");
 	}
 }
 
-int mostrarMenu(char *archivoE, char *archivoS){
+int mostrarMenu(char *archivoE, char *archivoS){	//MUESTRA EL MENU PRINCIPAL
 	int opcion;
 	while(1){
 		system("CLS");
@@ -412,7 +437,7 @@ int mostrarMenu(char *archivoE, char *archivoS){
 	}
 }
 
-void modificarArchivo(char *archivo){
+void modificarArchivo(char *archivo){	//CAMBIA EL NOMBRE DE UNA CADENA (EN ESTE CASO EL NOMBRE DEL ARCHIVO)
 	char opcion[50];
 	system("CLS");
 	if(strcmp(archivo, "VACIO")!=0){

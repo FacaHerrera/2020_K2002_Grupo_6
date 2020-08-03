@@ -189,7 +189,7 @@ int main() {
                     imprimir(&include, "DIRECTIVAS PRE-PROCESADOR", "INCLUDE", 30, "", 0, 0, "", 0, 0);
                     imprimir(&define, "DIRECTIVAS PRE-PROCESADOR", "DEFINE", 30, "", 0, 0, "", 0, 0);
                     darVuelta(&noReconocido);
-                    imprimir(&noReconocido, "CARACTERES", "NO RECONOCIDOS", 150, "LINEA", 6, 0, "", 0, 0);
+                    imprimir(&noReconocido, "CARACTERES / CADENAS", "NO RECONOCIDOS", 150, "LINEA", 6, 0, "", 0, 0);
                 }
                 fclose(yyin);
                 break;
@@ -226,7 +226,7 @@ int main() {
                     imprimir1(&include, r, "DIRECTIVAS PRE-PROCESADOR", "INCLUDE", 30, "", 0, 0, "", 0, 0);
                     imprimir1(&define, r, "DIRECTIVAS PRE-PROCESADOR", "DEFINE", 30, "", 0, 0, "", 0, 0);
                     darVuelta(&noReconocido);
-                    imprimir1(&noReconocido, r, "CARACTERES", "NO RECONOCIDOS", 150, "LINEA", 6, 0, "", 0, 0);
+                    imprimir1(&noReconocido, r, ""CARACTERES / CADENAS", "NO RECONOCIDOS", 150, "LINEA", 6, 0, "", 0, 0);
                     fclose(r);
 
                     printf("SU ARCHIVO DE SALIDA ES: %s\n", archivoS);

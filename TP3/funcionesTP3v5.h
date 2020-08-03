@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <ctype.h>
+#include <windows.h> 
 
 /////////////////////////////////////
 //Definicion de TIPOS y ESTRUCTURAS//
@@ -465,4 +466,24 @@ void modificarArchivo(char *archivo){	//CAMBIA EL NOMBRE DE UNA CADENA (EN ESTE 
 		 strcpy(archivo, opcion);
 	}
 }
+
+void AltEnter() {	//EJECUTA LA CONSOLA EN PANTALLA COMPLETA
+    keybd_event(VK_MENU,
+                0x38,
+                0,
+                0);
+    keybd_event(VK_RETURN,
+                0x1c,
+                0,
+                0);
+    keybd_event(VK_RETURN,
+                0x1c,
+                KEYEVENTF_KEYUP,
+                0);
+    keybd_event(VK_MENU,
+                0x38,
+                KEYEVENTF_KEYUP,
+                0);
+    return;
+} 
 

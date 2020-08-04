@@ -6,59 +6,59 @@
 |---------------------------------------------------|
 |        IDENTIFICADOR         |  VECES ENCONTRADO  |
 |---------------------------------------------------|
-|            vPila             |                   6|
-|            valor             |                   5|
-|          tipoError           |                  13|
-|            system            |                   1|
-|       suprimirEspacios       |                   3|
-|            strcpy            |                  11|
-|            strcat            |                   1|
-|            stdin             |                   2|
-|          siguiente           |                   3|
-|            scanf             |                   2|
-|          recorrido           |                   3|
-|         punteroNodo          |                   3|
-|            printf            |                   5|
-|             pila             |                  19|
-|             Pila             |                   6|
-|             NULL             |                   1|
-|             nodo             |                  12|
-|             Nodo             |                   5|
-|         mostrar_menu         |                   1|
-|       mostrar_consigna       |                   3|
-|            malloc            |                   1|
-|             main             |                   1|
-|            lenAux            |                   4|
-|             len              |                  28|
-|           leerPila           |                   4|
-|            inicio            |                   5|
-|             free             |                   2|
-|            fflush            |                   2|
-|          expresion           |                  23|
-|         evaluaError          |                   3|
-|           estado24           |                   3|
-|           estado11           |                   4|
-|           estado10           |                   4|
-|           estado03           |                   2|
-|           estado02           |                   2|
-|           estado01           |                   3|
-|           estado00           |                   3|
-|            estado            |                  14|
-|         escribirPila         |                   9|
-|            error7            |                   4|
-|            error6            |                   2|
-|            error5            |                   5|
-|            error4            |                   3|
-|            error3            |                   7|
-|            error2            |                   5|
-|            error1            |                   3|
+|           automata           |                   6|
+|           auxiliar           |                   4|
+|           columna            |                   9|
+|          condicion           |                   4|
+|             dato             |                   3|
 |            error             |                  17|
 |            ERROR             |                   1|
-|             dato             |                   3|
-|          condicion           |                   4|
-|           columna            |                   9|
-|           auxiliar           |                   4|
-|           automata           |                   6|
+|            error1            |                   3|
+|            error2            |                   5|
+|            error3            |                   7|
+|            error4            |                   3|
+|            error5            |                   5|
+|            error6            |                   2|
+|            error7            |                   4|
+|         escribirPila         |                   9|
+|            estado            |                  14|
+|           estado00           |                   3|
+|           estado01           |                   3|
+|           estado02           |                   2|
+|           estado03           |                   2|
+|           estado10           |                   4|
+|           estado11           |                   4|
+|           estado24           |                   3|
+|         evaluaError          |                   3|
+|          expresion           |                  23|
+|            fflush            |                   2|
+|             free             |                   2|
+|            inicio            |                   5|
+|           leerPila           |                   4|
+|             len              |                  28|
+|            lenAux            |                   4|
+|             main             |                   1|
+|            malloc            |                   1|
+|       mostrar_consigna       |                   3|
+|         mostrar_menu         |                   1|
+|             nodo             |                  12|
+|             Nodo             |                   5|
+|             NULL             |                   1|
+|             pila             |                  19|
+|             Pila             |                   6|
+|            printf            |                   5|
+|         punteroNodo          |                   3|
+|          recorrido           |                   3|
+|            scanf             |                   2|
+|          siguiente           |                   3|
+|            stdin             |                   2|
+|            strcat            |                   1|
+|            strcpy            |                  11|
+|       suprimirEspacios       |                   3|
+|            system            |                   1|
+|          tipoError           |                  13|
+|            valor             |                   5|
+|            vPila             |                   6|
 -----------------------------------------------------
 
 
@@ -321,8 +321,8 @@
 |----------|
 | CARACTER |
 |----------|
-|   's'    |
 |   'S'    |
+|   's'    |
 |   'R'    |
 |   '^'    |
 |   '\0'   |

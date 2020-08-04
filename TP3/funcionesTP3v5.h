@@ -115,7 +115,7 @@ void agregarOrdenado(Pila *pila, char *dato){ 	//AGREGA UN NODO A LA PILA DE FOR
 					escribirPila(pila,variable.dato,variable.numero1 + 1, variable.numero2);
 					break;
 				}
-				else if(strcmp(pila->inicio->datos.dato, dato)>0){
+				else if(strcmp(pila->inicio->datos.dato, dato)<0){
 						escribirPila(&auxiliar,pila->inicio->datos.dato,pila->inicio->datos.numero1, pila->inicio->datos.numero2);
 						pila->tamanio--;
 						pila->inicio = pila->inicio->siguiente;
@@ -171,7 +171,7 @@ char *centrar(char *dato, int ancho){	//CENTRA UNA CADENA EN UN ANCHO DADO
 }
 
 //GENERA LAS TABLAS DEL INFORME SEGUN UN FORMATO ESPECIFICADO (CANTIDAD DE COLUMNAS Y ANCHO DE CADA UNA). PARA ARCHIVOS
-void imprimir1(Pila *pila, FILE *r, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){
+void imprimirArchivo(Pila *pila, FILE *r, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){
 	int i, columnas, acum = 0, ancho = f1dato + f1valor1 + f2valor1 + f1valor2 + f2valor2;
 	PunteroNodo nodo;
 	char *aux;
@@ -277,7 +277,7 @@ void imprimir1(Pila *pila, FILE *r, char *titulo, char *titulo0, int f1dato, cha
 }
 
 //GENERA LAS TABLAS DEL INFORME SEGUN UN FORMATO ESPECIFICADO (CANTIDAD DE COLUMNAS Y ANCHO DE CADA UNA). PARA CONSOLA
-void imprimir(Pila *pila, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){
+void imprimirConsola(Pila *pila, char *titulo, char *titulo0, int f1dato, char *titulo1, int f1valor1, int f2valor1, char *titulo2, int f1valor2, int f2valor2){
 	int i, columnas, acum = 0, ancho = f1dato + f1valor1 + f2valor1 + f1valor2 + f2valor2;
 	PunteroNodo nodo;
 	char *aux;

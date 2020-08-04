@@ -91,22 +91,40 @@ Contenido leerPila(Pila *pila){	//Devuelve el primer elemento de la pila
 void agregarOrdenado(Pila *pila, char *dato){ 	//AGREGA UN NODO A LA PILA DE FORMA ORDENADA
 	Pila auxiliar;								//EL MENOR VA ARRIBA
 	Contenido variable;
+	char *datoMinuscula, *pilaMinuscula;
+	char i;
+	datoMinuscula = strdup(dato);
+	for(i = 0; i < strlen(datoMinuscula); i++) datoMinuscula[i] = tolower(datoMinuscula[i]);
 	inicializar(&auxiliar);
 	if(pila->inicio!=NULL){
 		while (pila->inicio!=NULL) {
-			if(strcmp(pila->inicio->datos.dato, dato)<0){	//SI EL DATO INGRESADO ES MENOR QUE EL DE LA PILA, LO AGREGA
+			pilaMinuscula = strdup(pila->inicio->datos.dato);
+			for(i = 0; i < strlen(pilaMinuscula); i++) pilaMinuscula[i] = tolower(pilaMinuscula[i]);
+			if(strcmp(pilaMinuscula, datoMinuscula)<0){	//SI EL DATO INGRESADO ES MENOR QUE EL DE LA PILA, LO AGREGA
 				escribirPila(pila,dato,1,0);
 				break;
 			}
-			else if(strcmp(pila->inicio->datos.dato, dato)>0){	//SI ES MAYOR, PONE EL NODO DE LA PILA EN UNA PILA AUXILIAR
+			else if(strcmp(pilaMinuscula, datoMinuscula)>0){	//SI ES MAYOR, PONE EL NODO DE LA PILA EN UNA PILA AUXILIAR
 				escribirPila(&auxiliar,pila->inicio->datos.dato,pila->inicio->datos.numero1, pila->inicio->datos.numero2);
 				pila->tamanio--;
 				pila->inicio = pila->inicio->siguiente;
 			}
 			else{	//SI SON IGUALES, INCREMENTA EL NUMERO DE APARICIONES DE ESE NODO
-				variable = leerPila(pila);
-				escribirPila(pila,variable.dato,variable.numero1 + 1, variable.numero2);
-				break;
+				if(strcmp(pila->inicio->datos.dato, dato)==0){
+					variable = leerPila(pila);
+					escribirPila(pila,variable.dato,variable.numero1 + 1, variable.numero2);
+					break;
+				}
+				else if(strcmp(pila->inicio->datos.dato, dato)>0){
+						escribirPila(&auxiliar,pila->inicio->datos.dato,pila->inicio->datos.numero1, pila->inicio->datos.numero2);
+						pila->tamanio--;
+						pila->inicio = pila->inicio->siguiente;
+				}
+				else{
+					escribirPila(pila,dato,1,0);
+					break;
+				}
+				
 			}
 		}
 		if(pila->inicio == NULL) escribirPila(pila,dato,1, 0);
@@ -204,7 +222,7 @@ void imprimir1(Pila *pila, FILE *r, char *titulo, char *titulo0, int f1dato, cha
 
 			fprintf(r, "|");
 			fprintf(r, "%s", centrar(titulo0, f1dato));
-			fprintf(r, "|");
+			fprintf(r, "|"); 
 			fprintf(r, "%s", centrar(titulo1, (f1valor1 + f2valor1)));
 
 			fprintf(r, "|\n");

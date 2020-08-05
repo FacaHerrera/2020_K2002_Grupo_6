@@ -153,7 +153,7 @@ COMENTARIO_MULTIPLE \/\*(\*+[^\*\/]|[^\*])*\*+\/
 %%
 
 int main() {
-    AltEnter(); 
+    pantallaCompleta(); 
     int salida = 1, opcion;
     char archivoE[200] = "main.c", archivoS[200] = "default.txt", condicion = 'S';
 

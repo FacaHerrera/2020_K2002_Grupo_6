@@ -485,7 +485,7 @@ void modificarArchivo(char *archivo){	//CAMBIA EL NOMBRE DE UNA CADENA (EN ESTE 
 	}
 }
 
-void AltEnter() {	//EJECUTA LA CONSOLA EN PANTALLA COMPLETA
+void pantallaCompleta() {	//EJECUTA LA CONSOLA EN PANTALLA COMPLETA
     keybd_event(VK_MENU,
                 0x38,
                 0,

@@ -5,7 +5,6 @@
 
 Pila identificadores;
 Pila literalCadena;
-Pila palabrasReservadas;
 Pila constanteDecimal;
 Pila constanteOctal;
 Pila constanteHexa;
@@ -17,6 +16,9 @@ Pila comentarioMultiple;
 Pila include;
 Pila define;
 Pila noReconocido;
+Pila prOtras;
+Pila prEstructuraDatos;
+Pila prtipoDato;
 
 double fractpart, intpart, linea = 0;
 char reconocido = 0;
@@ -48,7 +50,10 @@ ESCAPE_HEXADECIMAL \\x{NUMERO_HAXADECIMAL}{1,2}
 CONSTANTE_CARACTER {CARACTER_C}|{SECUENCIA_DE_ESCAPE}
 CONSTANTE_CADENA {CARACTER_S}|{SECUENCIA_DE_ESCAPE}
 CARACTER_DE_PUNTUACION [\[\]\(\)\{\}\.\&\*\+\-\!\/\%\<\>\^\|\=\:\,\;\#]|(\-\>)|(\+\+)|(\-\-)|(\<\<)|(\>\>)|(\<\=)|(\>\=)|(\=\=)|(\!\=)|(\&\&)|(\|\|)|(\*\=)|(\/\=)|(\%\=)|(\+\=)|(\-\=)|(\<\<\=)|(\>\>\=)|(\&\=)|(\^\=)|(\|\=)|(\.\.\.)|(\#\#)
-PALABRA_RESERVADA (auto)|(auto)|(break)|(case)|(char)|(const)|(continue)|(default)|(do)|(double)|(else)|(enum)|(extern)|(float)|(for)|(goto)|(if)|(int)|(long)|(register)|(return)|(short)|(signed)|(sizeof)|(static)|(struct)|(switch)|(typedef)|(union)|(unsigned)|(void)|(volatile)|(while)
+TIPOS_DE_DATO (char)|(const)|(double)|(enum)|(float)|(int)|(long)|(short)|(signed)|(struct)|(typedef)|(union)|(unsigned)|(void)
+ESTRUCTURAS_DE_CONTROL (break)|(case)|(continue)|(default)|(do)|(else)|(for)|(goto)|(if)|(return)|(switch)|(while)
+OTRAS (auto)|(extern)|(register)|(static)|(volatile)|(sizeof)
+PALABRA_RESERVADA {TIPOS_DE_DATO}|{ESTRUCTURAS_DE_CONTROL}|{OTRAS}
 IDENTIFICADOR ({LETRA}|{GUION_BAJO})({LETRA}|{NUMERO_DECIMAL}|{GUION_BAJO})*
 CONSTANTE {CONSTANTE_DECIMAL}|{CONSTANTE_HEXADECIMAL}|{CONSTANTE_OCTAL}|\'{CONSTANTE_CARACTER}?\'|\"{CONSTANTE_CADENA}*\"
 CONSTANTE_DECIMAL {NUMERO_DECIMAL_SIN_CERO}{NUMERO_DECIMAL}*{SUFIJO_ENTERO}?
@@ -72,8 +77,16 @@ COMENTARIO_MULTIPLE \/\*(\*+[^\*\/]|[^\*])*\*+\/
     reconocido = 1;
 }
 
-{PALABRA_RESERVADA} {
-    escribirPila(&palabrasReservadas, yytext, 0, 0);
+{TIPOS_DE_DATO} {
+    escribirPila(&prtipoDato, yytext, 0, 0);
+    reconocido = 1;
+    }
+{ESTRUCTURAS_DE_CONTROL} {
+    escribirPila(&prEstructuraDatos, yytext, 0, 0);
+    reconocido = 1;
+    }
+{OTRAS} {
+    escribirPila(&prOtras, yytext, 0, 0);
     reconocido = 1;
     }
 {IDENTIFICADOR} {
@@ -176,8 +189,12 @@ int main() {
                     darVuelta(&identificadores);
                     imprimirConsola(&identificadores, "IDENTIFICADORES", "IDENTIFICADOR", 30, "VECES ENCONTRADO", 20, 0, "", 0, 0);
                     imprimirConsola(&literalCadena, "LITERALES CADENA", "CADENA", 130, "LONGITUD", 10, 0, "", 0, 0);
-                    darVuelta(&palabrasReservadas);
-                    imprimirConsola(&palabrasReservadas, "PALABRAS RESERVADAS", "PALABRA", 20, "", 0, 0, "", 0, 0);
+                    darVuelta(&prtipoDato);
+                    darVuelta(&prEstructuraDatos);
+                    darVuelta(&prOtras);
+                    imprimirConsola(&prtipoDato, "PALABRAS RESERVADAS", "TIPOS DE DATO", 20, "", 0, 0, "", 0, 0);
+                    imprimirConsola(&prEstructuraDatos, "PALABRAS RESERVADAS", "ESTRUCTURAS DE CONTROL", 30, "", 0, 0, "", 0, 0);
+                    imprimirConsola(&prOtras, "PALABRAS RESERVADAS", "OTRAS", 20, "", 0, 0, "", 0, 0);
                     escribirPila(&constanteDecimal, "TOTAL DE LA SUMA", suma(&constanteDecimal), 0);
                     darVuelta(&constanteDecimal);
                     imprimirConsola(&constanteDecimal, "CONSTANTES", "DECIMAL", 20, "VALOR", 20, 0, "", 0, 0);
@@ -214,8 +231,12 @@ int main() {
                     darVuelta(&identificadores);
                     imprimirArchivo(&identificadores, r, "IDENTIFICADORES", "IDENTIFICADOR", 30, "VECES ENCONTRADO", 20, 0, "", 0, 0);
                     imprimirArchivo(&literalCadena, r, "LITERALES CADENA", "CADENA", 130, "LONGITUD", 10, 0, "", 0, 0);
-                    darVuelta(&palabrasReservadas);
-                    imprimirArchivo(&palabrasReservadas, r, "PALABRAS RESERVADAS", "PALABRA", 20, "", 0, 0, "", 0, 0);
+                    darVuelta(&prtipoDato);
+                    darVuelta(&prEstructuraDatos);
+                    darVuelta(&prOtras);
+                    imprimirArchivo(&prtipoDato, r, "PALABRAS RESERVADAS", "TIPOS DE DATO", 20, "", 0, 0, "", 0, 0);
+                    imprimirArchivo(&prEstructuraDatos, r, "PALABRAS RESERVADAS", "ESTRUCTURAS DE CONTROL", 30, "", 0, 0, "", 0, 0);
+                    imprimirArchivo(&prOtras, r, "PALABRAS RESERVADAS", "OTRAS", 20, "", 0, 0, "", 0, 0);
                     escribirPila(&constanteDecimal, "TOTAL DE LA SUMA", suma(&constanteDecimal), 0);
                     darVuelta(&constanteDecimal);
                     imprimirArchivo(&constanteDecimal, r, "CONSTANTES", "DECIMAL", 20, "VALOR", 20, 0, "", 0, 0);
@@ -254,7 +275,9 @@ int main() {
 void inicializarPilas(){
     inicializar(&identificadores);
     inicializar(&literalCadena);
-    inicializar(&palabrasReservadas);
+    inicializar(&prEstructuraDatos);
+    inicializar(&prtipoDato);
+    inicializar(&prOtras);
     inicializar(&constanteDecimal);
     inicializar(&constanteOctal);
     inicializar(&constanteHexa);

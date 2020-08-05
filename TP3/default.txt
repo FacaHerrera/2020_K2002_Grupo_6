@@ -93,7 +93,7 @@
 ----------------------
 |PALABRAS RESERVADAS |
 |--------------------|
-|      PALABRA       |
+|   TIPOS DE DATO    |
 |--------------------|
 |      typedef       |
 |       struct       |
@@ -125,23 +125,13 @@
 |        char        |
 |        int         |
 |        char        |
-|       while        |
-|       switch       |
-|        case        |
-|        case        |
-|       break        |
-|      default       |
-|       return       |
 |        int         |
 |        char        |
 |        char        |
-|       return       |
 |        void        |
 |        char        |
 |        int         |
 |        char        |
-|       while        |
-|         if         |
 |        int         |
 |        char        |
 |        char        |
@@ -149,75 +139,103 @@
 |        int         |
 |       struct       |
 |       struct       |
-|       while        |
-|         if         |
-|       switch       |
-|        case        |
-|       break        |
-|        case        |
-|       break        |
-|         if         |
-|        else        |
-|         if         |
-|        else        |
-|         if         |
-|        else        |
-|         if         |
-|        else        |
-|         if         |
-|        else        |
-|       switch       |
-|        case        |
-|       break        |
-|        case        |
-|       break        |
-|        case        |
-|       break        |
-|        case        |
-|       break        |
-|       switch       |
-|        case        |
-|       break        |
-|        case        |
-|        case        |
-|         if         |
-|       break        |
-|       return       |
 |        void        |
 |        char        |
+|        char        |
+|        char        |
+|        void        |
+|        int         |
+|        int         |
+|        int         |
+|        char        |
+|        char        |
+----------------------
+
+
+
+--------------------------------
+|     PALABRAS RESERVADAS      |
+|------------------------------|
+|    ESTRUCTURAS DE CONTROL    |
+|------------------------------|
+|            while             |
+|            switch            |
+|             case             |
+|             case             |
+|            break             |
+|           default            |
+|            return            |
+|            return            |
+|            while             |
+|              if              |
+|            while             |
+|              if              |
+|            switch            |
+|             case             |
+|            break             |
+|             case             |
+|            break             |
+|              if              |
+|             else             |
+|              if              |
+|             else             |
+|              if              |
+|             else             |
+|              if              |
+|             else             |
+|              if              |
+|             else             |
+|            switch            |
+|             case             |
+|            break             |
+|             case             |
+|            break             |
+|             case             |
+|            break             |
+|             case             |
+|            break             |
+|            switch            |
+|             case             |
+|            break             |
+|             case             |
+|             case             |
+|              if              |
+|            break             |
+|            return            |
+|              if              |
+|            return            |
+|            return            |
+|              if              |
+|              if              |
+|             else             |
+|             else             |
+|              if              |
+|             else             |
+|            switch            |
+|             case             |
+|            break             |
+|             case             |
+|            break             |
+|             case             |
+|            break             |
+|             case             |
+|            break             |
+|             case             |
+|            break             |
+|             case             |
+|            break             |
+|             case             |
+|            break             |
+--------------------------------
+
+
+
+----------------------
+|PALABRAS RESERVADAS |
+|--------------------|
+|       OTRAS        |
+|--------------------|
 |       sizeof       |
-|        char        |
-|        char        |
-|         if         |
-|       return       |
-|       return       |
-|        void        |
-|        int         |
-|        int         |
-|        int         |
-|        char        |
-|        char        |
-|         if         |
-|         if         |
-|        else        |
-|        else        |
-|         if         |
-|        else        |
-|       switch       |
-|        case        |
-|       break        |
-|        case        |
-|       break        |
-|        case        |
-|       break        |
-|        case        |
-|       break        |
-|        case        |
-|       break        |
-|        case        |
-|       break        |
-|        case        |
-|       break        |
 ----------------------
 
 

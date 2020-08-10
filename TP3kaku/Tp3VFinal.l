@@ -163,8 +163,6 @@ int main() {
     printf("Ingrese el nombre del archivo: ");
     scanf("%s", archivo);
 
-    verificar_txt(archivo);
-
     yyin = fopen(archivo, "r");
     yyout = fopen("basura.txt", "w");
 

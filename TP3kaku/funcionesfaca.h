@@ -22,7 +22,7 @@ typedef struct nodo{
 	struct nodo* siguiente;
 }nodo;
 
-void formato(FILE*, char*, int, int);
+void formato(FILE*, char*, char*, int, int);
 int octalADecimal(char*, int);
 int hexadecimalADecimal(char*, int);
 int buscarNodo(nodo**, tipoinfo);
@@ -128,7 +128,7 @@ void insertarOrdenado(nodo** primero, char* cadena, double cte1, double cte2) {
 
 // Funciones de impresion
 
-void formato(FILE* salida, char* caracter, int cantidad, int flag){
+/* void formato(FILE* salida, char* caracter, int cantidad, int flag){
     for(int i=0;i<cantidad;i++){
         fprintf(salida, "%s", caracter);
     }
@@ -185,6 +185,68 @@ void reporte(FILE* salida, nodo* primero, char* encabezado1, char* encabezado2, 
 	else{
 		fprintf(salida,"\n No existen elementos de este tipo! \n\n");
         formato(salida, "-", 85, 1);
+	}
+} */
+
+void formato(FILE* salida, char* cadena, char* caracter, int cantidad, int flag){
+    int largo = strlen(cadena);
+
+    for(int i=0;i<(cantidad - largo);i++){
+        fprintf(salida, "%s", caracter);
+    }
+    if(flag == 1){
+        fprintf(salida, "\n");
+    }
+}
+
+void reporte(FILE* salida, nodo* primero, char* encabezado1, char* encabezado2, int tipoImpresion){
+	nodo* actual = (nodo*) malloc(sizeof(nodo));
+	actual = primero;
+
+    formato(salida, "", "-", 110, 1);
+	
+    if(primero!= NULL){
+        switch(tipoImpresion){
+            case 1:
+                fprintf(salida,"%s", encabezado1);
+                formato(salida, encabezado1, " ", 97, 0);
+                fprintf(salida,"%s", encabezado2);
+                    while(actual != NULL){
+                        fprintf(salida,"\n %s", actual -> dato.cadena);
+                        formato(salida, actual -> dato.cadena, " ", 96, 0);
+                        fprintf(salida,"%lf", actual -> dato.constante1);
+                        actual = actual -> siguiente;			
+                    }
+                break;
+            case 2:
+                fprintf(salida,"%s", encabezado1);
+                formato(salida, encabezado1, " ", 97, 0);
+                fprintf(salida,"%s", encabezado2);
+                    while(actual != NULL){
+                        fprintf(salida,"\n %s", actual -> dato.cadena);
+                        actual = actual -> siguiente;			
+                    }
+                break;
+            case 3:
+                fprintf(salida,"%s", encabezado1);
+                formato(salida, encabezado1, " ", 97, 0);
+                fprintf(salida,"%s", encabezado2);
+                    while(actual != NULL){
+                        fprintf(salida,"\n %1.4lf", actual -> dato.constante1);
+                        formato(salida, "", " ", 88, 0);
+                        fprintf(salida,"%1.4lf", actual -> dato.constante2);
+                        actual = actual -> siguiente;			
+                    }
+                break;
+    }
+
+    fprintf(salida, "\n");
+    formato(salida, "", "-", 110, 1);
+    }
+
+	else{
+		fprintf(salida,"\n No existen elementos de este tipo! \n\n");
+        formato(salida, "", "-", 110, 1);
 	}
 }
 

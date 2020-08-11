@@ -24,7 +24,7 @@ nodo* define = NULL;
 nodo* cter_NN = NULL;
 
 double suma = 0, variable_conversion;
-int i = 1, contador_linea = 1;
+int i = 1, contador_linea = 0;
 
 %}
 
@@ -163,6 +163,8 @@ int main() {
     printf("Ingrese el nombre del archivo: ");
     scanf("%s", archivo);
 
+    verificar_txt(archivo);
+
     yyin = fopen(archivo, "r");
     yyout = fopen("basura.txt", "w");
 
@@ -174,6 +176,7 @@ int main() {
     voltearPila(&tipo_dato);
     voltearPila(&struct_control);
     voltearPila(&reservada);
+    voltearPila(&cter_NN);
 
     reporte(salida, identificadores, "IDENTIFICADORES", "CANTIDAD", 1);
     reporte(salida, lit_cadena, "LITERAL CADENA", "LONGITUD", 1);
@@ -189,7 +192,7 @@ int main() {
     reporte(salida, cte_caracter, "CONSTANTE CARACTER", "ENUMERACION", 1);
     reporte(salida, cte_decimal, "CONSTANTE DECIMAL", "", 2);
     fprintf(salida, "\n La suma total es: %lf \n", suma);
-    formato(salida, "-", 85, 1);
+    formato(salida, "", "-", 110, 1);
     reporte(salida, include, "INCLUDE'S", "", 2);
     reporte(salida, define, "DEFINE'S", "", 2);
     reporte(salida, cter_NN, "NO RECONOCIDOS", "LINEA", 1);

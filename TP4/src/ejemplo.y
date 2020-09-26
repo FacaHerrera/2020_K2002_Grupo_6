@@ -6,7 +6,7 @@
 #include <math.h>
 
 int yylex();
-int yyerror (char*);
+int yyerror (char* );
 int yywrap(){
 return(1);
 }
@@ -65,6 +65,7 @@ int contadorVariables = 0;
 %type <dval> exp
 %type <cval> unaVarSimple
 %type <cval> literalCadena
+%type <dval> listaArgumentos
 
 %% 
 
@@ -92,11 +93,13 @@ sentencia: sentCompuesta
 sentCompuesta: '{' listaDeclaraciones listaSentencias '}'
 ;
 
-listaDeclaraciones: sentenciaDeclaracion
+listaDeclaraciones: 
+                  | sentenciaDeclaracion
                   | listaDeclaraciones sentenciaDeclaracion
 ;
 
-listaSentencias: sentencia
+listaSentencias: 
+               | sentencia
                | listaSentencias sentencia
 ;
 
@@ -154,6 +157,11 @@ sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN.\n"
 
 
 //EXPRESIONES 
+
+listaArgumentos: exp
+               | listaArgumentos ',' exp
+;
+
 exp: ID operAsignacion exp {$<dval>$ = $<dval>3; }
      | exp OR exp          {$<dval>$ = $<dval>1 || $<dval>3; }
      | exp AND exp         {$<dval>$ = $<dval>1 && $<dval>3; }
@@ -185,6 +193,7 @@ exp: ID operAsignacion exp {$<dval>$ = $<dval>3; }
 
 literalCadena: LITERAL_CADENA {strcpy($<cval>$,$<cval>1); }
 ;
+
 
 %% 
 

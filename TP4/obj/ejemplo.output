@@ -1,16 +1,29 @@
+Nonterminals useless in grammar
+
+   listaArgumentos
+
+
 Terminals unused in grammar
 
    MAYORIGUAl
 
 
+Rules useless in grammar
+
+   72 listaArgumentos: exp
+   73                | listaArgumentos ',' exp
+
+
 Rules useless in parser due to conflicts
 
-   69 literalCadena: LITERAL_CADENA
+   71 literalCadena: LITERAL_CADENA
 
 
+Estado 24 conflictos: 1 desplazamiento(s)/reducción(ones)
 Estado 36 conflictos: 16 desplazamiento(s)/reducción(ones)
 Estado 37 conflictos: 16 desplazamiento(s)/reducción(ones)
 Estado 57 conflictos: 3 desplazamiento(s)/reducción(ones)
+Estado 59 conflictos: 21 desplazamiento(s)/reducción(ones)
 Estado 61 conflictos: 16 desplazamiento(s)/reducción(ones)
 Estado 92 conflictos: 16 desplazamiento(s)/reducción(ones)
 Estado 98 conflictos: 3 desplazamiento(s)/reducción(ones)
@@ -51,129 +64,131 @@ Gramática
 
    12 sentCompuesta: '{' listaDeclaraciones listaSentencias '}'
 
-   13 listaDeclaraciones: sentenciaDeclaracion
-   14                   | listaDeclaraciones sentenciaDeclaracion
+   13 listaDeclaraciones: /* vacío */
+   14                   | sentenciaDeclaracion
+   15                   | listaDeclaraciones sentenciaDeclaracion
 
-   15 listaSentencias: sentencia
-   16                | listaSentencias sentencia
+   16 listaSentencias: /* vacío */
+   17                | sentencia
+   18                | listaSentencias sentencia
 
-   17 $@1: /* vacío */
+   19 $@1: /* vacío */
 
-   18 sentenciaDeclaracion: TIPO_DATO $@1 listaVarSimples ';'
+   20 sentenciaDeclaracion: TIPO_DATO $@1 listaVarSimples ';'
 
-   19 listaVarSimples: unaVarSimple
-   20                | unaVarSimple ',' listaVarSimples
+   21 listaVarSimples: unaVarSimple
+   22                | unaVarSimple ',' listaVarSimples
 
-   21 unaVarSimple: ID
-   22             | ID operAsignacion exp
-   23             | ID operAsignacion literalCadena
+   23 unaVarSimple: ID
+   24             | ID operAsignacion exp
+   25             | ID operAsignacion literalCadena
 
-   24 operAsignacion: '='
-   25               | ASIGNACION_INCREMENTO
-   26               | ASIGNACION_DECREMENTO
-   27               | ASIGNACION_PRODUCTO
-   28               | ASIGNACION_DIVISION
+   26 operAsignacion: '='
+   27               | ASIGNACION_INCREMENTO
+   28               | ASIGNACION_DECREMENTO
+   29               | ASIGNACION_PRODUCTO
+   30               | ASIGNACION_DIVISION
 
-   29 sentExpresion: exp ';'
+   31 sentExpresion: exp ';'
 
-   30 sentSeleccion: IF '(' exp ')' sentencia
-   31              | IF '(' exp ')' sentencia ELSE sentencia
-   32              | SWITCH '(' exp ')' sentencia
+   32 sentSeleccion: IF '(' exp ')' sentencia
+   33              | IF '(' exp ')' sentencia ELSE sentencia
+   34              | SWITCH '(' exp ')' sentencia
 
-   33 sentIteracion: WHILE '(' exp ')' sentencia
-   34              | DO sentencia WHILE '(' exp ')' ';'
-   35              | FOR '(' exp ';' exp ';' exp ')' sentencia
+   35 sentIteracion: WHILE '(' exp ')' sentencia
+   36              | DO sentencia WHILE '(' exp ')' ';'
+   37              | FOR '(' exp ';' exp ';' exp ')' sentencia
 
-   36 sentEtiquetada: CASE exp ':' sentencia
-   37               | DEFAULT ':' sentencia
+   38 sentEtiquetada: CASE exp ':' sentencia
+   39               | DEFAULT ':' sentencia
 
-   38 sentSalto: RETURN exp ';'
-   39          | RETURN ';'
-   40          | BREAK ';'
-   41          | CONTINUE ';'
+   40 sentSalto: RETURN exp ';'
+   41          | RETURN ';'
+   42          | BREAK ';'
+   43          | CONTINUE ';'
 
-   42 exp: ID operAsignacion exp
-   43    | exp OR exp
-   44    | exp AND exp
-   45    | exp IGUALDAD exp
-   46    | exp DESIGUALDAD exp
-   47    | exp MAYORIGUAL exp
-   48    | exp '>' exp
-   49    | exp MENORIGUAL exp
-   50    | exp '<' exp
-   51    | exp '+' exp
-   52    | exp '-' exp
-   53    | exp '*' exp
-   54    | exp '/' exp
-   55    | exp '%' exp
-   56    | exp '^' exp
-   57    | INCREMENTO exp
-   58    | DECREMENTO exp
-   59    | exp INCREMENTO
-   60    | exp DECREMENTO
-   61    | '-' exp
-   62    | '!' exp
-   63    | SIZEOF '(' TIPO_DATO ')'
-   64    | '(' exp ')'
-   65    | ENTERO
-   66    | REAL
-   67    | LITERAL_CADENA
-   68    | ID
+   44 exp: ID operAsignacion exp
+   45    | exp OR exp
+   46    | exp AND exp
+   47    | exp IGUALDAD exp
+   48    | exp DESIGUALDAD exp
+   49    | exp MAYORIGUAL exp
+   50    | exp '>' exp
+   51    | exp MENORIGUAL exp
+   52    | exp '<' exp
+   53    | exp '+' exp
+   54    | exp '-' exp
+   55    | exp '*' exp
+   56    | exp '/' exp
+   57    | exp '%' exp
+   58    | exp '^' exp
+   59    | INCREMENTO exp
+   60    | DECREMENTO exp
+   61    | exp INCREMENTO
+   62    | exp DECREMENTO
+   63    | '-' exp
+   64    | '!' exp
+   65    | SIZEOF '(' TIPO_DATO ')'
+   66    | '(' exp ')'
+   67    | ENTERO
+   68    | REAL
+   69    | LITERAL_CADENA
+   70    | ID
 
-   69 literalCadena: LITERAL_CADENA
+   71 literalCadena: LITERAL_CADENA
 
 
 Terminales con las reglas donde aparecen
 
 $end (0) 0
 '\n' (10) 3 4 5
-'!' (33) 62
-'%' (37) 55
-'(' (40) 30 31 32 33 34 35 63 64
-')' (41) 30 31 32 33 34 35 63 64
-'*' (42) 53
-'+' (43) 51
-',' (44) 20
-'-' (45) 52 61
-'/' (47) 54
-':' (58) 36 37
-';' (59) 18 29 34 35 38 39 40 41
-'<' (60) 50
-'=' (61) 24
-'>' (62) 48
-'^' (94) 56
+'!' (33) 64
+'%' (37) 57
+'(' (40) 32 33 34 35 36 37 65 66
+')' (41) 32 33 34 35 36 37 65 66
+'*' (42) 55
+'+' (43) 53
+',' (44) 22
+'-' (45) 54 63
+'/' (47) 56
+':' (58) 38 39
+';' (59) 20 31 36 37 40 41 42 43
+'<' (60) 52
+'=' (61) 26
+'>' (62) 50
+'^' (94) 58
 '{' (123) 12
 '}' (125) 12
 error (256)
-REAL (258) 66
-ENTERO (259) 65
-LITERAL_CADENA (260) 67 69
-OR (261) 43
-AND (262) 44
-IGUALDAD (263) 45
-DESIGUALDAD (264) 46
-MAYORIGUAL (265) 47
-MENORIGUAL (266) 49
-INCREMENTO (267) 57 59
-DECREMENTO (268) 58 60
-ASIGNACION_INCREMENTO (269) 25
-ASIGNACION_DECREMENTO (270) 26
-ASIGNACION_PRODUCTO (271) 27
-ASIGNACION_DIVISION (272) 28
-IF (273) 30 31
-ELSE (274) 31
-SWITCH (275) 32
-WHILE (276) 33 34
-DO (277) 34
-FOR (278) 35
-RETURN (279) 38 39
-CONTINUE (280) 41
-BREAK (281) 40
-CASE (282) 36
-DEFAULT (283) 37
-TIPO_DATO (284) 18 63
-ID (285) 21 22 23 42 68
-SIZEOF (286) 63
+REAL (258) 68
+ENTERO (259) 67
+LITERAL_CADENA (260) 69 71
+OR (261) 45
+AND (262) 46
+IGUALDAD (263) 47
+DESIGUALDAD (264) 48
+MAYORIGUAL (265) 49
+MENORIGUAL (266) 51
+INCREMENTO (267) 59 61
+DECREMENTO (268) 60 62
+ASIGNACION_INCREMENTO (269) 27
+ASIGNACION_DECREMENTO (270) 28
+ASIGNACION_PRODUCTO (271) 29
+ASIGNACION_DIVISION (272) 30
+IF (273) 32 33
+ELSE (274) 33
+SWITCH (275) 34
+WHILE (276) 35 36
+DO (277) 36
+FOR (278) 37
+RETURN (279) 40 41
+CONTINUE (280) 43
+BREAK (281) 42
+CASE (282) 38
+DEFAULT (283) 39
+TIPO_DATO (284) 20 65
+ID (285) 23 24 25 44 70
+SIZEOF (286) 65
 MAYORIGUAl (287)
 
 
@@ -186,41 +201,41 @@ input (52)
 line (53)
     en la izquierda: 3 4 5, en la derecha: 2
 sentencia (54)
-    en la izquierda: 6 7 8 9 10 11, en la derecha: 5 15 16 30 31 32
-    33 34 35 36 37
+    en la izquierda: 6 7 8 9 10 11, en la derecha: 5 17 18 32 33 34
+    35 36 37 38 39
 sentCompuesta (55)
     en la izquierda: 12, en la derecha: 6
 listaDeclaraciones (56)
-    en la izquierda: 13 14, en la derecha: 12 14
+    en la izquierda: 13 14 15, en la derecha: 12 15
 listaSentencias (57)
-    en la izquierda: 15 16, en la derecha: 12 16
+    en la izquierda: 16 17 18, en la derecha: 12 18
 sentenciaDeclaracion (58)
-    en la izquierda: 18, en la derecha: 4 13 14
+    en la izquierda: 20, en la derecha: 4 14 15
 $@1 (59)
-    en la izquierda: 17, en la derecha: 18
+    en la izquierda: 19, en la derecha: 20
 listaVarSimples (60)
-    en la izquierda: 19 20, en la derecha: 18 20
+    en la izquierda: 21 22, en la derecha: 20 22
 unaVarSimple (61)
-    en la izquierda: 21 22 23, en la derecha: 19 20
+    en la izquierda: 23 24 25, en la derecha: 21 22
 operAsignacion (62)
-    en la izquierda: 24 25 26 27 28, en la derecha: 22 23 42
+    en la izquierda: 26 27 28 29 30, en la derecha: 24 25 44
 sentExpresion (63)
-    en la izquierda: 29, en la derecha: 7
+    en la izquierda: 31, en la derecha: 7
 sentSeleccion (64)
-    en la izquierda: 30 31 32, en la derecha: 8
+    en la izquierda: 32 33 34, en la derecha: 8
 sentIteracion (65)
-    en la izquierda: 33 34 35, en la derecha: 9
+    en la izquierda: 35 36 37, en la derecha: 9
 sentEtiquetada (66)
-    en la izquierda: 36 37, en la derecha: 11
+    en la izquierda: 38 39, en la derecha: 11
 sentSalto (67)
-    en la izquierda: 38 39 40 41, en la derecha: 10
+    en la izquierda: 40 41 42 43, en la derecha: 10
 exp (68)
-    en la izquierda: 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57
-    58 59 60 61 62 63 64 65 66 67 68, en la derecha: 22 29 30 31 32
-    33 34 35 36 38 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57
-    58 59 60 61 62 64
+    en la izquierda: 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59
+    60 61 62 63 64 65 66 67 68 69 70, en la derecha: 24 31 32 33 34
+    35 36 37 38 40 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59
+    60 61 62 63 64 66
 literalCadena (69)
-    en la izquierda: 69, en la derecha: 23
+    en la izquierda: 71, en la derecha: 25
 
 
 estado 0
@@ -283,28 +298,28 @@ estado 2
 
 estado 3
 
-   66 exp: REAL .
+   68 exp: REAL .
 
-    $default  reduce usando la regla 66 (exp)
+    $default  reduce usando la regla 68 (exp)
 
 
 estado 4
 
-   65 exp: ENTERO .
-
-    $default  reduce usando la regla 65 (exp)
-
-
-estado 5
-
-   67 exp: LITERAL_CADENA .
+   67 exp: ENTERO .
 
     $default  reduce usando la regla 67 (exp)
 
 
+estado 5
+
+   69 exp: LITERAL_CADENA .
+
+    $default  reduce usando la regla 69 (exp)
+
+
 estado 6
 
-   57 exp: INCREMENTO . exp
+   59 exp: INCREMENTO . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -322,7 +337,7 @@ estado 6
 
 estado 7
 
-   58 exp: DECREMENTO . exp
+   60 exp: DECREMENTO . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -340,29 +355,29 @@ estado 7
 
 estado 8
 
-   30 sentSeleccion: IF . '(' exp ')' sentencia
-   31              | IF . '(' exp ')' sentencia ELSE sentencia
+   32 sentSeleccion: IF . '(' exp ')' sentencia
+   33              | IF . '(' exp ')' sentencia ELSE sentencia
 
     '('  desplazar e ir al estado 38
 
 
 estado 9
 
-   32 sentSeleccion: SWITCH . '(' exp ')' sentencia
+   34 sentSeleccion: SWITCH . '(' exp ')' sentencia
 
     '('  desplazar e ir al estado 39
 
 
 estado 10
 
-   33 sentIteracion: WHILE . '(' exp ')' sentencia
+   35 sentIteracion: WHILE . '(' exp ')' sentencia
 
     '('  desplazar e ir al estado 40
 
 
 estado 11
 
-   34 sentIteracion: DO . sentencia WHILE '(' exp ')' ';'
+   36 sentIteracion: DO . sentencia WHILE '(' exp ')' ';'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -398,15 +413,15 @@ estado 11
 
 estado 12
 
-   35 sentIteracion: FOR . '(' exp ';' exp ';' exp ')' sentencia
+   37 sentIteracion: FOR . '(' exp ';' exp ';' exp ')' sentencia
 
     '('  desplazar e ir al estado 42
 
 
 estado 13
 
-   38 sentSalto: RETURN . exp ';'
-   39          | RETURN . ';'
+   40 sentSalto: RETURN . exp ';'
+   41          | RETURN . ';'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -425,21 +440,21 @@ estado 13
 
 estado 14
 
-   41 sentSalto: CONTINUE . ';'
+   43 sentSalto: CONTINUE . ';'
 
     ';'  desplazar e ir al estado 45
 
 
 estado 15
 
-   40 sentSalto: BREAK . ';'
+   42 sentSalto: BREAK . ';'
 
     ';'  desplazar e ir al estado 46
 
 
 estado 16
 
-   36 sentEtiquetada: CASE . exp ':' sentencia
+   38 sentEtiquetada: CASE . exp ':' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -457,24 +472,24 @@ estado 16
 
 estado 17
 
-   37 sentEtiquetada: DEFAULT . ':' sentencia
+   39 sentEtiquetada: DEFAULT . ':' sentencia
 
     ':'  desplazar e ir al estado 48
 
 
 estado 18
 
-   18 sentenciaDeclaracion: TIPO_DATO . $@1 listaVarSimples ';'
+   20 sentenciaDeclaracion: TIPO_DATO . $@1 listaVarSimples ';'
 
-    $default  reduce usando la regla 17 ($@1)
+    $default  reduce usando la regla 19 ($@1)
 
     $@1  ir al estado 49
 
 
 estado 19
 
-   42 exp: ID . operAsignacion exp
-   68    | ID .
+   44 exp: ID . operAsignacion exp
+   70    | ID .
 
     ASIGNACION_INCREMENTO  desplazar e ir al estado 50
     ASIGNACION_DECREMENTO  desplazar e ir al estado 51
@@ -482,21 +497,21 @@ estado 19
     ASIGNACION_DIVISION    desplazar e ir al estado 53
     '='                    desplazar e ir al estado 54
 
-    $default  reduce usando la regla 68 (exp)
+    $default  reduce usando la regla 70 (exp)
 
     operAsignacion  ir al estado 55
 
 
 estado 20
 
-   63 exp: SIZEOF . '(' TIPO_DATO ')'
+   65 exp: SIZEOF . '(' TIPO_DATO ')'
 
     '('  desplazar e ir al estado 56
 
 
 estado 21
 
-   61 exp: '-' . exp
+   63 exp: '-' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -514,7 +529,7 @@ estado 21
 
 estado 22
 
-   64 exp: '(' . exp ')'
+   66 exp: '(' . exp ')'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -543,13 +558,16 @@ estado 24
 
     TIPO_DATO  desplazar e ir al estado 18
 
+    TIPO_DATO  [reduce usando la regla 13 (listaDeclaraciones)]
+    $default   reduce usando la regla 13 (listaDeclaraciones)
+
     listaDeclaraciones    ir al estado 59
     sentenciaDeclaracion  ir al estado 60
 
 
 estado 25
 
-   62 exp: '!' . exp
+   64 exp: '!' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -630,23 +648,23 @@ estado 34
 
 estado 35
 
-   29 sentExpresion: exp . ';'
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   31 sentExpresion: exp . ';'
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -669,23 +687,23 @@ estado 35
 
 estado 36
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   57    | INCREMENTO exp .
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   59    | INCREMENTO exp .
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -704,44 +722,44 @@ estado 36
     '%'          desplazar e ir al estado 78
     '^'          desplazar e ir al estado 79
 
-    OR           [reduce usando la regla 57 (exp)]
-    AND          [reduce usando la regla 57 (exp)]
-    IGUALDAD     [reduce usando la regla 57 (exp)]
-    DESIGUALDAD  [reduce usando la regla 57 (exp)]
-    MAYORIGUAL   [reduce usando la regla 57 (exp)]
-    MENORIGUAL   [reduce usando la regla 57 (exp)]
-    INCREMENTO   [reduce usando la regla 57 (exp)]
-    DECREMENTO   [reduce usando la regla 57 (exp)]
-    '>'          [reduce usando la regla 57 (exp)]
-    '<'          [reduce usando la regla 57 (exp)]
-    '+'          [reduce usando la regla 57 (exp)]
-    '-'          [reduce usando la regla 57 (exp)]
-    '*'          [reduce usando la regla 57 (exp)]
-    '/'          [reduce usando la regla 57 (exp)]
-    '%'          [reduce usando la regla 57 (exp)]
-    '^'          [reduce usando la regla 57 (exp)]
-    $default     reduce usando la regla 57 (exp)
+    OR           [reduce usando la regla 59 (exp)]
+    AND          [reduce usando la regla 59 (exp)]
+    IGUALDAD     [reduce usando la regla 59 (exp)]
+    DESIGUALDAD  [reduce usando la regla 59 (exp)]
+    MAYORIGUAL   [reduce usando la regla 59 (exp)]
+    MENORIGUAL   [reduce usando la regla 59 (exp)]
+    INCREMENTO   [reduce usando la regla 59 (exp)]
+    DECREMENTO   [reduce usando la regla 59 (exp)]
+    '>'          [reduce usando la regla 59 (exp)]
+    '<'          [reduce usando la regla 59 (exp)]
+    '+'          [reduce usando la regla 59 (exp)]
+    '-'          [reduce usando la regla 59 (exp)]
+    '*'          [reduce usando la regla 59 (exp)]
+    '/'          [reduce usando la regla 59 (exp)]
+    '%'          [reduce usando la regla 59 (exp)]
+    '^'          [reduce usando la regla 59 (exp)]
+    $default     reduce usando la regla 59 (exp)
 
 
 estado 37
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   58    | DECREMENTO exp .
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   60    | DECREMENTO exp .
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -760,29 +778,29 @@ estado 37
     '%'          desplazar e ir al estado 78
     '^'          desplazar e ir al estado 79
 
-    OR           [reduce usando la regla 58 (exp)]
-    AND          [reduce usando la regla 58 (exp)]
-    IGUALDAD     [reduce usando la regla 58 (exp)]
-    DESIGUALDAD  [reduce usando la regla 58 (exp)]
-    MAYORIGUAL   [reduce usando la regla 58 (exp)]
-    MENORIGUAL   [reduce usando la regla 58 (exp)]
-    INCREMENTO   [reduce usando la regla 58 (exp)]
-    DECREMENTO   [reduce usando la regla 58 (exp)]
-    '>'          [reduce usando la regla 58 (exp)]
-    '<'          [reduce usando la regla 58 (exp)]
-    '+'          [reduce usando la regla 58 (exp)]
-    '-'          [reduce usando la regla 58 (exp)]
-    '*'          [reduce usando la regla 58 (exp)]
-    '/'          [reduce usando la regla 58 (exp)]
-    '%'          [reduce usando la regla 58 (exp)]
-    '^'          [reduce usando la regla 58 (exp)]
-    $default     reduce usando la regla 58 (exp)
+    OR           [reduce usando la regla 60 (exp)]
+    AND          [reduce usando la regla 60 (exp)]
+    IGUALDAD     [reduce usando la regla 60 (exp)]
+    DESIGUALDAD  [reduce usando la regla 60 (exp)]
+    MAYORIGUAL   [reduce usando la regla 60 (exp)]
+    MENORIGUAL   [reduce usando la regla 60 (exp)]
+    INCREMENTO   [reduce usando la regla 60 (exp)]
+    DECREMENTO   [reduce usando la regla 60 (exp)]
+    '>'          [reduce usando la regla 60 (exp)]
+    '<'          [reduce usando la regla 60 (exp)]
+    '+'          [reduce usando la regla 60 (exp)]
+    '-'          [reduce usando la regla 60 (exp)]
+    '*'          [reduce usando la regla 60 (exp)]
+    '/'          [reduce usando la regla 60 (exp)]
+    '%'          [reduce usando la regla 60 (exp)]
+    '^'          [reduce usando la regla 60 (exp)]
+    $default     reduce usando la regla 60 (exp)
 
 
 estado 38
 
-   30 sentSeleccion: IF '(' . exp ')' sentencia
-   31              | IF '(' . exp ')' sentencia ELSE sentencia
+   32 sentSeleccion: IF '(' . exp ')' sentencia
+   33              | IF '(' . exp ')' sentencia ELSE sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -800,7 +818,7 @@ estado 38
 
 estado 39
 
-   32 sentSeleccion: SWITCH '(' . exp ')' sentencia
+   34 sentSeleccion: SWITCH '(' . exp ')' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -818,7 +836,7 @@ estado 39
 
 estado 40
 
-   33 sentIteracion: WHILE '(' . exp ')' sentencia
+   35 sentIteracion: WHILE '(' . exp ')' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -836,14 +854,14 @@ estado 40
 
 estado 41
 
-   34 sentIteracion: DO sentencia . WHILE '(' exp ')' ';'
+   36 sentIteracion: DO sentencia . WHILE '(' exp ')' ';'
 
     WHILE  desplazar e ir al estado 84
 
 
 estado 42
 
-   35 sentIteracion: FOR '(' . exp ';' exp ';' exp ')' sentencia
+   37 sentIteracion: FOR '(' . exp ';' exp ';' exp ')' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -861,30 +879,30 @@ estado 42
 
 estado 43
 
-   39 sentSalto: RETURN ';' .
+   41 sentSalto: RETURN ';' .
 
-    $default  reduce usando la regla 39 (sentSalto)
+    $default  reduce usando la regla 41 (sentSalto)
 
 
 estado 44
 
-   38 sentSalto: RETURN exp . ';'
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   40 sentSalto: RETURN exp . ';'
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -907,37 +925,37 @@ estado 44
 
 estado 45
 
-   41 sentSalto: CONTINUE ';' .
+   43 sentSalto: CONTINUE ';' .
 
-    $default  reduce usando la regla 41 (sentSalto)
+    $default  reduce usando la regla 43 (sentSalto)
 
 
 estado 46
 
-   40 sentSalto: BREAK ';' .
+   42 sentSalto: BREAK ';' .
 
-    $default  reduce usando la regla 40 (sentSalto)
+    $default  reduce usando la regla 42 (sentSalto)
 
 
 estado 47
 
-   36 sentEtiquetada: CASE exp . ':' sentencia
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   38 sentEtiquetada: CASE exp . ':' sentencia
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -960,7 +978,7 @@ estado 47
 
 estado 48
 
-   37 sentEtiquetada: DEFAULT ':' . sentencia
+   39 sentEtiquetada: DEFAULT ':' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -996,7 +1014,7 @@ estado 48
 
 estado 49
 
-   18 sentenciaDeclaracion: TIPO_DATO $@1 . listaVarSimples ';'
+   20 sentenciaDeclaracion: TIPO_DATO $@1 . listaVarSimples ';'
 
     ID  desplazar e ir al estado 89
 
@@ -1006,42 +1024,42 @@ estado 49
 
 estado 50
 
-   25 operAsignacion: ASIGNACION_INCREMENTO .
-
-    $default  reduce usando la regla 25 (operAsignacion)
-
-
-estado 51
-
-   26 operAsignacion: ASIGNACION_DECREMENTO .
-
-    $default  reduce usando la regla 26 (operAsignacion)
-
-
-estado 52
-
-   27 operAsignacion: ASIGNACION_PRODUCTO .
+   27 operAsignacion: ASIGNACION_INCREMENTO .
 
     $default  reduce usando la regla 27 (operAsignacion)
 
 
-estado 53
+estado 51
 
-   28 operAsignacion: ASIGNACION_DIVISION .
+   28 operAsignacion: ASIGNACION_DECREMENTO .
 
     $default  reduce usando la regla 28 (operAsignacion)
 
 
+estado 52
+
+   29 operAsignacion: ASIGNACION_PRODUCTO .
+
+    $default  reduce usando la regla 29 (operAsignacion)
+
+
+estado 53
+
+   30 operAsignacion: ASIGNACION_DIVISION .
+
+    $default  reduce usando la regla 30 (operAsignacion)
+
+
 estado 54
 
-   24 operAsignacion: '=' .
+   26 operAsignacion: '=' .
 
-    $default  reduce usando la regla 24 (operAsignacion)
+    $default  reduce usando la regla 26 (operAsignacion)
 
 
 estado 55
 
-   42 exp: ID operAsignacion . exp
+   44 exp: ID operAsignacion . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1059,30 +1077,30 @@ estado 55
 
 estado 56
 
-   63 exp: SIZEOF '(' . TIPO_DATO ')'
+   65 exp: SIZEOF '(' . TIPO_DATO ')'
 
     TIPO_DATO  desplazar e ir al estado 93
 
 
 estado 57
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
-   61    | '-' exp .
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
+   63    | '-' exp .
 
     MAYORIGUAL  desplazar e ir al estado 68
     INCREMENTO  desplazar e ir al estado 70
@@ -1092,31 +1110,31 @@ estado 57
     '%'         desplazar e ir al estado 78
     '^'         desplazar e ir al estado 79
 
-    MAYORIGUAL  [reduce usando la regla 61 (exp)]
-    INCREMENTO  [reduce usando la regla 61 (exp)]
-    DECREMENTO  [reduce usando la regla 61 (exp)]
-    $default    reduce usando la regla 61 (exp)
+    MAYORIGUAL  [reduce usando la regla 63 (exp)]
+    INCREMENTO  [reduce usando la regla 63 (exp)]
+    DECREMENTO  [reduce usando la regla 63 (exp)]
+    $default    reduce usando la regla 63 (exp)
 
 
 estado 58
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
-   64    | '(' exp . ')'
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
+   66    | '(' exp . ')'
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -1140,7 +1158,7 @@ estado 58
 estado 59
 
    12 sentCompuesta: '{' listaDeclaraciones . listaSentencias '}'
-   14 listaDeclaraciones: listaDeclaraciones . sentenciaDeclaracion
+   15 listaDeclaraciones: listaDeclaraciones . sentenciaDeclaracion
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1165,6 +1183,29 @@ estado 59
     '{'             desplazar e ir al estado 24
     '!'             desplazar e ir al estado 25
 
+    REAL            [reduce usando la regla 16 (listaSentencias)]
+    ENTERO          [reduce usando la regla 16 (listaSentencias)]
+    LITERAL_CADENA  [reduce usando la regla 16 (listaSentencias)]
+    INCREMENTO      [reduce usando la regla 16 (listaSentencias)]
+    DECREMENTO      [reduce usando la regla 16 (listaSentencias)]
+    IF              [reduce usando la regla 16 (listaSentencias)]
+    SWITCH          [reduce usando la regla 16 (listaSentencias)]
+    WHILE           [reduce usando la regla 16 (listaSentencias)]
+    DO              [reduce usando la regla 16 (listaSentencias)]
+    FOR             [reduce usando la regla 16 (listaSentencias)]
+    RETURN          [reduce usando la regla 16 (listaSentencias)]
+    CONTINUE        [reduce usando la regla 16 (listaSentencias)]
+    BREAK           [reduce usando la regla 16 (listaSentencias)]
+    CASE            [reduce usando la regla 16 (listaSentencias)]
+    DEFAULT         [reduce usando la regla 16 (listaSentencias)]
+    ID              [reduce usando la regla 16 (listaSentencias)]
+    SIZEOF          [reduce usando la regla 16 (listaSentencias)]
+    '-'             [reduce usando la regla 16 (listaSentencias)]
+    '('             [reduce usando la regla 16 (listaSentencias)]
+    '{'             [reduce usando la regla 16 (listaSentencias)]
+    '!'             [reduce usando la regla 16 (listaSentencias)]
+    $default        reduce usando la regla 16 (listaSentencias)
+
     sentencia             ir al estado 95
     sentCompuesta         ir al estado 28
     listaSentencias       ir al estado 96
@@ -1179,30 +1220,30 @@ estado 59
 
 estado 60
 
-   13 listaDeclaraciones: sentenciaDeclaracion .
+   14 listaDeclaraciones: sentenciaDeclaracion .
 
-    $default  reduce usando la regla 13 (listaDeclaraciones)
+    $default  reduce usando la regla 14 (listaDeclaraciones)
 
 
 estado 61
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
-   62    | '!' exp .
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
+   64    | '!' exp .
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -1221,23 +1262,23 @@ estado 61
     '%'          desplazar e ir al estado 78
     '^'          desplazar e ir al estado 79
 
-    OR           [reduce usando la regla 62 (exp)]
-    AND          [reduce usando la regla 62 (exp)]
-    IGUALDAD     [reduce usando la regla 62 (exp)]
-    DESIGUALDAD  [reduce usando la regla 62 (exp)]
-    MAYORIGUAL   [reduce usando la regla 62 (exp)]
-    MENORIGUAL   [reduce usando la regla 62 (exp)]
-    INCREMENTO   [reduce usando la regla 62 (exp)]
-    DECREMENTO   [reduce usando la regla 62 (exp)]
-    '>'          [reduce usando la regla 62 (exp)]
-    '<'          [reduce usando la regla 62 (exp)]
-    '+'          [reduce usando la regla 62 (exp)]
-    '-'          [reduce usando la regla 62 (exp)]
-    '*'          [reduce usando la regla 62 (exp)]
-    '/'          [reduce usando la regla 62 (exp)]
-    '%'          [reduce usando la regla 62 (exp)]
-    '^'          [reduce usando la regla 62 (exp)]
-    $default     reduce usando la regla 62 (exp)
+    OR           [reduce usando la regla 64 (exp)]
+    AND          [reduce usando la regla 64 (exp)]
+    IGUALDAD     [reduce usando la regla 64 (exp)]
+    DESIGUALDAD  [reduce usando la regla 64 (exp)]
+    MAYORIGUAL   [reduce usando la regla 64 (exp)]
+    MENORIGUAL   [reduce usando la regla 64 (exp)]
+    INCREMENTO   [reduce usando la regla 64 (exp)]
+    DECREMENTO   [reduce usando la regla 64 (exp)]
+    '>'          [reduce usando la regla 64 (exp)]
+    '<'          [reduce usando la regla 64 (exp)]
+    '+'          [reduce usando la regla 64 (exp)]
+    '-'          [reduce usando la regla 64 (exp)]
+    '*'          [reduce usando la regla 64 (exp)]
+    '/'          [reduce usando la regla 64 (exp)]
+    '%'          [reduce usando la regla 64 (exp)]
+    '^'          [reduce usando la regla 64 (exp)]
+    $default     reduce usando la regla 64 (exp)
 
 
 estado 62
@@ -1256,7 +1297,7 @@ estado 63
 
 estado 64
 
-   43 exp: exp OR . exp
+   45 exp: exp OR . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1274,7 +1315,7 @@ estado 64
 
 estado 65
 
-   44 exp: exp AND . exp
+   46 exp: exp AND . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1292,7 +1333,7 @@ estado 65
 
 estado 66
 
-   45 exp: exp IGUALDAD . exp
+   47 exp: exp IGUALDAD . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1310,7 +1351,7 @@ estado 66
 
 estado 67
 
-   46 exp: exp DESIGUALDAD . exp
+   48 exp: exp DESIGUALDAD . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1328,7 +1369,7 @@ estado 67
 
 estado 68
 
-   47 exp: exp MAYORIGUAL . exp
+   49 exp: exp MAYORIGUAL . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1346,7 +1387,7 @@ estado 68
 
 estado 69
 
-   49 exp: exp MENORIGUAL . exp
+   51 exp: exp MENORIGUAL . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1364,21 +1405,21 @@ estado 69
 
 estado 70
 
-   59 exp: exp INCREMENTO .
+   61 exp: exp INCREMENTO .
 
-    $default  reduce usando la regla 59 (exp)
+    $default  reduce usando la regla 61 (exp)
 
 
 estado 71
 
-   60 exp: exp DECREMENTO .
+   62 exp: exp DECREMENTO .
 
-    $default  reduce usando la regla 60 (exp)
+    $default  reduce usando la regla 62 (exp)
 
 
 estado 72
 
-   48 exp: exp '>' . exp
+   50 exp: exp '>' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1396,7 +1437,7 @@ estado 72
 
 estado 73
 
-   50 exp: exp '<' . exp
+   52 exp: exp '<' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1414,7 +1455,7 @@ estado 73
 
 estado 74
 
-   51 exp: exp '+' . exp
+   53 exp: exp '+' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1432,7 +1473,7 @@ estado 74
 
 estado 75
 
-   52 exp: exp '-' . exp
+   54 exp: exp '-' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1450,7 +1491,7 @@ estado 75
 
 estado 76
 
-   53 exp: exp '*' . exp
+   55 exp: exp '*' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1468,7 +1509,7 @@ estado 76
 
 estado 77
 
-   54 exp: exp '/' . exp
+   56 exp: exp '/' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1486,7 +1527,7 @@ estado 77
 
 estado 78
 
-   55 exp: exp '%' . exp
+   57 exp: exp '%' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1504,7 +1545,7 @@ estado 78
 
 estado 79
 
-   56 exp: exp '^' . exp
+   58 exp: exp '^' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1522,31 +1563,31 @@ estado 79
 
 estado 80
 
-   29 sentExpresion: exp ';' .
+   31 sentExpresion: exp ';' .
 
-    $default  reduce usando la regla 29 (sentExpresion)
+    $default  reduce usando la regla 31 (sentExpresion)
 
 
 estado 81
 
-   30 sentSeleccion: IF '(' exp . ')' sentencia
-   31              | IF '(' exp . ')' sentencia ELSE sentencia
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   32 sentSeleccion: IF '(' exp . ')' sentencia
+   33              | IF '(' exp . ')' sentencia ELSE sentencia
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -1569,23 +1610,23 @@ estado 81
 
 estado 82
 
-   32 sentSeleccion: SWITCH '(' exp . ')' sentencia
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   34 sentSeleccion: SWITCH '(' exp . ')' sentencia
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -1608,23 +1649,23 @@ estado 82
 
 estado 83
 
-   33 sentIteracion: WHILE '(' exp . ')' sentencia
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   35 sentIteracion: WHILE '(' exp . ')' sentencia
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -1647,30 +1688,30 @@ estado 83
 
 estado 84
 
-   34 sentIteracion: DO sentencia WHILE . '(' exp ')' ';'
+   36 sentIteracion: DO sentencia WHILE . '(' exp ')' ';'
 
     '('  desplazar e ir al estado 115
 
 
 estado 85
 
-   35 sentIteracion: FOR '(' exp . ';' exp ';' exp ')' sentencia
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   37 sentIteracion: FOR '(' exp . ';' exp ';' exp ')' sentencia
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -1693,14 +1734,14 @@ estado 85
 
 estado 86
 
-   38 sentSalto: RETURN exp ';' .
+   40 sentSalto: RETURN exp ';' .
 
-    $default  reduce usando la regla 38 (sentSalto)
+    $default  reduce usando la regla 40 (sentSalto)
 
 
 estado 87
 
-   36 sentEtiquetada: CASE exp ':' . sentencia
+   38 sentEtiquetada: CASE exp ':' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1736,16 +1777,16 @@ estado 87
 
 estado 88
 
-   37 sentEtiquetada: DEFAULT ':' sentencia .
+   39 sentEtiquetada: DEFAULT ':' sentencia .
 
-    $default  reduce usando la regla 37 (sentEtiquetada)
+    $default  reduce usando la regla 39 (sentEtiquetada)
 
 
 estado 89
 
-   21 unaVarSimple: ID .
-   22             | ID . operAsignacion exp
-   23             | ID . operAsignacion literalCadena
+   23 unaVarSimple: ID .
+   24             | ID . operAsignacion exp
+   25             | ID . operAsignacion literalCadena
 
     ASIGNACION_INCREMENTO  desplazar e ir al estado 50
     ASIGNACION_DECREMENTO  desplazar e ir al estado 51
@@ -1753,47 +1794,47 @@ estado 89
     ASIGNACION_DIVISION    desplazar e ir al estado 53
     '='                    desplazar e ir al estado 54
 
-    $default  reduce usando la regla 21 (unaVarSimple)
+    $default  reduce usando la regla 23 (unaVarSimple)
 
     operAsignacion  ir al estado 118
 
 
 estado 90
 
-   18 sentenciaDeclaracion: TIPO_DATO $@1 listaVarSimples . ';'
+   20 sentenciaDeclaracion: TIPO_DATO $@1 listaVarSimples . ';'
 
     ';'  desplazar e ir al estado 119
 
 
 estado 91
 
-   19 listaVarSimples: unaVarSimple .
-   20                | unaVarSimple . ',' listaVarSimples
+   21 listaVarSimples: unaVarSimple .
+   22                | unaVarSimple . ',' listaVarSimples
 
     ','  desplazar e ir al estado 120
 
-    $default  reduce usando la regla 19 (listaVarSimples)
+    $default  reduce usando la regla 21 (listaVarSimples)
 
 
 estado 92
 
-   42 exp: ID operAsignacion exp .
-   43    | exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   44 exp: ID operAsignacion exp .
+   45    | exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -1812,50 +1853,50 @@ estado 92
     '%'          desplazar e ir al estado 78
     '^'          desplazar e ir al estado 79
 
-    OR           [reduce usando la regla 42 (exp)]
-    AND          [reduce usando la regla 42 (exp)]
-    IGUALDAD     [reduce usando la regla 42 (exp)]
-    DESIGUALDAD  [reduce usando la regla 42 (exp)]
-    MAYORIGUAL   [reduce usando la regla 42 (exp)]
-    MENORIGUAL   [reduce usando la regla 42 (exp)]
-    INCREMENTO   [reduce usando la regla 42 (exp)]
-    DECREMENTO   [reduce usando la regla 42 (exp)]
-    '>'          [reduce usando la regla 42 (exp)]
-    '<'          [reduce usando la regla 42 (exp)]
-    '+'          [reduce usando la regla 42 (exp)]
-    '-'          [reduce usando la regla 42 (exp)]
-    '*'          [reduce usando la regla 42 (exp)]
-    '/'          [reduce usando la regla 42 (exp)]
-    '%'          [reduce usando la regla 42 (exp)]
-    '^'          [reduce usando la regla 42 (exp)]
-    $default     reduce usando la regla 42 (exp)
+    OR           [reduce usando la regla 44 (exp)]
+    AND          [reduce usando la regla 44 (exp)]
+    IGUALDAD     [reduce usando la regla 44 (exp)]
+    DESIGUALDAD  [reduce usando la regla 44 (exp)]
+    MAYORIGUAL   [reduce usando la regla 44 (exp)]
+    MENORIGUAL   [reduce usando la regla 44 (exp)]
+    INCREMENTO   [reduce usando la regla 44 (exp)]
+    DECREMENTO   [reduce usando la regla 44 (exp)]
+    '>'          [reduce usando la regla 44 (exp)]
+    '<'          [reduce usando la regla 44 (exp)]
+    '+'          [reduce usando la regla 44 (exp)]
+    '-'          [reduce usando la regla 44 (exp)]
+    '*'          [reduce usando la regla 44 (exp)]
+    '/'          [reduce usando la regla 44 (exp)]
+    '%'          [reduce usando la regla 44 (exp)]
+    '^'          [reduce usando la regla 44 (exp)]
+    $default     reduce usando la regla 44 (exp)
 
 
 estado 93
 
-   63 exp: SIZEOF '(' TIPO_DATO . ')'
+   65 exp: SIZEOF '(' TIPO_DATO . ')'
 
     ')'  desplazar e ir al estado 121
 
 
 estado 94
 
-   64 exp: '(' exp ')' .
+   66 exp: '(' exp ')' .
 
-    $default  reduce usando la regla 64 (exp)
+    $default  reduce usando la regla 66 (exp)
 
 
 estado 95
 
-   15 listaSentencias: sentencia .
+   17 listaSentencias: sentencia .
 
-    $default  reduce usando la regla 15 (listaSentencias)
+    $default  reduce usando la regla 17 (listaSentencias)
 
 
 estado 96
 
    12 sentCompuesta: '{' listaDeclaraciones listaSentencias . '}'
-   16 listaSentencias: listaSentencias . sentencia
+   18 listaSentencias: listaSentencias . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1892,30 +1933,30 @@ estado 96
 
 estado 97
 
-   14 listaDeclaraciones: listaDeclaraciones sentenciaDeclaracion .
+   15 listaDeclaraciones: listaDeclaraciones sentenciaDeclaracion .
 
-    $default  reduce usando la regla 14 (listaDeclaraciones)
+    $default  reduce usando la regla 15 (listaDeclaraciones)
 
 
 estado 98
 
-   43 exp: exp . OR exp
-   43    | exp OR exp .
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   45    | exp OR exp .
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     AND          desplazar e ir al estado 65
     IGUALDAD     desplazar e ir al estado 66
@@ -1933,31 +1974,31 @@ estado 98
     '%'          desplazar e ir al estado 78
     '^'          desplazar e ir al estado 79
 
-    MAYORIGUAL  [reduce usando la regla 43 (exp)]
-    INCREMENTO  [reduce usando la regla 43 (exp)]
-    DECREMENTO  [reduce usando la regla 43 (exp)]
-    $default    reduce usando la regla 43 (exp)
+    MAYORIGUAL  [reduce usando la regla 45 (exp)]
+    INCREMENTO  [reduce usando la regla 45 (exp)]
+    DECREMENTO  [reduce usando la regla 45 (exp)]
+    $default    reduce usando la regla 45 (exp)
 
 
 estado 99
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   44    | exp AND exp .
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   46    | exp AND exp .
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     IGUALDAD     desplazar e ir al estado 66
     DESIGUALDAD  desplazar e ir al estado 67
@@ -1974,109 +2015,109 @@ estado 99
     '%'          desplazar e ir al estado 78
     '^'          desplazar e ir al estado 79
 
-    MAYORIGUAL  [reduce usando la regla 44 (exp)]
-    INCREMENTO  [reduce usando la regla 44 (exp)]
-    DECREMENTO  [reduce usando la regla 44 (exp)]
-    $default    reduce usando la regla 44 (exp)
-
-
-estado 100
-
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   45    | exp IGUALDAD exp .
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
-
-    MAYORIGUAL  desplazar e ir al estado 68
-    MENORIGUAL  desplazar e ir al estado 69
-    INCREMENTO  desplazar e ir al estado 70
-    DECREMENTO  desplazar e ir al estado 71
-    '>'         desplazar e ir al estado 72
-    '<'         desplazar e ir al estado 73
-    '+'         desplazar e ir al estado 74
-    '-'         desplazar e ir al estado 75
-    '*'         desplazar e ir al estado 76
-    '/'         desplazar e ir al estado 77
-    '%'         desplazar e ir al estado 78
-    '^'         desplazar e ir al estado 79
-
-    MAYORIGUAL  [reduce usando la regla 45 (exp)]
-    INCREMENTO  [reduce usando la regla 45 (exp)]
-    DECREMENTO  [reduce usando la regla 45 (exp)]
-    $default    reduce usando la regla 45 (exp)
-
-
-estado 101
-
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   46    | exp DESIGUALDAD exp .
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
-
-    MAYORIGUAL  desplazar e ir al estado 68
-    MENORIGUAL  desplazar e ir al estado 69
-    INCREMENTO  desplazar e ir al estado 70
-    DECREMENTO  desplazar e ir al estado 71
-    '>'         desplazar e ir al estado 72
-    '<'         desplazar e ir al estado 73
-    '+'         desplazar e ir al estado 74
-    '-'         desplazar e ir al estado 75
-    '*'         desplazar e ir al estado 76
-    '/'         desplazar e ir al estado 77
-    '%'         desplazar e ir al estado 78
-    '^'         desplazar e ir al estado 79
-
     MAYORIGUAL  [reduce usando la regla 46 (exp)]
     INCREMENTO  [reduce usando la regla 46 (exp)]
     DECREMENTO  [reduce usando la regla 46 (exp)]
     $default    reduce usando la regla 46 (exp)
 
 
+estado 100
+
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   47    | exp IGUALDAD exp .
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
+
+    MAYORIGUAL  desplazar e ir al estado 68
+    MENORIGUAL  desplazar e ir al estado 69
+    INCREMENTO  desplazar e ir al estado 70
+    DECREMENTO  desplazar e ir al estado 71
+    '>'         desplazar e ir al estado 72
+    '<'         desplazar e ir al estado 73
+    '+'         desplazar e ir al estado 74
+    '-'         desplazar e ir al estado 75
+    '*'         desplazar e ir al estado 76
+    '/'         desplazar e ir al estado 77
+    '%'         desplazar e ir al estado 78
+    '^'         desplazar e ir al estado 79
+
+    MAYORIGUAL  [reduce usando la regla 47 (exp)]
+    INCREMENTO  [reduce usando la regla 47 (exp)]
+    DECREMENTO  [reduce usando la regla 47 (exp)]
+    $default    reduce usando la regla 47 (exp)
+
+
+estado 101
+
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   48    | exp DESIGUALDAD exp .
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
+
+    MAYORIGUAL  desplazar e ir al estado 68
+    MENORIGUAL  desplazar e ir al estado 69
+    INCREMENTO  desplazar e ir al estado 70
+    DECREMENTO  desplazar e ir al estado 71
+    '>'         desplazar e ir al estado 72
+    '<'         desplazar e ir al estado 73
+    '+'         desplazar e ir al estado 74
+    '-'         desplazar e ir al estado 75
+    '*'         desplazar e ir al estado 76
+    '/'         desplazar e ir al estado 77
+    '%'         desplazar e ir al estado 78
+    '^'         desplazar e ir al estado 79
+
+    MAYORIGUAL  [reduce usando la regla 48 (exp)]
+    INCREMENTO  [reduce usando la regla 48 (exp)]
+    DECREMENTO  [reduce usando la regla 48 (exp)]
+    $default    reduce usando la regla 48 (exp)
+
+
 estado 102
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   47    | exp MAYORIGUAL exp .
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   49    | exp MAYORIGUAL exp .
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -2095,44 +2136,44 @@ estado 102
     '%'          desplazar e ir al estado 78
     '^'          desplazar e ir al estado 79
 
-    OR           [reduce usando la regla 47 (exp)]
-    AND          [reduce usando la regla 47 (exp)]
-    IGUALDAD     [reduce usando la regla 47 (exp)]
-    DESIGUALDAD  [reduce usando la regla 47 (exp)]
-    MAYORIGUAL   [reduce usando la regla 47 (exp)]
-    MENORIGUAL   [reduce usando la regla 47 (exp)]
-    INCREMENTO   [reduce usando la regla 47 (exp)]
-    DECREMENTO   [reduce usando la regla 47 (exp)]
-    '>'          [reduce usando la regla 47 (exp)]
-    '<'          [reduce usando la regla 47 (exp)]
-    '+'          [reduce usando la regla 47 (exp)]
-    '-'          [reduce usando la regla 47 (exp)]
-    '*'          [reduce usando la regla 47 (exp)]
-    '/'          [reduce usando la regla 47 (exp)]
-    '%'          [reduce usando la regla 47 (exp)]
-    '^'          [reduce usando la regla 47 (exp)]
-    $default     reduce usando la regla 47 (exp)
+    OR           [reduce usando la regla 49 (exp)]
+    AND          [reduce usando la regla 49 (exp)]
+    IGUALDAD     [reduce usando la regla 49 (exp)]
+    DESIGUALDAD  [reduce usando la regla 49 (exp)]
+    MAYORIGUAL   [reduce usando la regla 49 (exp)]
+    MENORIGUAL   [reduce usando la regla 49 (exp)]
+    INCREMENTO   [reduce usando la regla 49 (exp)]
+    DECREMENTO   [reduce usando la regla 49 (exp)]
+    '>'          [reduce usando la regla 49 (exp)]
+    '<'          [reduce usando la regla 49 (exp)]
+    '+'          [reduce usando la regla 49 (exp)]
+    '-'          [reduce usando la regla 49 (exp)]
+    '*'          [reduce usando la regla 49 (exp)]
+    '/'          [reduce usando la regla 49 (exp)]
+    '%'          [reduce usando la regla 49 (exp)]
+    '^'          [reduce usando la regla 49 (exp)]
+    $default     reduce usando la regla 49 (exp)
 
 
 estado 103
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   49    | exp MENORIGUAL exp .
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   51    | exp MENORIGUAL exp .
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     MAYORIGUAL  desplazar e ir al estado 68
     INCREMENTO  desplazar e ir al estado 70
@@ -2144,67 +2185,31 @@ estado 103
     '%'         desplazar e ir al estado 78
     '^'         desplazar e ir al estado 79
 
-    MAYORIGUAL  [reduce usando la regla 49 (exp)]
-    INCREMENTO  [reduce usando la regla 49 (exp)]
-    DECREMENTO  [reduce usando la regla 49 (exp)]
-    $default    reduce usando la regla 49 (exp)
+    MAYORIGUAL  [reduce usando la regla 51 (exp)]
+    INCREMENTO  [reduce usando la regla 51 (exp)]
+    DECREMENTO  [reduce usando la regla 51 (exp)]
+    $default    reduce usando la regla 51 (exp)
 
 
 estado 104
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   48    | exp '>' exp .
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
-
-    MAYORIGUAL  desplazar e ir al estado 68
-    INCREMENTO  desplazar e ir al estado 70
-    DECREMENTO  desplazar e ir al estado 71
-    '+'         desplazar e ir al estado 74
-    '-'         desplazar e ir al estado 75
-    '*'         desplazar e ir al estado 76
-    '/'         desplazar e ir al estado 77
-    '%'         desplazar e ir al estado 78
-    '^'         desplazar e ir al estado 79
-
-    MAYORIGUAL  [reduce usando la regla 48 (exp)]
-    INCREMENTO  [reduce usando la regla 48 (exp)]
-    DECREMENTO  [reduce usando la regla 48 (exp)]
-    $default    reduce usando la regla 48 (exp)
-
-
-estado 105
-
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   50    | exp '<' exp .
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   50    | exp '>' exp .
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     MAYORIGUAL  desplazar e ir al estado 68
     INCREMENTO  desplazar e ir al estado 70
@@ -2222,63 +2227,31 @@ estado 105
     $default    reduce usando la regla 50 (exp)
 
 
-estado 106
+estado 105
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   51    | exp '+' exp .
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
-
-    MAYORIGUAL  desplazar e ir al estado 68
-    INCREMENTO  desplazar e ir al estado 70
-    DECREMENTO  desplazar e ir al estado 71
-    '*'         desplazar e ir al estado 76
-    '/'         desplazar e ir al estado 77
-    '%'         desplazar e ir al estado 78
-    '^'         desplazar e ir al estado 79
-
-    MAYORIGUAL  [reduce usando la regla 51 (exp)]
-    INCREMENTO  [reduce usando la regla 51 (exp)]
-    DECREMENTO  [reduce usando la regla 51 (exp)]
-    $default    reduce usando la regla 51 (exp)
-
-
-estado 107
-
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   52    | exp '-' exp .
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   52    | exp '<' exp .
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     MAYORIGUAL  desplazar e ir al estado 68
     INCREMENTO  desplazar e ir al estado 70
     DECREMENTO  desplazar e ir al estado 71
+    '+'         desplazar e ir al estado 74
+    '-'         desplazar e ir al estado 75
     '*'         desplazar e ir al estado 76
     '/'         desplazar e ir al estado 77
     '%'         desplazar e ir al estado 78
@@ -2290,29 +2263,32 @@ estado 107
     $default    reduce usando la regla 52 (exp)
 
 
-estado 108
+estado 106
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   53    | exp '*' exp .
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   53    | exp '+' exp .
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     MAYORIGUAL  desplazar e ir al estado 68
     INCREMENTO  desplazar e ir al estado 70
     DECREMENTO  desplazar e ir al estado 71
+    '*'         desplazar e ir al estado 76
+    '/'         desplazar e ir al estado 77
+    '%'         desplazar e ir al estado 78
     '^'         desplazar e ir al estado 79
 
     MAYORIGUAL  [reduce usando la regla 53 (exp)]
@@ -2321,29 +2297,32 @@ estado 108
     $default    reduce usando la regla 53 (exp)
 
 
-estado 109
+estado 107
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   54    | exp '/' exp .
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   54    | exp '-' exp .
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     MAYORIGUAL  desplazar e ir al estado 68
     INCREMENTO  desplazar e ir al estado 70
     DECREMENTO  desplazar e ir al estado 71
+    '*'         desplazar e ir al estado 76
+    '/'         desplazar e ir al estado 77
+    '%'         desplazar e ir al estado 78
     '^'         desplazar e ir al estado 79
 
     MAYORIGUAL  [reduce usando la regla 54 (exp)]
@@ -2352,25 +2331,25 @@ estado 109
     $default    reduce usando la regla 54 (exp)
 
 
-estado 110
+estado 108
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   55    | exp '%' exp .
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   55    | exp '*' exp .
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     MAYORIGUAL  desplazar e ir al estado 68
     INCREMENTO  desplazar e ir al estado 70
@@ -2383,29 +2362,30 @@ estado 110
     $default    reduce usando la regla 55 (exp)
 
 
-estado 111
+estado 109
 
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   56    | exp '^' exp .
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   56    | exp '/' exp .
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     MAYORIGUAL  desplazar e ir al estado 68
     INCREMENTO  desplazar e ir al estado 70
     DECREMENTO  desplazar e ir al estado 71
+    '^'         desplazar e ir al estado 79
 
     MAYORIGUAL  [reduce usando la regla 56 (exp)]
     INCREMENTO  [reduce usando la regla 56 (exp)]
@@ -2413,10 +2393,71 @@ estado 111
     $default    reduce usando la regla 56 (exp)
 
 
+estado 110
+
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   57    | exp '%' exp .
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
+
+    MAYORIGUAL  desplazar e ir al estado 68
+    INCREMENTO  desplazar e ir al estado 70
+    DECREMENTO  desplazar e ir al estado 71
+    '^'         desplazar e ir al estado 79
+
+    MAYORIGUAL  [reduce usando la regla 57 (exp)]
+    INCREMENTO  [reduce usando la regla 57 (exp)]
+    DECREMENTO  [reduce usando la regla 57 (exp)]
+    $default    reduce usando la regla 57 (exp)
+
+
+estado 111
+
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   58    | exp '^' exp .
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
+
+    MAYORIGUAL  desplazar e ir al estado 68
+    INCREMENTO  desplazar e ir al estado 70
+    DECREMENTO  desplazar e ir al estado 71
+
+    MAYORIGUAL  [reduce usando la regla 58 (exp)]
+    INCREMENTO  [reduce usando la regla 58 (exp)]
+    DECREMENTO  [reduce usando la regla 58 (exp)]
+    $default    reduce usando la regla 58 (exp)
+
+
 estado 112
 
-   30 sentSeleccion: IF '(' exp ')' . sentencia
-   31              | IF '(' exp ')' . sentencia ELSE sentencia
+   32 sentSeleccion: IF '(' exp ')' . sentencia
+   33              | IF '(' exp ')' . sentencia ELSE sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2452,7 +2493,7 @@ estado 112
 
 estado 113
 
-   32 sentSeleccion: SWITCH '(' exp ')' . sentencia
+   34 sentSeleccion: SWITCH '(' exp ')' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2488,7 +2529,7 @@ estado 113
 
 estado 114
 
-   33 sentIteracion: WHILE '(' exp ')' . sentencia
+   35 sentIteracion: WHILE '(' exp ')' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2524,7 +2565,7 @@ estado 114
 
 estado 115
 
-   34 sentIteracion: DO sentencia WHILE '(' . exp ')' ';'
+   36 sentIteracion: DO sentencia WHILE '(' . exp ')' ';'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2542,7 +2583,7 @@ estado 115
 
 estado 116
 
-   35 sentIteracion: FOR '(' exp ';' . exp ';' exp ')' sentencia
+   37 sentIteracion: FOR '(' exp ';' . exp ';' exp ')' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2560,15 +2601,15 @@ estado 116
 
 estado 117
 
-   36 sentEtiquetada: CASE exp ':' sentencia .
+   38 sentEtiquetada: CASE exp ':' sentencia .
 
-    $default  reduce usando la regla 36 (sentEtiquetada)
+    $default  reduce usando la regla 38 (sentEtiquetada)
 
 
 estado 118
 
-   22 unaVarSimple: ID operAsignacion . exp
-   23             | ID operAsignacion . literalCadena
+   24 unaVarSimple: ID operAsignacion . exp
+   25             | ID operAsignacion . literalCadena
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2587,14 +2628,14 @@ estado 118
 
 estado 119
 
-   18 sentenciaDeclaracion: TIPO_DATO $@1 listaVarSimples ';' .
+   20 sentenciaDeclaracion: TIPO_DATO $@1 listaVarSimples ';' .
 
-    $default  reduce usando la regla 18 (sentenciaDeclaracion)
+    $default  reduce usando la regla 20 (sentenciaDeclaracion)
 
 
 estado 120
 
-   20 listaVarSimples: unaVarSimple ',' . listaVarSimples
+   22 listaVarSimples: unaVarSimple ',' . listaVarSimples
 
     ID  desplazar e ir al estado 89
 
@@ -2604,9 +2645,9 @@ estado 120
 
 estado 121
 
-   63 exp: SIZEOF '(' TIPO_DATO ')' .
+   65 exp: SIZEOF '(' TIPO_DATO ')' .
 
-    $default  reduce usando la regla 63 (exp)
+    $default  reduce usando la regla 65 (exp)
 
 
 estado 122
@@ -2618,55 +2659,55 @@ estado 122
 
 estado 123
 
-   16 listaSentencias: listaSentencias sentencia .
+   18 listaSentencias: listaSentencias sentencia .
 
-    $default  reduce usando la regla 16 (listaSentencias)
+    $default  reduce usando la regla 18 (listaSentencias)
 
 
 estado 124
 
-   30 sentSeleccion: IF '(' exp ')' sentencia .
-   31              | IF '(' exp ')' sentencia . ELSE sentencia
+   32 sentSeleccion: IF '(' exp ')' sentencia .
+   33              | IF '(' exp ')' sentencia . ELSE sentencia
 
     ELSE  desplazar e ir al estado 133
 
-    ELSE      [reduce usando la regla 30 (sentSeleccion)]
-    $default  reduce usando la regla 30 (sentSeleccion)
+    ELSE      [reduce usando la regla 32 (sentSeleccion)]
+    $default  reduce usando la regla 32 (sentSeleccion)
 
 
 estado 125
 
-   32 sentSeleccion: SWITCH '(' exp ')' sentencia .
+   34 sentSeleccion: SWITCH '(' exp ')' sentencia .
 
-    $default  reduce usando la regla 32 (sentSeleccion)
+    $default  reduce usando la regla 34 (sentSeleccion)
 
 
 estado 126
 
-   33 sentIteracion: WHILE '(' exp ')' sentencia .
+   35 sentIteracion: WHILE '(' exp ')' sentencia .
 
-    $default  reduce usando la regla 33 (sentIteracion)
+    $default  reduce usando la regla 35 (sentIteracion)
 
 
 estado 127
 
-   34 sentIteracion: DO sentencia WHILE '(' exp . ')' ';'
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   36 sentIteracion: DO sentencia WHILE '(' exp . ')' ';'
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -2689,23 +2730,23 @@ estado 127
 
 estado 128
 
-   35 sentIteracion: FOR '(' exp ';' exp . ';' exp ')' sentencia
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   37 sentIteracion: FOR '(' exp ';' exp . ';' exp ')' sentencia
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -2728,35 +2769,35 @@ estado 128
 
 estado 129
 
-   67 exp: LITERAL_CADENA .
-   69 literalCadena: LITERAL_CADENA .
+   69 exp: LITERAL_CADENA .
+   71 literalCadena: LITERAL_CADENA .
 
-    ';'       reduce usando la regla 67 (exp)
-    ';'       [reduce usando la regla 69 (literalCadena)]
-    ','       reduce usando la regla 67 (exp)
-    ','       [reduce usando la regla 69 (literalCadena)]
-    $default  reduce usando la regla 67 (exp)
+    ';'       reduce usando la regla 69 (exp)
+    ';'       [reduce usando la regla 71 (literalCadena)]
+    ','       reduce usando la regla 69 (exp)
+    ','       [reduce usando la regla 71 (literalCadena)]
+    $default  reduce usando la regla 69 (exp)
 
 
 estado 130
 
-   22 unaVarSimple: ID operAsignacion exp .
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   24 unaVarSimple: ID operAsignacion exp .
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -2775,26 +2816,26 @@ estado 130
     '%'          desplazar e ir al estado 78
     '^'          desplazar e ir al estado 79
 
-    $default  reduce usando la regla 22 (unaVarSimple)
+    $default  reduce usando la regla 24 (unaVarSimple)
 
 
 estado 131
 
-   23 unaVarSimple: ID operAsignacion literalCadena .
+   25 unaVarSimple: ID operAsignacion literalCadena .
 
-    $default  reduce usando la regla 23 (unaVarSimple)
+    $default  reduce usando la regla 25 (unaVarSimple)
 
 
 estado 132
 
-   20 listaVarSimples: unaVarSimple ',' listaVarSimples .
+   22 listaVarSimples: unaVarSimple ',' listaVarSimples .
 
-    $default  reduce usando la regla 20 (listaVarSimples)
+    $default  reduce usando la regla 22 (listaVarSimples)
 
 
 estado 133
 
-   31 sentSeleccion: IF '(' exp ')' sentencia ELSE . sentencia
+   33 sentSeleccion: IF '(' exp ')' sentencia ELSE . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2830,14 +2871,14 @@ estado 133
 
 estado 134
 
-   34 sentIteracion: DO sentencia WHILE '(' exp ')' . ';'
+   36 sentIteracion: DO sentencia WHILE '(' exp ')' . ';'
 
     ';'  desplazar e ir al estado 137
 
 
 estado 135
 
-   35 sentIteracion: FOR '(' exp ';' exp ';' . exp ')' sentencia
+   37 sentIteracion: FOR '(' exp ';' exp ';' . exp ')' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2855,37 +2896,37 @@ estado 135
 
 estado 136
 
-   31 sentSeleccion: IF '(' exp ')' sentencia ELSE sentencia .
+   33 sentSeleccion: IF '(' exp ')' sentencia ELSE sentencia .
 
-    $default  reduce usando la regla 31 (sentSeleccion)
+    $default  reduce usando la regla 33 (sentSeleccion)
 
 
 estado 137
 
-   34 sentIteracion: DO sentencia WHILE '(' exp ')' ';' .
+   36 sentIteracion: DO sentencia WHILE '(' exp ')' ';' .
 
-    $default  reduce usando la regla 34 (sentIteracion)
+    $default  reduce usando la regla 36 (sentIteracion)
 
 
 estado 138
 
-   35 sentIteracion: FOR '(' exp ';' exp ';' exp . ')' sentencia
-   43 exp: exp . OR exp
-   44    | exp . AND exp
-   45    | exp . IGUALDAD exp
-   46    | exp . DESIGUALDAD exp
-   47    | exp . MAYORIGUAL exp
-   48    | exp . '>' exp
-   49    | exp . MENORIGUAL exp
-   50    | exp . '<' exp
-   51    | exp . '+' exp
-   52    | exp . '-' exp
-   53    | exp . '*' exp
-   54    | exp . '/' exp
-   55    | exp . '%' exp
-   56    | exp . '^' exp
-   59    | exp . INCREMENTO
-   60    | exp . DECREMENTO
+   37 sentIteracion: FOR '(' exp ';' exp ';' exp . ')' sentencia
+   45 exp: exp . OR exp
+   46    | exp . AND exp
+   47    | exp . IGUALDAD exp
+   48    | exp . DESIGUALDAD exp
+   49    | exp . MAYORIGUAL exp
+   50    | exp . '>' exp
+   51    | exp . MENORIGUAL exp
+   52    | exp . '<' exp
+   53    | exp . '+' exp
+   54    | exp . '-' exp
+   55    | exp . '*' exp
+   56    | exp . '/' exp
+   57    | exp . '%' exp
+   58    | exp . '^' exp
+   61    | exp . INCREMENTO
+   62    | exp . DECREMENTO
 
     OR           desplazar e ir al estado 64
     AND          desplazar e ir al estado 65
@@ -2908,7 +2949,7 @@ estado 138
 
 estado 139
 
-   35 sentIteracion: FOR '(' exp ';' exp ';' exp ')' . sentencia
+   37 sentIteracion: FOR '(' exp ';' exp ';' exp ')' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2944,6 +2985,6 @@ estado 139
 
 estado 140
 
-   35 sentIteracion: FOR '(' exp ';' exp ';' exp ')' sentencia .
+   37 sentIteracion: FOR '(' exp ';' exp ';' exp ')' sentencia .
 
-    $default  reduce usando la regla 35 (sentIteracion)
+    $default  reduce usando la regla 37 (sentIteracion)

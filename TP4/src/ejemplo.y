@@ -64,8 +64,6 @@ int contadorVariables = 0;
 
 %type <dval> exp
 %type <cval> unaVarSimple
-%type <cval> literalCadena
-%type <dval> listaArgumentos
 
 %% 
 
@@ -74,10 +72,27 @@ input:
 ;
 
 line:     '\n'
-        | sentenciaDeclaracion '\n'
+        | funcion '\n'
         | sentencia '\n'
 ;
 
+// DECLARACION DE FUNCION
+funcion: TIPO_DATO {tipoDato = $<cval>1; } ID declaracionODefinicion
+;
+
+declaracionODefinicion: '(' listaParametrosDeclaracion ')' ';' {printf("Se declara la funcion %s de tipo %s \n",$<cval>2,tipoDato); }
+        | '(' listaParametrosDefinicion ')' sentCompuesta {printf("Se define la funcion %s de tipo %s \n",$<cval>2,tipoDato); }
+;
+
+listaParametrosDeclaracion:
+               | TIPO_DATO
+               | listaParametrosDeclaracion ',' TIPO_DATO
+;
+
+listaParametrosDefinicion: 
+                         | TIPO_DATO ID
+                         | listaParametrosDefinicion ',' TIPO_DATO ID
+;
 
 //SENTENCIA
 sentencia: sentCompuesta
@@ -113,7 +128,6 @@ listaVarSimples: unaVarSimple
 ;
 unaVarSimple: ID                               {printf("Se declaro el identificador %s de tipo %s\n",$<cval>1,tipoDato); contadorVariables++; }
              | ID operAsignacion exp           {printf("Se declaro el identificador %s de tipo %s, con valor %g\n",$<cval>1,tipoDato,$<dval>3); contadorVariables++;}
-             | ID operAsignacion literalCadena {printf("Se declaro el identificador %s de tipo %s, con valor %s\n",$<cval>1,tipoDato,$<cval>3); contadorVariables++;}
 ;
 
 operAsignacion: '='
@@ -149,7 +163,7 @@ sentEtiquetada: CASE exp ':' sentencia {printf("Se encontro una Sentencia de Eti
 
 
 //SENTENCIA DE SALTO
-sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN.\n"); }
+sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN, devuelve: %g. \n",$<dval>2); }
          | RETURN ';'     {printf("Se encontro una Sentencia de Salto RETURN.\n"); }
          | BREAK ';'      {printf("Se encontro una Sentencia de Salto BREAK.\n"); }
          | CONTINUE ';'   {printf("Se encontro una Sentencia de Salto CONTINUE.\n"); }
@@ -158,11 +172,8 @@ sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN.\n"
 
 //EXPRESIONES 
 
-listaArgumentos: exp
-               | listaArgumentos ',' exp
-;
-
 exp: ID operAsignacion exp {$<dval>$ = $<dval>3; }
+     | exp '?' exp ':' exp {$<dval>1 ? $<dval>3 : $<dval>5; }
      | exp OR exp          {$<dval>$ = $<dval>1 || $<dval>3; }
      | exp AND exp         {$<dval>$ = $<dval>1 && $<dval>3; }
      | exp IGUALDAD exp    {$<dval>$ = $<dval>1 == $<dval>3; }
@@ -174,16 +185,20 @@ exp: ID operAsignacion exp {$<dval>$ = $<dval>3; }
      | exp '+' exp         {$<dval>$ = $<dval>1 + $<dval>3; }
      | exp '-' exp         {$<dval>$ = $<dval>1 - $<dval>3; }
      | exp '*' exp         {$<dval>$ = $<dval>1 * $<dval>3; }
-     | exp '/' exp         {if($<dval>3 == 0) {printf("ERROR/: No se puede dividir por 0"); return 1; } else $<dval>$ = $<dval>1 / $<dval>3; }
+     | exp '/' exp         {if($<dval>3 == 0) {printf("ERROR/: No se puede dividir por 0 \n"); return 1; } else $<dval>$ = $<dval>1 / $<dval>3; }
      | exp '%' exp         {$<dval>$ = $<ival>1 % $<ival>3; }
-     | exp '^' exp         {if($<dval>1 == 0 && $<dval>3 == 0) {printf("ERROR/: No se puede elevear el 0 a la 0"); return 1; } else $<dval>$ = pow($<dval>1,$<dval>3); }
+     | exp '^' exp         {if($<dval>1 == 0 && $<dval>3 == 0) {printf("ERROR/: No se puede elevear el 0 a la 0 \n"); return 1; } else $<dval>$ = pow($<dval>1,$<dval>3); }
      | INCREMENTO exp      {$<dval>$ = ++ $<dval>2; }
      | DECREMENTO exp      {$<dval>$ = -- $<dval>2; }
      | exp INCREMENTO      {$<dval>$ = $<dval>2 ++; }
      | exp DECREMENTO      {$<dval>$ = $<dval>2 --; }
      | '-' exp             {$<dval>$ = - $<dval>2; }
-     | '!' exp             {$<dval>$ =  !$<dval>2; }
-     | SIZEOF '(' TIPO_DATO ')' {$<dval>$ = sizeof($<dval>3); }
+     | '!' exp             {$<dval>$ = !$<dval>2; }
+     | '&' exp             {$<dval>$ = $<dval>2; }
+     | '*' exp             {$<dval>$ = $<dval>2; }
+     | SIZEOF '(' TIPO_DATO ')'   {$<dval>$ = sizeof($<dval>3); }
+     | ID '[' exp ']'          {$<dval>$ = 0; } //DUDA
+     | ID '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); } //DUDA
      | '(' exp ')'         {$<dval>$ = ( $<dval>2 ); }
      | ENTERO              {$<dval>$ = $<ival>1; }
      | REAL                {$<dval>$ = $<dval>1; }
@@ -191,7 +206,13 @@ exp: ID operAsignacion exp {$<dval>$ = $<dval>3; }
      | ID
 ;
 
-literalCadena: LITERAL_CADENA {strcpy($<cval>$,$<cval>1); }
+array: '[' exp ']'
+     | array '[' exp ']'
+;
+
+listaArgumentos: 
+               | exp
+               | listaArgumentos ',' exp
 ;
 
 

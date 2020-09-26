@@ -23,7 +23,7 @@ CARACTER_IMPRIMIBLE [ -~]
 
 \"([^\"]|$)*\" {return LITERAL_CADENA; }
 
-char|float|int|long|short|double {return TIPO_DATO; }
+char|float|int|long|short|double|void {return TIPO_DATO; }
 
 if {return IF; }
 else {return ELSE; }
@@ -56,6 +56,9 @@ sizeof {return SIZEOF; }
 ";" {return ';'; }
 "," {return ','; }
 ":" {return ':'; }
+"&" {return '&'; }
+"!" {return '!'; }
+"?" {return '?'; }
 "\n" {return '\n'; } 
 
 "||" {return OR; }

@@ -12,6 +12,7 @@ return(1);
 }
 char* tipoDato;
 int contadorVariables = 0;
+int contadorParametros = 0;
 
 %}
 
@@ -68,30 +69,30 @@ int contadorVariables = 0;
 %% 
 
 input:
-        | input line
+     | input line
 ;
 
-line:     '\n'
-        | funcion '\n'
-        | sentencia '\n'
+line: '\n'
+    | funcion '\n'
+    | sentencia '\n'
 ;
 
 // DECLARACION DE FUNCION
-funcion: TIPO_DATO {tipoDato = $<cval>1; } ID declaracionODefinicion
+funcion: TIPO_DATO {tipoDato = $<cval>1; } ID declaracionODefinicion {contadorParametros = 0; }
 ;
 
-declaracionODefinicion: '(' listaParametrosDeclaracion ')' ';' {printf("Se declara la funcion %s de tipo %s \n",$<cval>2,tipoDato); }
-        | '(' listaParametrosDefinicion ')' sentCompuesta {printf("Se define la funcion %s de tipo %s \n",$<cval>2,tipoDato); }
+declaracionODefinicion: '(' listaParametrosDeclaracion ')' ';' {printf("Se declara la funcion %s de tipo %s con %d parametros \n",$<cval>2,tipoDato,contadorParametros); }
+                      | '(' listaParametrosDefinicion ')' sentCompuesta {printf("Se define la funcion %s de tipo %s con %d parametros \n",$<cval>2,tipoDato,contadorParametros); }
 ;
 
 listaParametrosDeclaracion:
-               | TIPO_DATO
-               | listaParametrosDeclaracion ',' TIPO_DATO
+                          | TIPO_DATO {contadorParametros++; printf(" -Tipo parametro %d = %s \n",contadorParametros ,$<cval>1); }
+                          | listaParametrosDeclaracion ',' TIPO_DATO {contadorParametros++; printf(" -Tipo parametro %d = %s \n",contadorParametros ,$<cval>1); }
 ;
 
 listaParametrosDefinicion: 
-                         | TIPO_DATO ID
-                         | listaParametrosDefinicion ',' TIPO_DATO ID
+                         | TIPO_DATO ID {contadorParametros++; printf(" -Tipo parametro %d = %s \n",contadorParametros ,$<cval>1); }
+                         | listaParametrosDefinicion ',' TIPO_DATO ID {contadorParametros++; printf(" -Tipo parametro %d = %s \n",contadorParametros ,$<cval>1); }
 ;
 
 //SENTENCIA
@@ -127,14 +128,14 @@ listaVarSimples: unaVarSimple
                 | unaVarSimple ',' listaVarSimples
 ;
 unaVarSimple: ID                               {printf("Se declaro el identificador %s de tipo %s\n",$<cval>1,tipoDato); contadorVariables++; }
-             | ID operAsignacion exp           {printf("Se declaro el identificador %s de tipo %s, con valor %g\n",$<cval>1,tipoDato,$<dval>3); contadorVariables++;}
+            | ID operAsignacion exp           {printf("Se declaro el identificador %s de tipo %s, con valor %g\n",$<cval>1,tipoDato,$<dval>3); contadorVariables++;}
 ;
 
 operAsignacion: '='
-                | ASIGNACION_INCREMENTO
-                | ASIGNACION_DECREMENTO
-                | ASIGNACION_PRODUCTO
-                | ASIGNACION_DIVISION
+              | ASIGNACION_INCREMENTO
+              | ASIGNACION_DECREMENTO
+              | ASIGNACION_PRODUCTO
+              | ASIGNACION_DIVISION
 ;
 
 
@@ -172,38 +173,38 @@ sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN, de
 
 //EXPRESIONES 
 
-exp: ID operAsignacion exp {$<dval>$ = $<dval>3; }
-     | exp '?' exp ':' exp {$<dval>1 ? $<dval>3 : $<dval>5; }
-     | exp OR exp          {$<dval>$ = $<dval>1 || $<dval>3; }
-     | exp AND exp         {$<dval>$ = $<dval>1 && $<dval>3; }
-     | exp IGUALDAD exp    {$<dval>$ = $<dval>1 == $<dval>3; }
-     | exp DESIGUALDAD exp {$<dval>$ = $<dval>1 != $<dval>3; }
-     | exp MAYORIGUAL exp  {$<dval>$ = $<dval>1 >= $<dval>3; }
-     | exp '>' exp         {$<dval>$ = $<dval>1 > $<dval>3; }
-     | exp MENORIGUAL exp  {$<dval>$ = $<dval>1 <= $<dval>3; }
-     | exp '<' exp         {$<dval>$ = $<dval>1 < $<dval>3; }
-     | exp '+' exp         {$<dval>$ = $<dval>1 + $<dval>3; }
-     | exp '-' exp         {$<dval>$ = $<dval>1 - $<dval>3; }
-     | exp '*' exp         {$<dval>$ = $<dval>1 * $<dval>3; }
-     | exp '/' exp         {if($<dval>3 == 0) {printf("ERROR/: No se puede dividir por 0 \n"); return 1; } else $<dval>$ = $<dval>1 / $<dval>3; }
-     | exp '%' exp         {$<dval>$ = $<ival>1 % $<ival>3; }
-     | exp '^' exp         {if($<dval>1 == 0 && $<dval>3 == 0) {printf("ERROR/: No se puede elevear el 0 a la 0 \n"); return 1; } else $<dval>$ = pow($<dval>1,$<dval>3); }
-     | INCREMENTO exp      {$<dval>$ = ++ $<dval>2; }
-     | DECREMENTO exp      {$<dval>$ = -- $<dval>2; }
-     | exp INCREMENTO      {$<dval>$ = $<dval>2 ++; }
-     | exp DECREMENTO      {$<dval>$ = $<dval>2 --; }
-     | '-' exp             {$<dval>$ = - $<dval>2; }
-     | '!' exp             {$<dval>$ = !$<dval>2; }
-     | '&' exp             {$<dval>$ = $<dval>2; }
-     | '*' exp             {$<dval>$ = $<dval>2; }
-     | SIZEOF '(' TIPO_DATO ')'   {$<dval>$ = sizeof($<dval>3); }
-     | ID '[' exp ']'          {$<dval>$ = 0; } //DUDA
-     | ID '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); } //DUDA
-     | '(' exp ')'         {$<dval>$ = ( $<dval>2 ); }
-     | ENTERO              {$<dval>$ = $<ival>1; }
-     | REAL                {$<dval>$ = $<dval>1; }
-     | LITERAL_CADENA
-     | ID
+exp: ID operAsignacion exp        {$<dval>$ = $<dval>3; }
+   | exp '?' exp ':' exp        {$<dval>1 ? $<dval>3 : $<dval>5; }
+   | exp OR exp                 {$<dval>$ = $<dval>1 || $<dval>3; }
+   | exp AND exp                {$<dval>$ = $<dval>1 && $<dval>3; }
+   | exp IGUALDAD exp           {$<dval>$ = $<dval>1 == $<dval>3; }
+   | exp DESIGUALDAD exp        {$<dval>$ = $<dval>1 != $<dval>3; }
+   | exp MAYORIGUAL exp         {$<dval>$ = $<dval>1 >= $<dval>3; }
+   | exp '>' exp                {$<dval>$ = $<dval>1 > $<dval>3; }
+   | exp MENORIGUAL exp         {$<dval>$ = $<dval>1 <= $<dval>3; }
+   | exp '<' exp                {$<dval>$ = $<dval>1 < $<dval>3; }
+   | exp '+' exp                {$<dval>$ = $<dval>1 + $<dval>3; }
+   | exp '-' exp                {$<dval>$ = $<dval>1 - $<dval>3; }
+   | exp '*' exp                {$<dval>$ = $<dval>1 * $<dval>3; }
+   | exp '/' exp                {if($<dval>3 == 0) {printf("ERROR/: No se puede dividir por 0 \n"); return 1; } else $<dval>$ = $<dval>1 / $<dval>3; }
+   | exp '%' exp                {$<dval>$ = $<ival>1 % $<ival>3; }
+   | exp '^' exp                {if($<dval>1 == 0 && $<dval>3 == 0) {printf("ERROR/: No se puede elevear el 0 a la 0 \n"); return 1; } else $<dval>$ = pow($<dval>1,$<dval>3); }
+   | INCREMENTO exp             {$<dval>$ = ++ $<dval>2; }
+   | DECREMENTO exp             {$<dval>$ = -- $<dval>2; }
+   | exp INCREMENTO             {$<dval>$ = $<dval>2 ++; }
+   | exp DECREMENTO             {$<dval>$ = $<dval>2 --; }
+   | '-' exp                    {$<dval>$ = - $<dval>2; }
+   | '!' exp                    {$<dval>$ = !$<dval>2; }
+   | '&' exp                    {$<dval>$ = $<dval>2; }
+   | '*' exp                    {$<dval>$ = $<dval>2; }
+   | SIZEOF '(' TIPO_DATO ')'   {$<dval>$ = sizeof($<dval>3); }
+   | ID '[' exp ']'             {$<dval>$ = 0; } //DUDA
+   | ID '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); } //DUDA
+   | '(' exp ')'                {$<dval>$ = ( $<dval>2 ); }
+   | ENTERO                     {$<dval>$ = $<ival>1; }
+   | REAL                       {$<dval>$ = $<dval>1; }
+   | LITERAL_CADENA
+   | ID
 ;
 
 array: '[' exp ']'

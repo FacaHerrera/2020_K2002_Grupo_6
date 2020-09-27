@@ -79,7 +79,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 19 "../src/ejemplo.y"
+#line 21 "../src/ejemplo.y"
 
   int ival;
   double dval;

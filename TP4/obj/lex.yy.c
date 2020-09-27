@@ -480,10 +480,11 @@ char *yytext;
 #line 2 "../src/ejemplo.l"
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "ejemplo.tab.h"
 
-#line 487 "lex.yy.c"
+#line 488 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -634,10 +635,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 17 "../src/ejemplo.l"
+#line 18 "../src/ejemplo.l"
 
 
-#line 641 "lex.yy.c"
+#line 642 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -722,270 +723,270 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 19 "../src/ejemplo.l"
+#line 20 "../src/ejemplo.l"
 {yylval.ival = atoi(yytext); return ENTERO; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 20 "../src/ejemplo.l"
+#line 21 "../src/ejemplo.l"
 {yylval.ival = strtol(yytext, NULL, 0); return ENTERO; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 21 "../src/ejemplo.l"
+#line 22 "../src/ejemplo.l"
 {yylval.ival = strtol(yytext, NULL, 0); return ENTERO; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 22 "../src/ejemplo.l"
+#line 23 "../src/ejemplo.l"
 {yylval.dval = atof(yytext); return REAL; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 24 "../src/ejemplo.l"
-{return LITERAL_CADENA; }
+#line 25 "../src/ejemplo.l"
+{strcpy(yylval.cval,yytext); return LITERAL_CADENA; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 26 "../src/ejemplo.l"
-{return TIPO_DATO; }
+#line 27 "../src/ejemplo.l"
+{strcpy(yylval.cval,yytext); return TIPO_DATO; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 28 "../src/ejemplo.l"
+#line 29 "../src/ejemplo.l"
 {return IF; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 29 "../src/ejemplo.l"
+#line 30 "../src/ejemplo.l"
 {return ELSE; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 30 "../src/ejemplo.l"
+#line 31 "../src/ejemplo.l"
 {return SWITCH; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 31 "../src/ejemplo.l"
+#line 32 "../src/ejemplo.l"
 {return WHILE; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 32 "../src/ejemplo.l"
+#line 33 "../src/ejemplo.l"
 {return DO; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 33 "../src/ejemplo.l"
+#line 34 "../src/ejemplo.l"
 {return FOR; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 34 "../src/ejemplo.l"
+#line 35 "../src/ejemplo.l"
 {return RETURN; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 35 "../src/ejemplo.l"
+#line 36 "../src/ejemplo.l"
 {return BREAK; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 36 "../src/ejemplo.l"
+#line 37 "../src/ejemplo.l"
 {return CONTINUE; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 37 "../src/ejemplo.l"
+#line 38 "../src/ejemplo.l"
 {return CASE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 38 "../src/ejemplo.l"
+#line 39 "../src/ejemplo.l"
 {return DEFAULT; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 39 "../src/ejemplo.l"
+#line 40 "../src/ejemplo.l"
 {return SIZEOF; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 41 "../src/ejemplo.l"
-{return ID;}
+#line 42 "../src/ejemplo.l"
+{strcpy(yylval.cval,yytext); return ID;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 43 "../src/ejemplo.l"
+#line 44 "../src/ejemplo.l"
 {return '+'; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 44 "../src/ejemplo.l"
+#line 45 "../src/ejemplo.l"
 {return '-'; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 45 "../src/ejemplo.l"
+#line 46 "../src/ejemplo.l"
 {return '*'; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 46 "../src/ejemplo.l"
+#line 47 "../src/ejemplo.l"
 {return '/'; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 47 "../src/ejemplo.l"
+#line 48 "../src/ejemplo.l"
 {return '%'; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 48 "../src/ejemplo.l"
+#line 49 "../src/ejemplo.l"
 {return '^'; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 49 "../src/ejemplo.l"
+#line 50 "../src/ejemplo.l"
 {return '('; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 50 "../src/ejemplo.l"
+#line 51 "../src/ejemplo.l"
 {return ')'; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 51 "../src/ejemplo.l"
+#line 52 "../src/ejemplo.l"
 {return '{'; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 52 "../src/ejemplo.l"
+#line 53 "../src/ejemplo.l"
 {return '}'; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 53 "../src/ejemplo.l"
+#line 54 "../src/ejemplo.l"
 {return '>'; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 54 "../src/ejemplo.l"
+#line 55 "../src/ejemplo.l"
 {return '<'; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 55 "../src/ejemplo.l"
+#line 56 "../src/ejemplo.l"
 {return '='; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 56 "../src/ejemplo.l"
+#line 57 "../src/ejemplo.l"
 {return ';'; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 57 "../src/ejemplo.l"
+#line 58 "../src/ejemplo.l"
 {return ','; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 58 "../src/ejemplo.l"
+#line 59 "../src/ejemplo.l"
 {return ':'; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 59 "../src/ejemplo.l"
+#line 60 "../src/ejemplo.l"
 {return '&'; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 60 "../src/ejemplo.l"
+#line 61 "../src/ejemplo.l"
 {return '!'; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 61 "../src/ejemplo.l"
+#line 62 "../src/ejemplo.l"
 {return '?'; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 62 "../src/ejemplo.l"
+#line 63 "../src/ejemplo.l"
 {return '\n'; } 
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 64 "../src/ejemplo.l"
+#line 65 "../src/ejemplo.l"
 {return OR; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 65 "../src/ejemplo.l"
+#line 66 "../src/ejemplo.l"
 {return AND; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 66 "../src/ejemplo.l"
+#line 67 "../src/ejemplo.l"
 {return IGUALDAD; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 67 "../src/ejemplo.l"
+#line 68 "../src/ejemplo.l"
 {return DESIGUALDAD; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 68 "../src/ejemplo.l"
+#line 69 "../src/ejemplo.l"
 {return MAYORIGUAL; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 69 "../src/ejemplo.l"
+#line 70 "../src/ejemplo.l"
 {return MENORIGUAL; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 70 "../src/ejemplo.l"
+#line 71 "../src/ejemplo.l"
 {return INCREMENTO; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 71 "../src/ejemplo.l"
+#line 72 "../src/ejemplo.l"
 {return DECREMENTO; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 72 "../src/ejemplo.l"
+#line 73 "../src/ejemplo.l"
 {return ASIGNACION_INCREMENTO; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 73 "../src/ejemplo.l"
+#line 74 "../src/ejemplo.l"
 {return ASIGNACION_DECREMENTO; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 74 "../src/ejemplo.l"
+#line 75 "../src/ejemplo.l"
 {return ASIGNACION_PRODUCTO; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 75 "../src/ejemplo.l"
+#line 76 "../src/ejemplo.l"
 {return ASIGNACION_DIVISION; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 77 "../src/ejemplo.l"
+#line 78 "../src/ejemplo.l"
 
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 78 "../src/ejemplo.l"
+#line 79 "../src/ejemplo.l"
 ECHO;
 	YY_BREAK
-#line 989 "lex.yy.c"
+#line 990 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1871,4 +1872,4 @@ int main()
 	return 0;
 	}
 #endif
-#line 78 "../src/ejemplo.l"
+#line 79 "../src/ejemplo.l"

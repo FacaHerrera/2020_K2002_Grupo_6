@@ -5,14 +5,16 @@
 #include <stdlib.h>
 #include <math.h>
 
-int yylex();
+extern int yylex();
 int yyerror (char* );
 int yywrap(){
 return(1);
 }
+extern FILE *yyin;
 char* tipoDato;
 int contadorVariables = 0;
 int contadorParametros = 0;
+char* nombreFuncion;
 
 %}
 
@@ -78,11 +80,11 @@ line: '\n'
 ;
 
 // DECLARACION DE FUNCION
-funcion: TIPO_DATO {tipoDato = $<cval>1; } ID declaracionODefinicion {contadorParametros = 0; }
+funcion: TIPO_DATO {tipoDato = $<cval>1; } ID {nombreFuncion = $<cval>2; } declaracionODefinicion {contadorParametros = 0; }
 ;
 
-declaracionODefinicion: '(' listaParametrosDeclaracion ')' ';' {printf("Se declara la funcion %s de tipo %s con %d parametros \n",$<cval>2,tipoDato,contadorParametros); }
-                      | '(' listaParametrosDefinicion ')' sentCompuesta {printf("Se define la funcion %s de tipo %s con %d parametros \n",$<cval>2,tipoDato,contadorParametros); }
+declaracionODefinicion: '(' listaParametrosDeclaracion ')' ';' {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDato); }
+                      | '(' listaParametrosDefinicion ')' sentCompuesta {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s \n",nombreFuncion,contadorParametros,tipoDato); }
 ;
 
 listaParametrosDeclaracion:
@@ -207,10 +209,6 @@ exp: ID operAsignacion exp        {$<dval>$ = $<dval>3; }
    | ID
 ;
 
-array: '[' exp ']'
-     | array '[' exp ']'
-;
-
 listaArgumentos: 
                | exp
                | listaArgumentos ',' exp
@@ -221,15 +219,15 @@ listaArgumentos:
 
 int yyerror (char *mensaje) 
 {
-  printf ("Error: %s\n", mensaje);
+  printf ("Error Sintactico: %s\n", mensaje);
 }
 
 void main(){
 
    #ifdef BISON_DEBUG
         yydebug = 1;
-#endif    
- 
+#endif 
+   yyin = fopen("entrada.txt","rt");
    printf("Ingrese una expresion para resolver:\n");
    yyparse();
 }

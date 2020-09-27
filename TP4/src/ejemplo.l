@@ -1,6 +1,7 @@
 %{
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "ejemplo.tab.h"
 
@@ -21,9 +22,9 @@ CARACTER_IMPRIMIBLE [ -~]
 0[xX]{DIGITO_HEXADECIMAL}+ {yylval.ival = strtol(yytext, NULL, 0); return ENTERO; }
 ((({DIGITO_DECIMAL}+\.{DIGITO_DECIMAL}+)|{DIGITO_DECIMAL}+\.)((e?[+-]?{DIGITO_DECIMAL}+)|E?[+-]?{DIGITO_DECIMAL}+)[fFlL]?)|([1-9]{DIGITO_DECIMAL}*((e[+-]?{DIGITO_DECIMAL}+)|E[+-]?{DIGITO_DECIMAL}+)[fFlL]?) {yylval.dval = atof(yytext); return REAL; }
 
-\"([^\"]|$)*\" {return LITERAL_CADENA; }
+\"([^\"]|$)*\" {strcpy(yylval.cval,yytext); return LITERAL_CADENA; }
 
-char|float|int|long|short|double|void {return TIPO_DATO; }
+char|float|int|long|short|double|void {strcpy(yylval.cval,yytext); return TIPO_DATO; }
 
 if {return IF; }
 else {return ELSE; }
@@ -38,7 +39,7 @@ case {return CASE; }
 default {return DEFAULT; }
 sizeof {return SIZEOF; }
 
-([a-zA-Z]|"_")([a-zA-Z]|{DIGITO_DECIMAL}|"_")* {return ID;}
+([a-zA-Z]|"_")([a-zA-Z]|{DIGITO_DECIMAL}|"_")* {strcpy(yylval.cval,yytext); return ID;}
 
 "+" {return '+'; }
 "-" {return '-'; }

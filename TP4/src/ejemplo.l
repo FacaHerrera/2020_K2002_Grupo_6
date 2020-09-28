@@ -24,8 +24,10 @@ CARACTER_IMPRIMIBLE [ -~]
 
 \"([^\"]|$)*\" {strcpy(yylval.cval,yytext); return LITERAL_CADENA; }
 
-char|float|int|long|short|double|void {strcpy(yylval.cval,yytext); return TIPO_DATO; }
+char|float|int|long|short|double {strcpy(yylval.cval,yytext); return TIPO_DATO; }
 
+
+void {strcpy(yylval.cval,yytext); return VOID; }
 if {return IF; }
 else {return ELSE; }
 switch {return SWITCH; }
@@ -38,6 +40,7 @@ continue {return CONTINUE; }
 case {return CASE; }
 default {return DEFAULT; }
 sizeof {return SIZEOF; }
+goto {return GOTO; }
 
 ([a-zA-Z]|"_")([a-zA-Z]|{DIGITO_DECIMAL}|"_")* {strcpy(yylval.cval,yytext); return ID;}
 
@@ -59,6 +62,7 @@ sizeof {return SIZEOF; }
 ":" {return ':'; }
 "&" {return '&'; }
 "!" {return '!'; }
+"~" {return '~'; }
 "?" {return '?'; }
 "\n" {return '\n'; } 
 
@@ -75,5 +79,8 @@ sizeof {return SIZEOF; }
 "*=" {return ASIGNACION_PRODUCTO; }
 "/=" {return ASIGNACION_DIVISION; }
 
+
+\/\/{CARACTER_IMPRIMIBLE}* {printf("Se encontro el comentario simple: \"%s\". \n",yytext); }
+\/\*(([^\*]|$)|(\*([^\/]|$)))*\*\/ {printf("Se encontro el comentario multiple: \"%s\". \n",yytext); }
 .
 %%

@@ -10,11 +10,14 @@ int yyerror (char* );
 int yywrap(){
 return(1);
 }
-extern FILE *yyin;
+FILE* yyin;
 char* tipoDato;
+char* nombreFuncion;
+char* nombreID;
+
 int contadorVariables = 0;
 int contadorParametros = 0;
-char* nombreFuncion;
+
 
 %}
 
@@ -51,6 +54,8 @@ char* nombreFuncion;
 %token <cval> BREAK
 %token <cval> CASE
 %token <cval> DEFAULT
+%token <cval> VOID
+%token <cval> GOTO
 
 %token <cval> TIPO_DATO
 %token <cval> ID
@@ -81,6 +86,7 @@ line: '\n'
 
 // DECLARACION DE FUNCION
 funcion: TIPO_DATO {tipoDato = $<cval>1; } ID {nombreFuncion = $<cval>2; } declaracionODefinicion {contadorParametros = 0; }
+       | VOID {tipoDato = $<cval>1; } ID {nombreFuncion = $<cval>2; } declaracionODefinicion {contadorParametros = 0; }
 ;
 
 declaracionODefinicion: '(' listaParametrosDeclaracion ')' ';' {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDato); }
@@ -129,15 +135,32 @@ sentenciaDeclaracion: TIPO_DATO {tipoDato = $<cval>1; } listaVarSimples ';' {pri
 listaVarSimples: unaVarSimple
                 | unaVarSimple ',' listaVarSimples
 ;
-unaVarSimple: ID                               {printf("Se declaro el identificador %s de tipo %s\n",$<cval>1,tipoDato); contadorVariables++; }
-            | ID operAsignacion exp           {printf("Se declaro el identificador %s de tipo %s, con valor %g\n",$<cval>1,tipoDato,$<dval>3); contadorVariables++;}
+unaVarSimple: ID {nombreID = $<cval>1; } tipoVariable asignacion
 ;
 
-operAsignacion: '='
-              | ASIGNACION_INCREMENTO
-              | ASIGNACION_DECREMENTO
-              | ASIGNACION_PRODUCTO
-              | ASIGNACION_DIVISION
+tipoVariable:             {printf("Se declaro el identificador \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
+            | array       {printf("Se declaro el array \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
+            | puntero     {printf("Se declaro el puntero \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
+;
+
+asignacion:
+          | '=' inicializador
+;
+
+puntero: '*'
+       | puntero '*'
+;
+
+array: '[' exp ']'
+     | array '[' exp ']'
+;
+
+inicializador: exp                            {printf("-Valor de \"%s\" = %g \n",nombreID,$<dval>1); }
+             | '{' listaDeInicializadores '}' 
+;
+
+listaDeInicializadores: inicializador
+                      | listaDeInicializadores ',' inicializador
 ;
 
 
@@ -163,19 +186,22 @@ sentIteracion: WHILE '(' exp ')' sentencia               {printf("Se encontro un
 //SENTENCIA DE ETIQUETA
 sentEtiquetada: CASE exp ':' sentencia {printf("Se encontro una Sentencia de Etiqueta CASE.\n"); }
               | DEFAULT ':' sentencia  {printf("Se encontro una Sentencia de Etiqueta DEFAULT.\n"); }
+              | ID ':' sentencia
+;
 
 
 //SENTENCIA DE SALTO
-sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN, devuelve: %g. \n",$<dval>2); }
-         | RETURN ';'     {printf("Se encontro una Sentencia de Salto RETURN.\n"); }
+sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN. \n"); }
          | BREAK ';'      {printf("Se encontro una Sentencia de Salto BREAK.\n"); }
          | CONTINUE ';'   {printf("Se encontro una Sentencia de Salto CONTINUE.\n"); }
+         | GOTO ID ';'    {printf("Se encontro una Sentencia de Salto GOTO. \n"); }
 ;
 
 
 //EXPRESIONES 
 
-exp: ID operAsignacion exp        {$<dval>$ = $<dval>3; }
+exp: 
+   | exp operAsignacion exp     {$<dval>$ = $<dval>3; }
    | exp '?' exp ':' exp        {$<dval>1 ? $<dval>3 : $<dval>5; }
    | exp OR exp                 {$<dval>$ = $<dval>1 || $<dval>3; }
    | exp AND exp                {$<dval>$ = $<dval>1 && $<dval>3; }
@@ -196,12 +222,14 @@ exp: ID operAsignacion exp        {$<dval>$ = $<dval>3; }
    | exp INCREMENTO             {$<dval>$ = $<dval>2 ++; }
    | exp DECREMENTO             {$<dval>$ = $<dval>2 --; }
    | '-' exp                    {$<dval>$ = - $<dval>2; }
+   | '+' exp                    {$<dval>$ = + $<dval>2; }
+   | '~' exp                    {$<dval>$ = $<dval>2; } // DUDA
    | '!' exp                    {$<dval>$ = !$<dval>2; }
    | '&' exp                    {$<dval>$ = $<dval>2; }
    | '*' exp                    {$<dval>$ = $<dval>2; }
    | SIZEOF '(' TIPO_DATO ')'   {$<dval>$ = sizeof($<dval>3); }
-   | ID '[' exp ']'             {$<dval>$ = 0; } //DUDA
-   | ID '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); } //DUDA
+   | exp '[' exp ']'             {$<dval>$ = $<dval>3; }
+   | exp '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); } //DUDA
    | '(' exp ')'                {$<dval>$ = ( $<dval>2 ); }
    | ENTERO                     {$<dval>$ = $<ival>1; }
    | REAL                       {$<dval>$ = $<dval>1; }
@@ -212,6 +240,13 @@ exp: ID operAsignacion exp        {$<dval>$ = $<dval>3; }
 listaArgumentos: 
                | exp
                | listaArgumentos ',' exp
+;
+
+operAsignacion: '='
+              | ASIGNACION_INCREMENTO
+              | ASIGNACION_DECREMENTO
+              | ASIGNACION_PRODUCTO
+              | ASIGNACION_DIVISION
 ;
 
 
@@ -227,7 +262,7 @@ void main(){
    #ifdef BISON_DEBUG
         yydebug = 1;
 #endif 
-   yyin = fopen("entrada.txt","rt");
    printf("Ingrese una expresion para resolver:\n");
+   yyin = fopen("entrada.txt", "r");
    yyparse();
 }

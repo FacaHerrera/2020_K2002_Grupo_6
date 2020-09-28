@@ -65,10 +65,12 @@
      BREAK = 281,
      CASE = 282,
      DEFAULT = 283,
-     TIPO_DATO = 284,
-     ID = 285,
-     SIZEOF = 286,
-     MAYORIGUAl = 287
+     VOID = 284,
+     GOTO = 285,
+     TIPO_DATO = 286,
+     ID = 287,
+     SIZEOF = 288,
+     MAYORIGUAl = 289
    };
 #endif
 
@@ -79,7 +81,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 21 "../src/ejemplo.y"
+#line 25 "../src/ejemplo.y"
 
   int ival;
   double dval;
@@ -88,7 +90,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 92 "ejemplo.tab.h"
+#line 94 "ejemplo.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

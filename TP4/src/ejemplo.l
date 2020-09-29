@@ -26,7 +26,6 @@ CARACTER_IMPRIMIBLE [ -~]
 
 char|float|int|long|short|double {strcpy(yylval.cval,yytext); return TIPO_DATO; }
 
-
 void {strcpy(yylval.cval,yytext); return VOID; }
 if {return IF; }
 else {return ELSE; }
@@ -54,6 +53,8 @@ goto {return GOTO; }
 ")" {return ')'; }
 "{" {return '{'; }
 "}" {return '}'; }
+"[" {return '['; }
+"]" {return ']'; }
 ">" {return '>'; }
 "<" {return '<'; }
 "=" {return '='; }
@@ -82,5 +83,5 @@ goto {return GOTO; }
 
 \/\/{CARACTER_IMPRIMIBLE}* {printf("Se encontro el comentario simple: \"%s\". \n",yytext); }
 \/\*(([^\*]|$)|(\*([^\/]|$)))*\*\/ {printf("Se encontro el comentario multiple: \"%s\". \n",yytext); }
-.
+.   {return NO_IDENTIFICADO; }
 %%

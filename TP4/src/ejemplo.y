@@ -60,6 +60,7 @@ int contadorParametros = 0;
 %token <cval> TIPO_DATO
 %token <cval> ID
 %token <cval> SIZEOF
+%token <cval> NO_IDENTIFICADO
 
 %left OR
 %left AND
@@ -135,15 +136,16 @@ sentenciaDeclaracion: TIPO_DATO {tipoDato = $<cval>1; } listaVarSimples ';' {pri
 listaVarSimples: unaVarSimple
                 | unaVarSimple ',' listaVarSimples
 ;
-unaVarSimple: ID {nombreID = $<cval>1; } tipoVariable asignacion
+unaVarSimple: ID {nombreID = $<cval>1; } tipoVariable '=' inicializador
+            | ID {nombreID = $<cval>1; } tipoVariable
 ;
 
-tipoVariable:             {printf("Se declaro el identificador \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
-            | array       {printf("Se declaro el array \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
-            | puntero     {printf("Se declaro el puntero \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
+tipoVariable:         {printf("Se declaro el identificador \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
+            | array   {printf("Se declaro el array \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
+            | puntero {printf("Se declaro el puntero \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
 ;
 
-asignacion:
+asignacion: 
           | '=' inicializador
 ;
 
@@ -199,8 +201,7 @@ sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN. \n
 
 
 //EXPRESIONES 
-
-exp: 
+exp:
    | exp operAsignacion exp     {$<dval>$ = $<dval>3; }
    | exp '?' exp ':' exp        {$<dval>1 ? $<dval>3 : $<dval>5; }
    | exp OR exp                 {$<dval>$ = $<dval>1 || $<dval>3; }
@@ -228,7 +229,7 @@ exp:
    | '&' exp                    {$<dval>$ = $<dval>2; }
    | '*' exp                    {$<dval>$ = $<dval>2; }
    | SIZEOF '(' TIPO_DATO ')'   {$<dval>$ = sizeof($<dval>3); }
-   | exp '[' exp ']'             {$<dval>$ = $<dval>3; }
+   | exp array                  {$<dval>$ = 0; }
    | exp '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); } //DUDA
    | '(' exp ')'                {$<dval>$ = ( $<dval>2 ); }
    | ENTERO                     {$<dval>$ = $<ival>1; }

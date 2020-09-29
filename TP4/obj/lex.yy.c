@@ -282,11 +282,11 @@ static void yy_fatal_error YY_PROTO(( yyconst char msg[] ));
 	*yy_cp = '\0'; \
 	yy_c_buf_p = yy_cp;
 
-#define YY_NUM_RULES 60
-#define YY_END_OF_BUFFER 61
+#define YY_NUM_RULES 59
+#define YY_END_OF_BUFFER 60
 static yyconst short int yy_accept[161] =
     {   0,
-        0,    0,   61,   59,   44,   41,   59,   26,   40,   28,
+        0,    0,   60,   59,   44,   41,   59,   26,   40,   28,
        29,   24,   22,   38,   23,   25,    2,    1,   39,   37,
        35,   36,   34,   43,   21,   32,   33,   27,   21,   21,
        21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
@@ -1026,15 +1026,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 86 "../src/ejemplo.l"
-{return NO_IDENTIFICADO; }
-	YY_BREAK
-case 60:
-YY_RULE_SETUP
 #line 87 "../src/ejemplo.l"
 ECHO;
 	YY_BREAK
-#line 1038 "lex.yy.c"
+#line 1033 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

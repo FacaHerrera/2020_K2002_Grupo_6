@@ -70,8 +70,7 @@
      TIPO_DATO = 286,
      ID = 287,
      SIZEOF = 288,
-     NO_IDENTIFICADO = 289,
-     MAYORIGUAl = 290
+     MAYORIGUAl = 289
    };
 #endif
 
@@ -82,7 +81,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 24 "../src/ejemplo.y"
+#line 23 "../src/ejemplo.y"
 
   int ival;
   double dval;
@@ -91,7 +90,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 95 "ejemplo.tab.h"
+#line 94 "ejemplo.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

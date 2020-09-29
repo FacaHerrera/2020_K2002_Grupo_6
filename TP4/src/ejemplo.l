@@ -83,5 +83,5 @@ goto {return GOTO; }
 
 \/\/{CARACTER_IMPRIMIBLE}* {printf("Se encontro el comentario simple: \"%s\". \n",yytext); }
 \/\*(([^\*]|$)|(\*([^\/]|$)))*\*\/ {printf("Se encontro el comentario multiple: \"%s\". \n",yytext); }
-.   {return NO_IDENTIFICADO; }
+
 %%

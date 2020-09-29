@@ -54,23 +54,24 @@
      ASIGNACION_DECREMENTO = 270,
      ASIGNACION_PRODUCTO = 271,
      ASIGNACION_DIVISION = 272,
-     IF = 273,
-     ELSE = 274,
-     SWITCH = 275,
-     WHILE = 276,
-     DO = 277,
-     FOR = 278,
-     RETURN = 279,
-     CONTINUE = 280,
-     BREAK = 281,
-     CASE = 282,
-     DEFAULT = 283,
-     VOID = 284,
-     GOTO = 285,
-     TIPO_DATO = 286,
-     ID = 287,
-     SIZEOF = 288,
-     MAYORIGUAl = 289
+     FLECHA = 273,
+     IF = 274,
+     ELSE = 275,
+     SWITCH = 276,
+     WHILE = 277,
+     DO = 278,
+     FOR = 279,
+     RETURN = 280,
+     CONTINUE = 281,
+     BREAK = 282,
+     CASE = 283,
+     DEFAULT = 284,
+     VOID = 285,
+     GOTO = 286,
+     TIPO_DATO = 287,
+     ID = 288,
+     SIZEOF = 289,
+     MAYORIGUAl = 290
    };
 #endif
 
@@ -81,7 +82,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 23 "../src/ejemplo.y"
+#line 27 "../src/ejemplo.y"
 
   int ival;
   double dval;
@@ -90,7 +91,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 94 "ejemplo.tab.h"
+#line 95 "ejemplo.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

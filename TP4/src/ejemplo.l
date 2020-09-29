@@ -60,6 +60,7 @@ goto {return GOTO; }
 "=" {return '='; }
 ";" {return ';'; }
 "," {return ','; }
+"." {return '.'; }
 ":" {return ':'; }
 "&" {return '&'; }
 "!" {return '!'; }
@@ -79,6 +80,7 @@ goto {return GOTO; }
 "-=" {return ASIGNACION_DECREMENTO; }
 "*=" {return ASIGNACION_PRODUCTO; }
 "/=" {return ASIGNACION_DIVISION; }
+"->" {return FLECHA; }
 
 
 \/\/{CARACTER_IMPRIMIBLE}* {printf("Se encontro el comentario simple: \"%s\". \n",yytext); }

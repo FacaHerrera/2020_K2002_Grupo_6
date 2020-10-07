@@ -218,7 +218,7 @@ expAsignacion: expCondicional
              | expUnaria operAsignacion expAsignacion {$<dval>$ = $<dval>3; }
 ;
 expCondicional: expOr
-              | expOr '?' exp : expCondicional {$<dval>$ = 0; }
+              | expOr '?' exp ':' expCondicional {$<dval>$ = 0; }
 ;
 expOr: expAnd
      | expOr OR expAnd {$<dval>$ = $<dval>1 || $<dval>3; }
@@ -302,3 +302,5 @@ void main(){
    yyin = fopen("entrada.txt", "r");
    yyparse();
 }
+
+//Comentario para que funcione el make

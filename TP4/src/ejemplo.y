@@ -75,7 +75,6 @@ int contadorParametros = 0;
 %left '(' ')'
 
 %type <dval> exp
-%type <cval> unaVarSimple
 
 %% 
 
@@ -89,22 +88,26 @@ line: '\n'
 ;
 
 // DECLARACION DE FUNCION
-funcion: TIPO_DATO ID {tipoDato = $<cval>1; nombreFuncion = $<cval>2; } declaracionODefinicion {contadorParametros = 0; }
-       | VOID ID {tipoDato = $<cval>1; nombreFuncion = $<cval>2; } declaracionODefinicion {contadorParametros = 0; }
+funcion: TIPO_DATO ID {tipoDato = $<cval>1; nombreFuncion = $<cval>2; } parametros {contadorParametros = 0; }
+       | VOID ID {tipoDato = $<cval>1; nombreFuncion = $<cval>2; } parametros {contadorParametros = 0; }
 ;
 
-declaracionODefinicion: '(' listaParametrosDeclaracion ')' ';' {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDato); }
-                      | '(' listaParametrosDefinicion ')' sentCompuesta {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s \n",nombreFuncion,contadorParametros,tipoDato); }
+parametros: '(' listaParametros ')' declaracionODefinicion 
 ;
 
-listaParametrosDeclaracion:
-                          | TIPO_DATO {contadorParametros++; }
-                          | listaParametrosDeclaracion ',' TIPO_DATO {contadorParametros++; }
+declaracionODefinicion: ';'           {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDato); }
+                      | sentCompuesta {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s \n",nombreFuncion,contadorParametros,tipoDato); }
+
+listaParametros: 
+               | tipo {contadorParametros++; }
+               | listaParametros ',' tipo {contadorParametros++; }
 ;
 
-listaParametrosDefinicion: {printf("HOLA"); }
-                         | TIPO_DATO ID {contadorParametros++; printf("HOLA"); }
-                         | listaParametrosDefinicion ',' TIPO_DATO ID {contadorParametros++; }
+tipo: TIPO_DATO opcionId
+;
+
+opcionId: 
+    | ID
 ;
 
 //SENTENCIA
@@ -117,7 +120,12 @@ sentencia: sentCompuesta
 ;
 
 //SENTENCIA COMPUESTA
-sentCompuesta: '{' listaDeclaraciones listaSentencias '}' {printf("Se encontro una Sentencia Compuesta. \n"); }
+sentCompuesta: '{' listaDeclaraciones listaSentencias barraN '}' {printf("Se encontro una Sentencia Compuesta. \n"); }
+;
+
+barraN: 
+      | '\n'
+      | barraN '\n'
 ;
 
 listaDeclaraciones: 

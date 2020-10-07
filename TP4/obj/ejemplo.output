@@ -6,9 +6,7 @@ Terminals unused in grammar
 
 Rules useless in parser due to conflicts
 
-   15 listaParametrosDefinicion: /* vacío */
-
-   70 exp: expCondicional
+   74 exp: expCondicional
 
 
 Estado 28 conflictos: 1 desplazamiento(s)/reducción(ones)
@@ -16,11 +14,11 @@ Estado 44 conflictos: 6 reducción(ones)/reducción(ones)
 Estado 76 conflictos: 26 desplazamiento(s)/reducción(ones)
 Estado 83 conflictos: 14 reducción(ones)/reducción(ones)
 Estado 113 conflictos: 1 desplazamiento(s)/reducción(ones)
+Estado 131 conflictos: 1 desplazamiento(s)/reducción(ones)
 Estado 151 conflictos: 1 desplazamiento(s)/reducción(ones)
-Estado 162 conflictos: 2 reducción(ones)/reducción(ones)
-Estado 176 conflictos: 1 desplazamiento(s)/reducción(ones)
-Estado 187 conflictos: 1 desplazamiento(s)/reducción(ones)
-Estado 215 conflictos: 1 desplazamiento(s)/reducción(ones)
+Estado 177 conflictos: 1 desplazamiento(s)/reducción(ones)
+Estado 190 conflictos: 1 desplazamiento(s)/reducción(ones)
+Estado 216 conflictos: 1 desplazamiento(s)/reducción(ones)
 
 
 Gramática
@@ -36,222 +34,229 @@ Gramática
 
     6 $@1: /* vacío */
 
-    7 funcion: TIPO_DATO ID $@1 declaracionODefinicion
+    7 funcion: TIPO_DATO ID $@1 parametros
 
     8 $@2: /* vacío */
 
-    9 funcion: VOID ID $@2 declaracionODefinicion
+    9 funcion: VOID ID $@2 parametros
 
-   10 declaracionODefinicion: '(' listaParametrosDeclaracion ')' ';'
-   11                       | '(' listaParametrosDefinicion ')' sentCompuesta
+   10 parametros: '(' listaParametros ')' declaracionODefinicion
 
-   12 listaParametrosDeclaracion: /* vacío */
-   13                           | TIPO_DATO
-   14                           | listaParametrosDeclaracion ',' TIPO_DATO
+   11 declaracionODefinicion: ';'
+   12                       | sentCompuesta
 
-   15 listaParametrosDefinicion: /* vacío */
-   16                          | TIPO_DATO ID
-   17                          | listaParametrosDefinicion ',' TIPO_DATO ID
+   13 listaParametros: /* vacío */
+   14                | tipo
+   15                | listaParametros ',' tipo
 
-   18 sentencia: sentCompuesta
-   19          | sentExpresion
-   20          | sentSeleccion
-   21          | sentIteracion
-   22          | sentSalto
-   23          | sentEtiquetada
+   16 tipo: TIPO_DATO opcionId
 
-   24 sentCompuesta: '{' listaDeclaraciones listaSentencias '}'
+   17 opcionId: /* vacío */
+   18         | ID
 
-   25 listaDeclaraciones: /* vacío */
-   26                   | sentenciaDeclaracion
-   27                   | listaDeclaraciones sentenciaDeclaracion
+   19 sentencia: sentCompuesta
+   20          | sentExpresion
+   21          | sentSeleccion
+   22          | sentIteracion
+   23          | sentSalto
+   24          | sentEtiquetada
 
-   28 listaSentencias: /* vacío */
-   29                | sentencia
-   30                | listaSentencias sentencia
+   25 sentCompuesta: '{' listaDeclaraciones listaSentencias barraN '}'
 
-   31 $@3: /* vacío */
+   26 barraN: /* vacío */
+   27       | '\n'
+   28       | barraN '\n'
 
-   32 sentenciaDeclaracion: TIPO_DATO $@3 listaVarSimples ';'
+   29 listaDeclaraciones: /* vacío */
+   30                   | sentenciaDeclaracion
+   31                   | listaDeclaraciones sentenciaDeclaracion
 
-   33 listaVarSimples: unaVarSimple
-   34                | unaVarSimple ',' listaVarSimples
+   32 listaSentencias: /* vacío */
+   33                | sentencia
+   34                | listaSentencias sentencia
 
-   35 $@4: /* vacío */
+   35 $@3: /* vacío */
 
-   36 unaVarSimple: ID $@4 tipoVariable asignacion
+   36 sentenciaDeclaracion: TIPO_DATO $@3 listaVarSimples ';'
 
-   37 tipoVariable: /* vacío */
-   38             | array
-   39             | puntero
+   37 listaVarSimples: unaVarSimple
+   38                | unaVarSimple ',' listaVarSimples
 
-   40 asignacion: /* vacío */
-   41           | '=' inicializador
+   39 $@4: /* vacío */
 
-   42 puntero: '*'
-   43        | puntero '*'
+   40 unaVarSimple: ID $@4 tipoVariable asignacion
 
-   44 array: '[' exp ']'
-   45      | array '[' exp ']'
+   41 tipoVariable: /* vacío */
+   42             | array
+   43             | puntero
 
-   46 inicializador: exp
-   47              | '{' listaDeInicializadores '}'
+   44 asignacion: /* vacío */
+   45           | '=' inicializador
 
-   48 listaDeInicializadores: inicializador
-   49                       | listaDeInicializadores ',' inicializador
+   46 puntero: '*'
+   47        | puntero '*'
 
-   50 sentExpresion: exp ';'
+   48 array: '[' exp ']'
+   49      | array '[' exp ']'
 
-   51 sentSeleccion: IF '(' exp ')' sentencia
-   52              | IF '(' exp ')' sentencia ELSE sentencia
-   53              | SWITCH '(' exp ')' sentencia
+   50 inicializador: exp
+   51              | '{' listaDeInicializadores '}'
 
-   54 sentIteracion: WHILE '(' exp ')' sentencia
-   55              | DO sentencia WHILE '(' exp ')' ';'
-   56              | FOR '(' exp ';' exp ';' exp ')' sentencia
+   52 listaDeInicializadores: inicializador
+   53                       | listaDeInicializadores ',' inicializador
 
-   57 sentEtiquetada: CASE exp ':' sentencia
-   58               | DEFAULT ':' sentencia
-   59               | ID ':' sentencia
+   54 sentExpresion: exp ';'
 
-   60 sentSalto: RETURN exp ';'
-   61          | BREAK ';'
-   62          | CONTINUE ';'
-   63          | GOTO ID ';'
+   55 sentSeleccion: IF '(' exp ')' sentencia
+   56              | IF '(' exp ')' sentencia ELSE sentencia
+   57              | SWITCH '(' exp ')' sentencia
 
-   64 exp: expAsignacion
-   65    | exp ',' expAsignacion
+   58 sentIteracion: WHILE '(' exp ')' sentencia
+   59              | DO sentencia WHILE '(' exp ')' ';'
+   60              | FOR '(' exp ';' exp ';' exp ')' sentencia
 
-   66 expAsignacion: expCondicional
-   67              | expUnaria operAsignacion expAsignacion
+   61 sentEtiquetada: CASE exp ':' sentencia
+   62               | DEFAULT ':' sentencia
+   63               | ID ':' sentencia
 
-   68 expCondicional: expOr
-   69               | expOr '?'
+   64 sentSalto: RETURN exp ';'
+   65          | BREAK ';'
+   66          | CONTINUE ';'
+   67          | GOTO ID ';'
 
-   70 exp: expCondicional
+   68 exp: expAsignacion
+   69    | exp ',' expAsignacion
 
-   71 expOr: expAnd
-   72      | expOr OR expAnd
+   70 expAsignacion: expCondicional
+   71              | expUnaria operAsignacion expAsignacion
 
-   73 expAnd: expIgualdad
-   74       | expAnd AND expIgualdad
+   72 expCondicional: expOr
+   73               | expOr '?'
 
-   75 expIgualdad: expRelacional
-   76            | expIgualdad IGUALDAD expRelacional
-   77            | expIgualdad DESIGUALDAD expRelacional
+   74 exp: expCondicional
 
-   78 expRelacional: expAditiva
-   79              | expRelacional MAYORIGUAL expAditiva
-   80              | expRelacional '>' expAditiva
-   81              | expRelacional MENORIGUAL expAditiva
-   82              | expRelacional '<' expAditiva
+   75 expOr: expAnd
+   76      | expOr OR expAnd
 
-   83 expAditiva: expMultiplicativa
-   84           | expAditiva '+' expMultiplicativa
-   85           | expAditiva '-' expMultiplicativa
+   77 expAnd: expIgualdad
+   78       | expAnd AND expIgualdad
 
-   86 expMultiplicativa: expUnaria
-   87                  | expMultiplicativa '*' expUnaria
-   88                  | expMultiplicativa '/' expUnaria
-   89                  | expMultiplicativa '%' expUnaria
+   79 expIgualdad: expRelacional
+   80            | expIgualdad IGUALDAD expRelacional
+   81            | expIgualdad DESIGUALDAD expRelacional
 
-   90 expUnaria: expSufijo
-   91          | INCREMENTO expUnaria
-   92          | DECREMENTO expUnaria
-   93          | '-' expUnaria
-   94          | '+' expUnaria
-   95          | '~' expUnaria
-   96          | '!' expUnaria
-   97          | '&' expUnaria
-   98          | puntero expUnaria
-   99          | SIZEOF '(' expUnaria ')'
-  100          | SIZEOF '(' TIPO_DATO ')'
+   82 expRelacional: expAditiva
+   83              | expRelacional MAYORIGUAL expAditiva
+   84              | expRelacional '>' expAditiva
+   85              | expRelacional MENORIGUAL expAditiva
+   86              | expRelacional '<' expAditiva
 
-  101 expSufijo: expPrimaria
-  102          | expSufijo array
-  103          | expSufijo '(' listaArgumentos ')'
-  104          | expSufijo '.' ID
-  105          | expSufijo FLECHA ID
-  106          | expSufijo INCREMENTO
-  107          | expSufijo DECREMENTO
+   87 expAditiva: expMultiplicativa
+   88           | expAditiva '+' expMultiplicativa
+   89           | expAditiva '-' expMultiplicativa
 
-  108 expPrimaria: ID
-  109            | ENTERO
-  110            | REAL
-  111            | LITERAL_CADENA
-  112            | '(' exp ')'
+   90 expMultiplicativa: expUnaria
+   91                  | expMultiplicativa '*' expUnaria
+   92                  | expMultiplicativa '/' expUnaria
+   93                  | expMultiplicativa '%' expUnaria
 
-  113 listaArgumentos: /* vacío */
-  114                | exp
-  115                | listaArgumentos ',' exp
+   94 expUnaria: expSufijo
+   95          | INCREMENTO expUnaria
+   96          | DECREMENTO expUnaria
+   97          | '-' expUnaria
+   98          | '+' expUnaria
+   99          | '~' expUnaria
+  100          | '!' expUnaria
+  101          | '&' expUnaria
+  102          | puntero expUnaria
+  103          | SIZEOF '(' expUnaria ')'
+  104          | SIZEOF '(' TIPO_DATO ')'
 
-  116 operAsignacion: '='
-  117               | ASIGNACION_INCREMENTO
-  118               | ASIGNACION_DECREMENTO
-  119               | ASIGNACION_PRODUCTO
-  120               | ASIGNACION_DIVISION
+  105 expSufijo: expPrimaria
+  106          | expSufijo array
+  107          | expSufijo '(' listaArgumentos ')'
+  108          | expSufijo '.' ID
+  109          | expSufijo FLECHA ID
+  110          | expSufijo INCREMENTO
+  111          | expSufijo DECREMENTO
+
+  112 expPrimaria: ID
+  113            | ENTERO
+  114            | REAL
+  115            | LITERAL_CADENA
+  116            | '(' exp ')'
+
+  117 listaArgumentos: /* vacío */
+  118                | exp
+  119                | listaArgumentos ',' exp
+
+  120 operAsignacion: '='
+  121               | ASIGNACION_INCREMENTO
+  122               | ASIGNACION_DECREMENTO
+  123               | ASIGNACION_PRODUCTO
+  124               | ASIGNACION_DIVISION
 
 
 Terminales con las reglas donde aparecen
 
 $end (0) 0
-'\n' (10) 3 4 5
-'!' (33) 96
-'%' (37) 89
-'&' (38) 97
-'(' (40) 10 11 51 52 53 54 55 56 99 100 103 112
-')' (41) 10 11 51 52 53 54 55 56 99 100 103 112
-'*' (42) 42 43 87
-'+' (43) 84 94
-',' (44) 14 17 34 49 65 115
-'-' (45) 85 93
-'.' (46) 104
-'/' (47) 88
-':' (58) 57 58 59
-';' (59) 10 32 50 55 56 60 61 62 63
-'<' (60) 82
-'=' (61) 41 116
-'>' (62) 80
-'?' (63) 69
-'[' (91) 44 45
-']' (93) 44 45
+'\n' (10) 3 4 5 27 28
+'!' (33) 100
+'%' (37) 93
+'&' (38) 101
+'(' (40) 10 55 56 57 58 59 60 103 104 107 116
+')' (41) 10 55 56 57 58 59 60 103 104 107 116
+'*' (42) 46 47 91
+'+' (43) 88 98
+',' (44) 15 38 53 69 119
+'-' (45) 89 97
+'.' (46) 108
+'/' (47) 92
+':' (58) 61 62 63
+';' (59) 11 36 54 59 60 64 65 66 67
+'<' (60) 86
+'=' (61) 45 120
+'>' (62) 84
+'?' (63) 73
+'[' (91) 48 49
+']' (93) 48 49
 '^' (94)
-'{' (123) 24 47
-'}' (125) 24 47
-'~' (126) 95
+'{' (123) 25 51
+'}' (125) 25 51
+'~' (126) 99
 error (256)
-REAL (258) 110
-ENTERO (259) 109
-LITERAL_CADENA (260) 111
-OR (261) 72
-AND (262) 74
-IGUALDAD (263) 76
-DESIGUALDAD (264) 77
-MAYORIGUAL (265) 79
-MENORIGUAL (266) 81
-INCREMENTO (267) 91 106
-DECREMENTO (268) 92 107
-ASIGNACION_INCREMENTO (269) 117
-ASIGNACION_DECREMENTO (270) 118
-ASIGNACION_PRODUCTO (271) 119
-ASIGNACION_DIVISION (272) 120
-FLECHA (273) 105
-IF (274) 51 52
-ELSE (275) 52
-SWITCH (276) 53
-WHILE (277) 54 55
-DO (278) 55
-FOR (279) 56
-RETURN (280) 60
-CONTINUE (281) 62
-BREAK (282) 61
-CASE (283) 57
-DEFAULT (284) 58
+REAL (258) 114
+ENTERO (259) 113
+LITERAL_CADENA (260) 115
+OR (261) 76
+AND (262) 78
+IGUALDAD (263) 80
+DESIGUALDAD (264) 81
+MAYORIGUAL (265) 83
+MENORIGUAL (266) 85
+INCREMENTO (267) 95 110
+DECREMENTO (268) 96 111
+ASIGNACION_INCREMENTO (269) 121
+ASIGNACION_DECREMENTO (270) 122
+ASIGNACION_PRODUCTO (271) 123
+ASIGNACION_DIVISION (272) 124
+FLECHA (273) 109
+IF (274) 55 56
+ELSE (275) 56
+SWITCH (276) 57
+WHILE (277) 58 59
+DO (278) 59
+FOR (279) 60
+RETURN (280) 64
+CONTINUE (281) 66
+BREAK (282) 65
+CASE (283) 61
+DEFAULT (284) 62
 VOID (285) 9
-GOTO (286) 63
-TIPO_DATO (287) 7 13 14 16 17 32 100
-ID (288) 7 9 16 17 36 59 63 104 105 108
-SIZEOF (289) 99 100
+GOTO (286) 67
+TIPO_DATO (287) 7 16 36 104
+ID (288) 7 9 18 40 63 67 108 109 112
+SIZEOF (289) 103 104
 MAYORIGUAl (290)
 
 
@@ -269,85 +274,91 @@ $@1 (64)
     en la izquierda: 6, en la derecha: 7
 $@2 (65)
     en la izquierda: 8, en la derecha: 9
-declaracionODefinicion (66)
-    en la izquierda: 10 11, en la derecha: 7 9
-listaParametrosDeclaracion (67)
-    en la izquierda: 12 13 14, en la derecha: 10 14
-listaParametrosDefinicion (68)
-    en la izquierda: 15 16 17, en la derecha: 11 17
-sentencia (69)
-    en la izquierda: 18 19 20 21 22 23, en la derecha: 5 29 30 51 52
-    53 54 55 56 57 58 59
-sentCompuesta (70)
-    en la izquierda: 24, en la derecha: 11 18
-listaDeclaraciones (71)
-    en la izquierda: 25 26 27, en la derecha: 24 27
-listaSentencias (72)
-    en la izquierda: 28 29 30, en la derecha: 24 30
-sentenciaDeclaracion (73)
-    en la izquierda: 32, en la derecha: 26 27
-$@3 (74)
-    en la izquierda: 31, en la derecha: 32
-listaVarSimples (75)
-    en la izquierda: 33 34, en la derecha: 32 34
-unaVarSimple (76)
-    en la izquierda: 36, en la derecha: 33 34
-$@4 (77)
+parametros (66)
+    en la izquierda: 10, en la derecha: 7 9
+declaracionODefinicion (67)
+    en la izquierda: 11 12, en la derecha: 10
+listaParametros (68)
+    en la izquierda: 13 14 15, en la derecha: 10 15
+tipo (69)
+    en la izquierda: 16, en la derecha: 14 15
+opcionId (70)
+    en la izquierda: 17 18, en la derecha: 16
+sentencia (71)
+    en la izquierda: 19 20 21 22 23 24, en la derecha: 5 33 34 55 56
+    57 58 59 60 61 62 63
+sentCompuesta (72)
+    en la izquierda: 25, en la derecha: 12 19
+barraN (73)
+    en la izquierda: 26 27 28, en la derecha: 25 28
+listaDeclaraciones (74)
+    en la izquierda: 29 30 31, en la derecha: 25 31
+listaSentencias (75)
+    en la izquierda: 32 33 34, en la derecha: 25 34
+sentenciaDeclaracion (76)
+    en la izquierda: 36, en la derecha: 30 31
+$@3 (77)
     en la izquierda: 35, en la derecha: 36
-tipoVariable (78)
-    en la izquierda: 37 38 39, en la derecha: 36
-asignacion (79)
-    en la izquierda: 40 41, en la derecha: 36
-puntero (80)
-    en la izquierda: 42 43, en la derecha: 39 43 98
-array (81)
-    en la izquierda: 44 45, en la derecha: 38 45 102
-inicializador (82)
-    en la izquierda: 46 47, en la derecha: 41 48 49
-listaDeInicializadores (83)
-    en la izquierda: 48 49, en la derecha: 47 49
-sentExpresion (84)
-    en la izquierda: 50, en la derecha: 19
-sentSeleccion (85)
-    en la izquierda: 51 52 53, en la derecha: 20
-sentIteracion (86)
-    en la izquierda: 54 55 56, en la derecha: 21
-sentEtiquetada (87)
-    en la izquierda: 57 58 59, en la derecha: 23
-sentSalto (88)
-    en la izquierda: 60 61 62 63, en la derecha: 22
-exp (89)
-    en la izquierda: 64 65 70, en la derecha: 44 45 46 50 51 52 53
-    54 55 56 57 60 65 112 114 115
-expAsignacion (90)
-    en la izquierda: 66 67, en la derecha: 64 65 67
-expCondicional (91)
-    en la izquierda: 68 69, en la derecha: 66 70
-expOr (92)
-    en la izquierda: 71 72, en la derecha: 68 69 72
-expAnd (93)
-    en la izquierda: 73 74, en la derecha: 71 72 74
-expIgualdad (94)
-    en la izquierda: 75 76 77, en la derecha: 73 74 76 77
-expRelacional (95)
-    en la izquierda: 78 79 80 81 82, en la derecha: 75 76 77 79 80
-    81 82
-expAditiva (96)
-    en la izquierda: 83 84 85, en la derecha: 78 79 80 81 82 84 85
-expMultiplicativa (97)
-    en la izquierda: 86 87 88 89, en la derecha: 83 84 85 87 88 89
-expUnaria (98)
-    en la izquierda: 90 91 92 93 94 95 96 97 98 99 100, en la derecha:
-    67 86 87 88 89 91 92 93 94 95 96 97 98 99
-expSufijo (99)
-    en la izquierda: 101 102 103 104 105 106 107, en la derecha: 90
-    102 103 104 105 106 107
-expPrimaria (100)
-    en la izquierda: 108 109 110 111 112, en la derecha: 101
-listaArgumentos (101)
-    en la izquierda: 113 114 115, en la derecha: 103 115
-operAsignacion (102)
-    en la izquierda: 116 117 118 119 120, en la derecha: 67
+listaVarSimples (78)
+    en la izquierda: 37 38, en la derecha: 36 38
+unaVarSimple (79)
+    en la izquierda: 40, en la derecha: 37 38
+$@4 (80)
+    en la izquierda: 39, en la derecha: 40
+tipoVariable (81)
+    en la izquierda: 41 42 43, en la derecha: 40
+asignacion (82)
+    en la izquierda: 44 45, en la derecha: 40
+puntero (83)
+    en la izquierda: 46 47, en la derecha: 43 47 102
+array (84)
+    en la izquierda: 48 49, en la derecha: 42 49 106
+inicializador (85)
+    en la izquierda: 50 51, en la derecha: 45 52 53
+listaDeInicializadores (86)
+    en la izquierda: 52 53, en la derecha: 51 53
+sentExpresion (87)
+    en la izquierda: 54, en la derecha: 20
+sentSeleccion (88)
+    en la izquierda: 55 56 57, en la derecha: 21
+sentIteracion (89)
+    en la izquierda: 58 59 60, en la derecha: 22
+sentEtiquetada (90)
+    en la izquierda: 61 62 63, en la derecha: 24
+sentSalto (91)
+    en la izquierda: 64 65 66 67, en la derecha: 23
+exp (92)
+    en la izquierda: 68 69 74, en la derecha: 48 49 50 54 55 56 57
+    58 59 60 61 64 69 116 118 119
+expAsignacion (93)
+    en la izquierda: 70 71, en la derecha: 68 69 71
+expCondicional (94)
+    en la izquierda: 72 73, en la derecha: 70 74
+expOr (95)
+    en la izquierda: 75 76, en la derecha: 72 73 76
+expAnd (96)
+    en la izquierda: 77 78, en la derecha: 75 76 78
+expIgualdad (97)
+    en la izquierda: 79 80 81, en la derecha: 77 78 80 81
+expRelacional (98)
+    en la izquierda: 82 83 84 85 86, en la derecha: 79 80 81 83 84
+    85 86
+expAditiva (99)
+    en la izquierda: 87 88 89, en la derecha: 82 83 84 85 86 88 89
+expMultiplicativa (100)
+    en la izquierda: 90 91 92 93, en la derecha: 87 88 89 91 92 93
+expUnaria (101)
+    en la izquierda: 94 95 96 97 98 99 100 101 102 103 104, en la derecha:
+    71 90 91 92 93 95 96 97 98 99 100 101 102 103
+expSufijo (102)
+    en la izquierda: 105 106 107 108 109 110 111, en la derecha: 94
+    106 107 108 109 110 111
+expPrimaria (103)
+    en la izquierda: 112 113 114 115 116, en la derecha: 105
+listaArgumentos (104)
+    en la izquierda: 117 118 119, en la derecha: 107 119
+operAsignacion (105)
+    en la izquierda: 120 121 122 123 124, en la derecha: 71
 
 
 estado 0
@@ -428,28 +439,28 @@ estado 2
 
 estado 3
 
-  110 expPrimaria: REAL .
+  114 expPrimaria: REAL .
 
-    $default  reduce usando la regla 110 (expPrimaria)
+    $default  reduce usando la regla 114 (expPrimaria)
 
 
 estado 4
 
-  109 expPrimaria: ENTERO .
+  113 expPrimaria: ENTERO .
 
-    $default  reduce usando la regla 109 (expPrimaria)
+    $default  reduce usando la regla 113 (expPrimaria)
 
 
 estado 5
 
-  111 expPrimaria: LITERAL_CADENA .
+  115 expPrimaria: LITERAL_CADENA .
 
-    $default  reduce usando la regla 111 (expPrimaria)
+    $default  reduce usando la regla 115 (expPrimaria)
 
 
 estado 6
 
-   91 expUnaria: INCREMENTO . expUnaria
+   95 expUnaria: INCREMENTO . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -474,7 +485,7 @@ estado 6
 
 estado 7
 
-   92 expUnaria: DECREMENTO . expUnaria
+   96 expUnaria: DECREMENTO . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -499,29 +510,29 @@ estado 7
 
 estado 8
 
-   51 sentSeleccion: IF . '(' exp ')' sentencia
-   52              | IF . '(' exp ')' sentencia ELSE sentencia
+   55 sentSeleccion: IF . '(' exp ')' sentencia
+   56              | IF . '(' exp ')' sentencia ELSE sentencia
 
     '('  desplazar e ir al estado 57
 
 
 estado 9
 
-   53 sentSeleccion: SWITCH . '(' exp ')' sentencia
+   57 sentSeleccion: SWITCH . '(' exp ')' sentencia
 
     '('  desplazar e ir al estado 58
 
 
 estado 10
 
-   54 sentIteracion: WHILE . '(' exp ')' sentencia
+   58 sentIteracion: WHILE . '(' exp ')' sentencia
 
     '('  desplazar e ir al estado 59
 
 
 estado 11
 
-   55 sentIteracion: DO . sentencia WHILE '(' exp ')' ';'
+   59 sentIteracion: DO . sentencia WHILE '(' exp ')' ';'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -574,14 +585,14 @@ estado 11
 
 estado 12
 
-   56 sentIteracion: FOR . '(' exp ';' exp ';' exp ')' sentencia
+   60 sentIteracion: FOR . '(' exp ';' exp ';' exp ')' sentencia
 
     '('  desplazar e ir al estado 61
 
 
 estado 13
 
-   60 sentSalto: RETURN . exp ';'
+   64 sentSalto: RETURN . exp ';'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -615,21 +626,21 @@ estado 13
 
 estado 14
 
-   62 sentSalto: CONTINUE . ';'
+   66 sentSalto: CONTINUE . ';'
 
     ';'  desplazar e ir al estado 63
 
 
 estado 15
 
-   61 sentSalto: BREAK . ';'
+   65 sentSalto: BREAK . ';'
 
     ';'  desplazar e ir al estado 64
 
 
 estado 16
 
-   57 sentEtiquetada: CASE . exp ':' sentencia
+   61 sentEtiquetada: CASE . exp ':' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -663,53 +674,53 @@ estado 16
 
 estado 17
 
-   58 sentEtiquetada: DEFAULT . ':' sentencia
+   62 sentEtiquetada: DEFAULT . ':' sentencia
 
     ':'  desplazar e ir al estado 66
 
 
 estado 18
 
-    9 funcion: VOID . ID $@2 declaracionODefinicion
+    9 funcion: VOID . ID $@2 parametros
 
     ID  desplazar e ir al estado 67
 
 
 estado 19
 
-   63 sentSalto: GOTO . ID ';'
+   67 sentSalto: GOTO . ID ';'
 
     ID  desplazar e ir al estado 68
 
 
 estado 20
 
-    7 funcion: TIPO_DATO . ID $@1 declaracionODefinicion
+    7 funcion: TIPO_DATO . ID $@1 parametros
 
     ID  desplazar e ir al estado 69
 
 
 estado 21
 
-   59 sentEtiquetada: ID . ':' sentencia
-  108 expPrimaria: ID .
+   63 sentEtiquetada: ID . ':' sentencia
+  112 expPrimaria: ID .
 
     ':'  desplazar e ir al estado 70
 
-    $default  reduce usando la regla 108 (expPrimaria)
+    $default  reduce usando la regla 112 (expPrimaria)
 
 
 estado 22
 
-   99 expUnaria: SIZEOF . '(' expUnaria ')'
-  100          | SIZEOF . '(' TIPO_DATO ')'
+  103 expUnaria: SIZEOF . '(' expUnaria ')'
+  104          | SIZEOF . '(' TIPO_DATO ')'
 
     '('  desplazar e ir al estado 71
 
 
 estado 23
 
-   94 expUnaria: '+' . expUnaria
+   98 expUnaria: '+' . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -734,7 +745,7 @@ estado 23
 
 estado 24
 
-   93 expUnaria: '-' . expUnaria
+   97 expUnaria: '-' . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -759,14 +770,14 @@ estado 24
 
 estado 25
 
-   42 puntero: '*' .
+   46 puntero: '*' .
 
-    $default  reduce usando la regla 42 (puntero)
+    $default  reduce usando la regla 46 (puntero)
 
 
 estado 26
 
-  112 expPrimaria: '(' . exp ')'
+  116 expPrimaria: '(' . exp ')'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -807,12 +818,12 @@ estado 27
 
 estado 28
 
-   24 sentCompuesta: '{' . listaDeclaraciones listaSentencias '}'
+   25 sentCompuesta: '{' . listaDeclaraciones listaSentencias barraN '}'
 
     TIPO_DATO  desplazar e ir al estado 75
 
-    TIPO_DATO  [reduce usando la regla 25 (listaDeclaraciones)]
-    $default   reduce usando la regla 25 (listaDeclaraciones)
+    TIPO_DATO  [reduce usando la regla 29 (listaDeclaraciones)]
+    $default   reduce usando la regla 29 (listaDeclaraciones)
 
     listaDeclaraciones    ir al estado 76
     sentenciaDeclaracion  ir al estado 77
@@ -820,7 +831,7 @@ estado 28
 
 estado 29
 
-   95 expUnaria: '~' . expUnaria
+   99 expUnaria: '~' . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -845,7 +856,7 @@ estado 29
 
 estado 30
 
-   96 expUnaria: '!' . expUnaria
+  100 expUnaria: '!' . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -870,7 +881,7 @@ estado 30
 
 estado 31
 
-   97 expUnaria: '&' . expUnaria
+  101 expUnaria: '&' . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -916,15 +927,15 @@ estado 34
 
 estado 35
 
-   18 sentencia: sentCompuesta .
+   19 sentencia: sentCompuesta .
 
-    $default  reduce usando la regla 18 (sentencia)
+    $default  reduce usando la regla 19 (sentencia)
 
 
 estado 36
 
-   43 puntero: puntero . '*'
-   98 expUnaria: puntero . expUnaria
+   47 puntero: puntero . '*'
+  102 expUnaria: puntero . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -949,43 +960,43 @@ estado 36
 
 estado 37
 
-   19 sentencia: sentExpresion .
-
-    $default  reduce usando la regla 19 (sentencia)
-
-
-estado 38
-
-   20 sentencia: sentSeleccion .
+   20 sentencia: sentExpresion .
 
     $default  reduce usando la regla 20 (sentencia)
 
 
-estado 39
+estado 38
 
-   21 sentencia: sentIteracion .
+   21 sentencia: sentSeleccion .
 
     $default  reduce usando la regla 21 (sentencia)
 
 
-estado 40
+estado 39
 
-   23 sentencia: sentEtiquetada .
-
-    $default  reduce usando la regla 23 (sentencia)
-
-
-estado 41
-
-   22 sentencia: sentSalto .
+   22 sentencia: sentIteracion .
 
     $default  reduce usando la regla 22 (sentencia)
 
 
+estado 40
+
+   24 sentencia: sentEtiquetada .
+
+    $default  reduce usando la regla 24 (sentencia)
+
+
+estado 41
+
+   23 sentencia: sentSalto .
+
+    $default  reduce usando la regla 23 (sentencia)
+
+
 estado 42
 
-   50 sentExpresion: exp . ';'
-   65 exp: exp . ',' expAsignacion
+   54 sentExpresion: exp . ';'
+   69 exp: exp . ',' expAsignacion
 
     ';'  desplazar e ir al estado 85
     ','  desplazar e ir al estado 86
@@ -993,111 +1004,111 @@ estado 42
 
 estado 43
 
-   64 exp: expAsignacion .
+   68 exp: expAsignacion .
 
-    $default  reduce usando la regla 64 (exp)
+    $default  reduce usando la regla 68 (exp)
 
 
 estado 44
 
-   66 expAsignacion: expCondicional .
-   70 exp: expCondicional .
+   70 expAsignacion: expCondicional .
+   74 exp: expCondicional .
 
-    ')'       reduce usando la regla 66 (expAsignacion)
-    ')'       [reduce usando la regla 70 (exp)]
-    ';'       reduce usando la regla 66 (expAsignacion)
-    ';'       [reduce usando la regla 70 (exp)]
-    ','       reduce usando la regla 66 (expAsignacion)
-    ','       [reduce usando la regla 70 (exp)]
-    '}'       reduce usando la regla 66 (expAsignacion)
-    '}'       [reduce usando la regla 70 (exp)]
-    ']'       reduce usando la regla 66 (expAsignacion)
-    ']'       [reduce usando la regla 70 (exp)]
-    ':'       reduce usando la regla 66 (expAsignacion)
-    ':'       [reduce usando la regla 70 (exp)]
-    $default  reduce usando la regla 66 (expAsignacion)
+    ')'       reduce usando la regla 70 (expAsignacion)
+    ')'       [reduce usando la regla 74 (exp)]
+    ';'       reduce usando la regla 70 (expAsignacion)
+    ';'       [reduce usando la regla 74 (exp)]
+    ','       reduce usando la regla 70 (expAsignacion)
+    ','       [reduce usando la regla 74 (exp)]
+    '}'       reduce usando la regla 70 (expAsignacion)
+    '}'       [reduce usando la regla 74 (exp)]
+    ']'       reduce usando la regla 70 (expAsignacion)
+    ']'       [reduce usando la regla 74 (exp)]
+    ':'       reduce usando la regla 70 (expAsignacion)
+    ':'       [reduce usando la regla 74 (exp)]
+    $default  reduce usando la regla 70 (expAsignacion)
 
 
 estado 45
 
-   68 expCondicional: expOr .
-   69               | expOr . '?'
-   72 expOr: expOr . OR expAnd
+   72 expCondicional: expOr .
+   73               | expOr . '?'
+   76 expOr: expOr . OR expAnd
 
     OR   desplazar e ir al estado 87
     '?'  desplazar e ir al estado 88
 
-    $default  reduce usando la regla 68 (expCondicional)
+    $default  reduce usando la regla 72 (expCondicional)
 
 
 estado 46
 
-   71 expOr: expAnd .
-   74 expAnd: expAnd . AND expIgualdad
+   75 expOr: expAnd .
+   78 expAnd: expAnd . AND expIgualdad
 
     AND  desplazar e ir al estado 89
 
-    $default  reduce usando la regla 71 (expOr)
+    $default  reduce usando la regla 75 (expOr)
 
 
 estado 47
 
-   73 expAnd: expIgualdad .
-   76 expIgualdad: expIgualdad . IGUALDAD expRelacional
-   77            | expIgualdad . DESIGUALDAD expRelacional
+   77 expAnd: expIgualdad .
+   80 expIgualdad: expIgualdad . IGUALDAD expRelacional
+   81            | expIgualdad . DESIGUALDAD expRelacional
 
     IGUALDAD     desplazar e ir al estado 90
     DESIGUALDAD  desplazar e ir al estado 91
 
-    $default  reduce usando la regla 73 (expAnd)
+    $default  reduce usando la regla 77 (expAnd)
 
 
 estado 48
 
-   75 expIgualdad: expRelacional .
-   79 expRelacional: expRelacional . MAYORIGUAL expAditiva
-   80              | expRelacional . '>' expAditiva
-   81              | expRelacional . MENORIGUAL expAditiva
-   82              | expRelacional . '<' expAditiva
+   79 expIgualdad: expRelacional .
+   83 expRelacional: expRelacional . MAYORIGUAL expAditiva
+   84              | expRelacional . '>' expAditiva
+   85              | expRelacional . MENORIGUAL expAditiva
+   86              | expRelacional . '<' expAditiva
 
     MAYORIGUAL  desplazar e ir al estado 92
     MENORIGUAL  desplazar e ir al estado 93
     '>'         desplazar e ir al estado 94
     '<'         desplazar e ir al estado 95
 
-    $default  reduce usando la regla 75 (expIgualdad)
+    $default  reduce usando la regla 79 (expIgualdad)
 
 
 estado 49
 
-   78 expRelacional: expAditiva .
-   84 expAditiva: expAditiva . '+' expMultiplicativa
-   85           | expAditiva . '-' expMultiplicativa
+   82 expRelacional: expAditiva .
+   88 expAditiva: expAditiva . '+' expMultiplicativa
+   89           | expAditiva . '-' expMultiplicativa
 
     '+'  desplazar e ir al estado 96
     '-'  desplazar e ir al estado 97
 
-    $default  reduce usando la regla 78 (expRelacional)
+    $default  reduce usando la regla 82 (expRelacional)
 
 
 estado 50
 
-   83 expAditiva: expMultiplicativa .
-   87 expMultiplicativa: expMultiplicativa . '*' expUnaria
-   88                  | expMultiplicativa . '/' expUnaria
-   89                  | expMultiplicativa . '%' expUnaria
+   87 expAditiva: expMultiplicativa .
+   91 expMultiplicativa: expMultiplicativa . '*' expUnaria
+   92                  | expMultiplicativa . '/' expUnaria
+   93                  | expMultiplicativa . '%' expUnaria
 
     '*'  desplazar e ir al estado 98
     '/'  desplazar e ir al estado 99
     '%'  desplazar e ir al estado 100
 
-    $default  reduce usando la regla 83 (expAditiva)
+    $default  reduce usando la regla 87 (expAditiva)
 
 
 estado 51
 
-   67 expAsignacion: expUnaria . operAsignacion expAsignacion
-   86 expMultiplicativa: expUnaria .
+   71 expAsignacion: expUnaria . operAsignacion expAsignacion
+   90 expMultiplicativa: expUnaria .
 
     ASIGNACION_INCREMENTO  desplazar e ir al estado 101
     ASIGNACION_DECREMENTO  desplazar e ir al estado 102
@@ -1105,20 +1116,20 @@ estado 51
     ASIGNACION_DIVISION    desplazar e ir al estado 104
     '='                    desplazar e ir al estado 105
 
-    $default  reduce usando la regla 86 (expMultiplicativa)
+    $default  reduce usando la regla 90 (expMultiplicativa)
 
     operAsignacion  ir al estado 106
 
 
 estado 52
 
-   90 expUnaria: expSufijo .
-  102 expSufijo: expSufijo . array
-  103          | expSufijo . '(' listaArgumentos ')'
-  104          | expSufijo . '.' ID
-  105          | expSufijo . FLECHA ID
-  106          | expSufijo . INCREMENTO
-  107          | expSufijo . DECREMENTO
+   94 expUnaria: expSufijo .
+  106 expSufijo: expSufijo . array
+  107          | expSufijo . '(' listaArgumentos ')'
+  108          | expSufijo . '.' ID
+  109          | expSufijo . FLECHA ID
+  110          | expSufijo . INCREMENTO
+  111          | expSufijo . DECREMENTO
 
     INCREMENTO  desplazar e ir al estado 107
     DECREMENTO  desplazar e ir al estado 108
@@ -1127,43 +1138,43 @@ estado 52
     '['         desplazar e ir al estado 111
     '.'         desplazar e ir al estado 112
 
-    $default  reduce usando la regla 90 (expUnaria)
+    $default  reduce usando la regla 94 (expUnaria)
 
     array  ir al estado 113
 
 
 estado 53
 
-  101 expSufijo: expPrimaria .
+  105 expSufijo: expPrimaria .
 
-    $default  reduce usando la regla 101 (expSufijo)
+    $default  reduce usando la regla 105 (expSufijo)
 
 
 estado 54
 
-  108 expPrimaria: ID .
+  112 expPrimaria: ID .
 
-    $default  reduce usando la regla 108 (expPrimaria)
+    $default  reduce usando la regla 112 (expPrimaria)
 
 
 estado 55
 
-   91 expUnaria: INCREMENTO expUnaria .
+   95 expUnaria: INCREMENTO expUnaria .
 
-    $default  reduce usando la regla 91 (expUnaria)
+    $default  reduce usando la regla 95 (expUnaria)
 
 
 estado 56
 
-   92 expUnaria: DECREMENTO expUnaria .
+   96 expUnaria: DECREMENTO expUnaria .
 
-    $default  reduce usando la regla 92 (expUnaria)
+    $default  reduce usando la regla 96 (expUnaria)
 
 
 estado 57
 
-   51 sentSeleccion: IF '(' . exp ')' sentencia
-   52              | IF '(' . exp ')' sentencia ELSE sentencia
+   55 sentSeleccion: IF '(' . exp ')' sentencia
+   56              | IF '(' . exp ')' sentencia ELSE sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1197,7 +1208,7 @@ estado 57
 
 estado 58
 
-   53 sentSeleccion: SWITCH '(' . exp ')' sentencia
+   57 sentSeleccion: SWITCH '(' . exp ')' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1231,7 +1242,7 @@ estado 58
 
 estado 59
 
-   54 sentIteracion: WHILE '(' . exp ')' sentencia
+   58 sentIteracion: WHILE '(' . exp ')' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1265,14 +1276,14 @@ estado 59
 
 estado 60
 
-   55 sentIteracion: DO sentencia . WHILE '(' exp ')' ';'
+   59 sentIteracion: DO sentencia . WHILE '(' exp ')' ';'
 
     WHILE  desplazar e ir al estado 117
 
 
 estado 61
 
-   56 sentIteracion: FOR '(' . exp ';' exp ';' exp ')' sentencia
+   60 sentIteracion: FOR '(' . exp ';' exp ';' exp ')' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1306,8 +1317,8 @@ estado 61
 
 estado 62
 
-   60 sentSalto: RETURN exp . ';'
-   65 exp: exp . ',' expAsignacion
+   64 sentSalto: RETURN exp . ';'
+   69 exp: exp . ',' expAsignacion
 
     ';'  desplazar e ir al estado 119
     ','  desplazar e ir al estado 86
@@ -1315,22 +1326,22 @@ estado 62
 
 estado 63
 
-   62 sentSalto: CONTINUE ';' .
+   66 sentSalto: CONTINUE ';' .
 
-    $default  reduce usando la regla 62 (sentSalto)
+    $default  reduce usando la regla 66 (sentSalto)
 
 
 estado 64
 
-   61 sentSalto: BREAK ';' .
+   65 sentSalto: BREAK ';' .
 
-    $default  reduce usando la regla 61 (sentSalto)
+    $default  reduce usando la regla 65 (sentSalto)
 
 
 estado 65
 
-   57 sentEtiquetada: CASE exp . ':' sentencia
-   65 exp: exp . ',' expAsignacion
+   61 sentEtiquetada: CASE exp . ':' sentencia
+   69 exp: exp . ',' expAsignacion
 
     ','  desplazar e ir al estado 86
     ':'  desplazar e ir al estado 120
@@ -1338,7 +1349,7 @@ estado 65
 
 estado 66
 
-   58 sentEtiquetada: DEFAULT ':' . sentencia
+   62 sentEtiquetada: DEFAULT ':' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1391,7 +1402,7 @@ estado 66
 
 estado 67
 
-    9 funcion: VOID ID . $@2 declaracionODefinicion
+    9 funcion: VOID ID . $@2 parametros
 
     $default  reduce usando la regla 8 ($@2)
 
@@ -1400,14 +1411,14 @@ estado 67
 
 estado 68
 
-   63 sentSalto: GOTO ID . ';'
+   67 sentSalto: GOTO ID . ';'
 
     ';'  desplazar e ir al estado 123
 
 
 estado 69
 
-    7 funcion: TIPO_DATO ID . $@1 declaracionODefinicion
+    7 funcion: TIPO_DATO ID . $@1 parametros
 
     $default  reduce usando la regla 6 ($@1)
 
@@ -1416,7 +1427,7 @@ estado 69
 
 estado 70
 
-   59 sentEtiquetada: ID ':' . sentencia
+   63 sentEtiquetada: ID ':' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1469,8 +1480,8 @@ estado 70
 
 estado 71
 
-   99 expUnaria: SIZEOF '(' . expUnaria ')'
-  100          | SIZEOF '(' . TIPO_DATO ')'
+  103 expUnaria: SIZEOF '(' . expUnaria ')'
+  104          | SIZEOF '(' . TIPO_DATO ')'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1496,22 +1507,22 @@ estado 71
 
 estado 72
 
-   94 expUnaria: '+' expUnaria .
+   98 expUnaria: '+' expUnaria .
 
-    $default  reduce usando la regla 94 (expUnaria)
+    $default  reduce usando la regla 98 (expUnaria)
 
 
 estado 73
 
-   93 expUnaria: '-' expUnaria .
+   97 expUnaria: '-' expUnaria .
 
-    $default  reduce usando la regla 93 (expUnaria)
+    $default  reduce usando la regla 97 (expUnaria)
 
 
 estado 74
 
-   65 exp: exp . ',' expAsignacion
-  112 expPrimaria: '(' exp . ')'
+   69 exp: exp . ',' expAsignacion
+  116 expPrimaria: '(' exp . ')'
 
     ')'  desplazar e ir al estado 128
     ','  desplazar e ir al estado 86
@@ -1519,17 +1530,17 @@ estado 74
 
 estado 75
 
-   32 sentenciaDeclaracion: TIPO_DATO . $@3 listaVarSimples ';'
+   36 sentenciaDeclaracion: TIPO_DATO . $@3 listaVarSimples ';'
 
-    $default  reduce usando la regla 31 ($@3)
+    $default  reduce usando la regla 35 ($@3)
 
     $@3  ir al estado 129
 
 
 estado 76
 
-   24 sentCompuesta: '{' listaDeclaraciones . listaSentencias '}'
-   27 listaDeclaraciones: listaDeclaraciones . sentenciaDeclaracion
+   25 sentCompuesta: '{' listaDeclaraciones . listaSentencias barraN '}'
+   31 listaDeclaraciones: listaDeclaraciones . sentenciaDeclaracion
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1559,33 +1570,33 @@ estado 76
     '!'             desplazar e ir al estado 30
     '&'             desplazar e ir al estado 31
 
-    REAL            [reduce usando la regla 28 (listaSentencias)]
-    ENTERO          [reduce usando la regla 28 (listaSentencias)]
-    LITERAL_CADENA  [reduce usando la regla 28 (listaSentencias)]
-    INCREMENTO      [reduce usando la regla 28 (listaSentencias)]
-    DECREMENTO      [reduce usando la regla 28 (listaSentencias)]
-    IF              [reduce usando la regla 28 (listaSentencias)]
-    SWITCH          [reduce usando la regla 28 (listaSentencias)]
-    WHILE           [reduce usando la regla 28 (listaSentencias)]
-    DO              [reduce usando la regla 28 (listaSentencias)]
-    FOR             [reduce usando la regla 28 (listaSentencias)]
-    RETURN          [reduce usando la regla 28 (listaSentencias)]
-    CONTINUE        [reduce usando la regla 28 (listaSentencias)]
-    BREAK           [reduce usando la regla 28 (listaSentencias)]
-    CASE            [reduce usando la regla 28 (listaSentencias)]
-    DEFAULT         [reduce usando la regla 28 (listaSentencias)]
-    GOTO            [reduce usando la regla 28 (listaSentencias)]
-    ID              [reduce usando la regla 28 (listaSentencias)]
-    SIZEOF          [reduce usando la regla 28 (listaSentencias)]
-    '+'             [reduce usando la regla 28 (listaSentencias)]
-    '-'             [reduce usando la regla 28 (listaSentencias)]
-    '*'             [reduce usando la regla 28 (listaSentencias)]
-    '('             [reduce usando la regla 28 (listaSentencias)]
-    '{'             [reduce usando la regla 28 (listaSentencias)]
-    '~'             [reduce usando la regla 28 (listaSentencias)]
-    '!'             [reduce usando la regla 28 (listaSentencias)]
-    '&'             [reduce usando la regla 28 (listaSentencias)]
-    $default        reduce usando la regla 28 (listaSentencias)
+    REAL            [reduce usando la regla 32 (listaSentencias)]
+    ENTERO          [reduce usando la regla 32 (listaSentencias)]
+    LITERAL_CADENA  [reduce usando la regla 32 (listaSentencias)]
+    INCREMENTO      [reduce usando la regla 32 (listaSentencias)]
+    DECREMENTO      [reduce usando la regla 32 (listaSentencias)]
+    IF              [reduce usando la regla 32 (listaSentencias)]
+    SWITCH          [reduce usando la regla 32 (listaSentencias)]
+    WHILE           [reduce usando la regla 32 (listaSentencias)]
+    DO              [reduce usando la regla 32 (listaSentencias)]
+    FOR             [reduce usando la regla 32 (listaSentencias)]
+    RETURN          [reduce usando la regla 32 (listaSentencias)]
+    CONTINUE        [reduce usando la regla 32 (listaSentencias)]
+    BREAK           [reduce usando la regla 32 (listaSentencias)]
+    CASE            [reduce usando la regla 32 (listaSentencias)]
+    DEFAULT         [reduce usando la regla 32 (listaSentencias)]
+    GOTO            [reduce usando la regla 32 (listaSentencias)]
+    ID              [reduce usando la regla 32 (listaSentencias)]
+    SIZEOF          [reduce usando la regla 32 (listaSentencias)]
+    '+'             [reduce usando la regla 32 (listaSentencias)]
+    '-'             [reduce usando la regla 32 (listaSentencias)]
+    '*'             [reduce usando la regla 32 (listaSentencias)]
+    '('             [reduce usando la regla 32 (listaSentencias)]
+    '{'             [reduce usando la regla 32 (listaSentencias)]
+    '~'             [reduce usando la regla 32 (listaSentencias)]
+    '!'             [reduce usando la regla 32 (listaSentencias)]
+    '&'             [reduce usando la regla 32 (listaSentencias)]
+    $default        reduce usando la regla 32 (listaSentencias)
 
     sentencia             ir al estado 130
     sentCompuesta         ir al estado 35
@@ -1613,30 +1624,30 @@ estado 76
 
 estado 77
 
-   26 listaDeclaraciones: sentenciaDeclaracion .
+   30 listaDeclaraciones: sentenciaDeclaracion .
 
-    $default  reduce usando la regla 26 (listaDeclaraciones)
+    $default  reduce usando la regla 30 (listaDeclaraciones)
 
 
 estado 78
 
-   95 expUnaria: '~' expUnaria .
+   99 expUnaria: '~' expUnaria .
 
-    $default  reduce usando la regla 95 (expUnaria)
+    $default  reduce usando la regla 99 (expUnaria)
 
 
 estado 79
 
-   96 expUnaria: '!' expUnaria .
+  100 expUnaria: '!' expUnaria .
 
-    $default  reduce usando la regla 96 (expUnaria)
+    $default  reduce usando la regla 100 (expUnaria)
 
 
 estado 80
 
-   97 expUnaria: '&' expUnaria .
+  101 expUnaria: '&' expUnaria .
 
-    $default  reduce usando la regla 97 (expUnaria)
+    $default  reduce usando la regla 101 (expUnaria)
 
 
 estado 81
@@ -1655,57 +1666,57 @@ estado 82
 
 estado 83
 
-   42 puntero: '*' .
-   43        | puntero '*' .
+   46 puntero: '*' .
+   47        | puntero '*' .
 
-    REAL            reduce usando la regla 42 (puntero)
-    REAL            [reduce usando la regla 43 (puntero)]
-    ENTERO          reduce usando la regla 42 (puntero)
-    ENTERO          [reduce usando la regla 43 (puntero)]
-    LITERAL_CADENA  reduce usando la regla 42 (puntero)
-    LITERAL_CADENA  [reduce usando la regla 43 (puntero)]
-    INCREMENTO      reduce usando la regla 42 (puntero)
-    INCREMENTO      [reduce usando la regla 43 (puntero)]
-    DECREMENTO      reduce usando la regla 42 (puntero)
-    DECREMENTO      [reduce usando la regla 43 (puntero)]
-    ID              reduce usando la regla 42 (puntero)
-    ID              [reduce usando la regla 43 (puntero)]
-    SIZEOF          reduce usando la regla 42 (puntero)
-    SIZEOF          [reduce usando la regla 43 (puntero)]
-    '+'             reduce usando la regla 42 (puntero)
-    '+'             [reduce usando la regla 43 (puntero)]
-    '-'             reduce usando la regla 42 (puntero)
-    '-'             [reduce usando la regla 43 (puntero)]
-    '*'             reduce usando la regla 42 (puntero)
-    '*'             [reduce usando la regla 43 (puntero)]
-    '('             reduce usando la regla 42 (puntero)
-    '('             [reduce usando la regla 43 (puntero)]
-    '~'             reduce usando la regla 42 (puntero)
-    '~'             [reduce usando la regla 43 (puntero)]
-    '!'             reduce usando la regla 42 (puntero)
-    '!'             [reduce usando la regla 43 (puntero)]
-    '&'             reduce usando la regla 42 (puntero)
-    '&'             [reduce usando la regla 43 (puntero)]
-    $default        reduce usando la regla 42 (puntero)
+    REAL            reduce usando la regla 46 (puntero)
+    REAL            [reduce usando la regla 47 (puntero)]
+    ENTERO          reduce usando la regla 46 (puntero)
+    ENTERO          [reduce usando la regla 47 (puntero)]
+    LITERAL_CADENA  reduce usando la regla 46 (puntero)
+    LITERAL_CADENA  [reduce usando la regla 47 (puntero)]
+    INCREMENTO      reduce usando la regla 46 (puntero)
+    INCREMENTO      [reduce usando la regla 47 (puntero)]
+    DECREMENTO      reduce usando la regla 46 (puntero)
+    DECREMENTO      [reduce usando la regla 47 (puntero)]
+    ID              reduce usando la regla 46 (puntero)
+    ID              [reduce usando la regla 47 (puntero)]
+    SIZEOF          reduce usando la regla 46 (puntero)
+    SIZEOF          [reduce usando la regla 47 (puntero)]
+    '+'             reduce usando la regla 46 (puntero)
+    '+'             [reduce usando la regla 47 (puntero)]
+    '-'             reduce usando la regla 46 (puntero)
+    '-'             [reduce usando la regla 47 (puntero)]
+    '*'             reduce usando la regla 46 (puntero)
+    '*'             [reduce usando la regla 47 (puntero)]
+    '('             reduce usando la regla 46 (puntero)
+    '('             [reduce usando la regla 47 (puntero)]
+    '~'             reduce usando la regla 46 (puntero)
+    '~'             [reduce usando la regla 47 (puntero)]
+    '!'             reduce usando la regla 46 (puntero)
+    '!'             [reduce usando la regla 47 (puntero)]
+    '&'             reduce usando la regla 46 (puntero)
+    '&'             [reduce usando la regla 47 (puntero)]
+    $default        reduce usando la regla 46 (puntero)
 
 
 estado 84
 
-   98 expUnaria: puntero expUnaria .
+  102 expUnaria: puntero expUnaria .
 
-    $default  reduce usando la regla 98 (expUnaria)
+    $default  reduce usando la regla 102 (expUnaria)
 
 
 estado 85
 
-   50 sentExpresion: exp ';' .
+   54 sentExpresion: exp ';' .
 
-    $default  reduce usando la regla 50 (sentExpresion)
+    $default  reduce usando la regla 54 (sentExpresion)
 
 
 estado 86
 
-   65 exp: exp ',' . expAsignacion
+   69 exp: exp ',' . expAsignacion
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1738,7 +1749,7 @@ estado 86
 
 estado 87
 
-   72 expOr: expOr OR . expAnd
+   76 expOr: expOr OR . expAnd
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1768,14 +1779,14 @@ estado 87
 
 estado 88
 
-   69 expCondicional: expOr '?' .
+   73 expCondicional: expOr '?' .
 
-    $default  reduce usando la regla 69 (expCondicional)
+    $default  reduce usando la regla 73 (expCondicional)
 
 
 estado 89
 
-   74 expAnd: expAnd AND . expIgualdad
+   78 expAnd: expAnd AND . expIgualdad
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1804,7 +1815,7 @@ estado 89
 
 estado 90
 
-   76 expIgualdad: expIgualdad IGUALDAD . expRelacional
+   80 expIgualdad: expIgualdad IGUALDAD . expRelacional
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1832,7 +1843,7 @@ estado 90
 
 estado 91
 
-   77 expIgualdad: expIgualdad DESIGUALDAD . expRelacional
+   81 expIgualdad: expIgualdad DESIGUALDAD . expRelacional
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1860,7 +1871,7 @@ estado 91
 
 estado 92
 
-   79 expRelacional: expRelacional MAYORIGUAL . expAditiva
+   83 expRelacional: expRelacional MAYORIGUAL . expAditiva
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1887,7 +1898,7 @@ estado 92
 
 estado 93
 
-   81 expRelacional: expRelacional MENORIGUAL . expAditiva
+   85 expRelacional: expRelacional MENORIGUAL . expAditiva
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1914,7 +1925,7 @@ estado 93
 
 estado 94
 
-   80 expRelacional: expRelacional '>' . expAditiva
+   84 expRelacional: expRelacional '>' . expAditiva
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1941,7 +1952,7 @@ estado 94
 
 estado 95
 
-   82 expRelacional: expRelacional '<' . expAditiva
+   86 expRelacional: expRelacional '<' . expAditiva
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1968,7 +1979,7 @@ estado 95
 
 estado 96
 
-   84 expAditiva: expAditiva '+' . expMultiplicativa
+   88 expAditiva: expAditiva '+' . expMultiplicativa
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -1994,7 +2005,7 @@ estado 96
 
 estado 97
 
-   85 expAditiva: expAditiva '-' . expMultiplicativa
+   89 expAditiva: expAditiva '-' . expMultiplicativa
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2020,7 +2031,7 @@ estado 97
 
 estado 98
 
-   87 expMultiplicativa: expMultiplicativa '*' . expUnaria
+   91 expMultiplicativa: expMultiplicativa '*' . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2045,7 +2056,7 @@ estado 98
 
 estado 99
 
-   88 expMultiplicativa: expMultiplicativa '/' . expUnaria
+   92 expMultiplicativa: expMultiplicativa '/' . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2070,7 +2081,7 @@ estado 99
 
 estado 100
 
-   89 expMultiplicativa: expMultiplicativa '%' . expUnaria
+   93 expMultiplicativa: expMultiplicativa '%' . expUnaria
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2095,42 +2106,42 @@ estado 100
 
 estado 101
 
-  117 operAsignacion: ASIGNACION_INCREMENTO .
+  121 operAsignacion: ASIGNACION_INCREMENTO .
 
-    $default  reduce usando la regla 117 (operAsignacion)
+    $default  reduce usando la regla 121 (operAsignacion)
 
 
 estado 102
 
-  118 operAsignacion: ASIGNACION_DECREMENTO .
+  122 operAsignacion: ASIGNACION_DECREMENTO .
 
-    $default  reduce usando la regla 118 (operAsignacion)
+    $default  reduce usando la regla 122 (operAsignacion)
 
 
 estado 103
 
-  119 operAsignacion: ASIGNACION_PRODUCTO .
+  123 operAsignacion: ASIGNACION_PRODUCTO .
 
-    $default  reduce usando la regla 119 (operAsignacion)
+    $default  reduce usando la regla 123 (operAsignacion)
 
 
 estado 104
 
-  120 operAsignacion: ASIGNACION_DIVISION .
+  124 operAsignacion: ASIGNACION_DIVISION .
 
-    $default  reduce usando la regla 120 (operAsignacion)
+    $default  reduce usando la regla 124 (operAsignacion)
 
 
 estado 105
 
-  116 operAsignacion: '=' .
+  120 operAsignacion: '=' .
 
-    $default  reduce usando la regla 116 (operAsignacion)
+    $default  reduce usando la regla 120 (operAsignacion)
 
 
 estado 106
 
-   67 expAsignacion: expUnaria operAsignacion . expAsignacion
+   71 expAsignacion: expUnaria operAsignacion . expAsignacion
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2163,28 +2174,28 @@ estado 106
 
 estado 107
 
-  106 expSufijo: expSufijo INCREMENTO .
+  110 expSufijo: expSufijo INCREMENTO .
 
-    $default  reduce usando la regla 106 (expSufijo)
+    $default  reduce usando la regla 110 (expSufijo)
 
 
 estado 108
 
-  107 expSufijo: expSufijo DECREMENTO .
+  111 expSufijo: expSufijo DECREMENTO .
 
-    $default  reduce usando la regla 107 (expSufijo)
+    $default  reduce usando la regla 111 (expSufijo)
 
 
 estado 109
 
-  105 expSufijo: expSufijo FLECHA . ID
+  109 expSufijo: expSufijo FLECHA . ID
 
     ID  desplazar e ir al estado 150
 
 
 estado 110
 
-  103 expSufijo: expSufijo '(' . listaArgumentos ')'
+  107 expSufijo: expSufijo '(' . listaArgumentos ')'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2201,7 +2212,7 @@ estado 110
     '!'             desplazar e ir al estado 30
     '&'             desplazar e ir al estado 31
 
-    $default  reduce usando la regla 113 (listaArgumentos)
+    $default  reduce usando la regla 117 (listaArgumentos)
 
     puntero            ir al estado 36
     exp                ir al estado 151
@@ -2221,7 +2232,7 @@ estado 110
 
 estado 111
 
-   44 array: '[' . exp ']'
+   48 array: '[' . exp ']'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2255,27 +2266,27 @@ estado 111
 
 estado 112
 
-  104 expSufijo: expSufijo '.' . ID
+  108 expSufijo: expSufijo '.' . ID
 
     ID  desplazar e ir al estado 154
 
 
 estado 113
 
-   45 array: array . '[' exp ']'
-  102 expSufijo: expSufijo array .
+   49 array: array . '[' exp ']'
+  106 expSufijo: expSufijo array .
 
     '['  desplazar e ir al estado 155
 
-    '['       [reduce usando la regla 102 (expSufijo)]
-    $default  reduce usando la regla 102 (expSufijo)
+    '['       [reduce usando la regla 106 (expSufijo)]
+    $default  reduce usando la regla 106 (expSufijo)
 
 
 estado 114
 
-   51 sentSeleccion: IF '(' exp . ')' sentencia
-   52              | IF '(' exp . ')' sentencia ELSE sentencia
-   65 exp: exp . ',' expAsignacion
+   55 sentSeleccion: IF '(' exp . ')' sentencia
+   56              | IF '(' exp . ')' sentencia ELSE sentencia
+   69 exp: exp . ',' expAsignacion
 
     ')'  desplazar e ir al estado 156
     ','  desplazar e ir al estado 86
@@ -2283,8 +2294,8 @@ estado 114
 
 estado 115
 
-   53 sentSeleccion: SWITCH '(' exp . ')' sentencia
-   65 exp: exp . ',' expAsignacion
+   57 sentSeleccion: SWITCH '(' exp . ')' sentencia
+   69 exp: exp . ',' expAsignacion
 
     ')'  desplazar e ir al estado 157
     ','  desplazar e ir al estado 86
@@ -2292,8 +2303,8 @@ estado 115
 
 estado 116
 
-   54 sentIteracion: WHILE '(' exp . ')' sentencia
-   65 exp: exp . ',' expAsignacion
+   58 sentIteracion: WHILE '(' exp . ')' sentencia
+   69 exp: exp . ',' expAsignacion
 
     ')'  desplazar e ir al estado 158
     ','  desplazar e ir al estado 86
@@ -2301,15 +2312,15 @@ estado 116
 
 estado 117
 
-   55 sentIteracion: DO sentencia WHILE . '(' exp ')' ';'
+   59 sentIteracion: DO sentencia WHILE . '(' exp ')' ';'
 
     '('  desplazar e ir al estado 159
 
 
 estado 118
 
-   56 sentIteracion: FOR '(' exp . ';' exp ';' exp ')' sentencia
-   65 exp: exp . ',' expAsignacion
+   60 sentIteracion: FOR '(' exp . ';' exp ';' exp ')' sentencia
+   69 exp: exp . ',' expAsignacion
 
     ';'  desplazar e ir al estado 160
     ','  desplazar e ir al estado 86
@@ -2317,14 +2328,14 @@ estado 118
 
 estado 119
 
-   60 sentSalto: RETURN exp ';' .
+   64 sentSalto: RETURN exp ';' .
 
-    $default  reduce usando la regla 60 (sentSalto)
+    $default  reduce usando la regla 64 (sentSalto)
 
 
 estado 120
 
-   57 sentEtiquetada: CASE exp ':' . sentencia
+   61 sentEtiquetada: CASE exp ':' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2377,67 +2388,67 @@ estado 120
 
 estado 121
 
-   58 sentEtiquetada: DEFAULT ':' sentencia .
+   62 sentEtiquetada: DEFAULT ':' sentencia .
 
-    $default  reduce usando la regla 58 (sentEtiquetada)
+    $default  reduce usando la regla 62 (sentEtiquetada)
 
 
 estado 122
 
-    9 funcion: VOID ID $@2 . declaracionODefinicion
+    9 funcion: VOID ID $@2 . parametros
 
     '('  desplazar e ir al estado 162
 
-    declaracionODefinicion  ir al estado 163
+    parametros  ir al estado 163
 
 
 estado 123
 
-   63 sentSalto: GOTO ID ';' .
+   67 sentSalto: GOTO ID ';' .
 
-    $default  reduce usando la regla 63 (sentSalto)
+    $default  reduce usando la regla 67 (sentSalto)
 
 
 estado 124
 
-    7 funcion: TIPO_DATO ID $@1 . declaracionODefinicion
+    7 funcion: TIPO_DATO ID $@1 . parametros
 
     '('  desplazar e ir al estado 162
 
-    declaracionODefinicion  ir al estado 164
+    parametros  ir al estado 164
 
 
 estado 125
 
-   59 sentEtiquetada: ID ':' sentencia .
+   63 sentEtiquetada: ID ':' sentencia .
 
-    $default  reduce usando la regla 59 (sentEtiquetada)
+    $default  reduce usando la regla 63 (sentEtiquetada)
 
 
 estado 126
 
-  100 expUnaria: SIZEOF '(' TIPO_DATO . ')'
+  104 expUnaria: SIZEOF '(' TIPO_DATO . ')'
 
     ')'  desplazar e ir al estado 165
 
 
 estado 127
 
-   99 expUnaria: SIZEOF '(' expUnaria . ')'
+  103 expUnaria: SIZEOF '(' expUnaria . ')'
 
     ')'  desplazar e ir al estado 166
 
 
 estado 128
 
-  112 expPrimaria: '(' exp ')' .
+  116 expPrimaria: '(' exp ')' .
 
-    $default  reduce usando la regla 112 (expPrimaria)
+    $default  reduce usando la regla 116 (expPrimaria)
 
 
 estado 129
 
-   32 sentenciaDeclaracion: TIPO_DATO $@3 . listaVarSimples ';'
+   36 sentenciaDeclaracion: TIPO_DATO $@3 . listaVarSimples ';'
 
     ID  desplazar e ir al estado 167
 
@@ -2447,15 +2458,15 @@ estado 129
 
 estado 130
 
-   29 listaSentencias: sentencia .
+   33 listaSentencias: sentencia .
 
-    $default  reduce usando la regla 29 (listaSentencias)
+    $default  reduce usando la regla 33 (listaSentencias)
 
 
 estado 131
 
-   24 sentCompuesta: '{' listaDeclaraciones listaSentencias . '}'
-   30 listaSentencias: listaSentencias . sentencia
+   25 sentCompuesta: '{' listaDeclaraciones listaSentencias . barraN '}'
+   34 listaSentencias: listaSentencias . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2479,14 +2490,18 @@ estado 131
     '-'             desplazar e ir al estado 24
     '*'             desplazar e ir al estado 25
     '('             desplazar e ir al estado 26
+    '\n'            desplazar e ir al estado 170
     '{'             desplazar e ir al estado 28
-    '}'             desplazar e ir al estado 170
     '~'             desplazar e ir al estado 29
     '!'             desplazar e ir al estado 30
     '&'             desplazar e ir al estado 31
 
+    '\n'      [reduce usando la regla 26 (barraN)]
+    $default  reduce usando la regla 26 (barraN)
+
     sentencia          ir al estado 171
     sentCompuesta      ir al estado 35
+    barraN             ir al estado 172
     puntero            ir al estado 36
     sentExpresion      ir al estado 37
     sentSeleccion      ir al estado 38
@@ -2509,236 +2524,236 @@ estado 131
 
 estado 132
 
-   27 listaDeclaraciones: listaDeclaraciones sentenciaDeclaracion .
+   31 listaDeclaraciones: listaDeclaraciones sentenciaDeclaracion .
 
-    $default  reduce usando la regla 27 (listaDeclaraciones)
+    $default  reduce usando la regla 31 (listaDeclaraciones)
 
 
 estado 133
 
-   65 exp: exp ',' expAsignacion .
+   69 exp: exp ',' expAsignacion .
 
-    $default  reduce usando la regla 65 (exp)
+    $default  reduce usando la regla 69 (exp)
 
 
 estado 134
 
-   66 expAsignacion: expCondicional .
+   70 expAsignacion: expCondicional .
 
-    $default  reduce usando la regla 66 (expAsignacion)
+    $default  reduce usando la regla 70 (expAsignacion)
 
 
 estado 135
 
-   72 expOr: expOr OR expAnd .
-   74 expAnd: expAnd . AND expIgualdad
+   76 expOr: expOr OR expAnd .
+   78 expAnd: expAnd . AND expIgualdad
 
     AND  desplazar e ir al estado 89
 
-    $default  reduce usando la regla 72 (expOr)
+    $default  reduce usando la regla 76 (expOr)
 
 
 estado 136
 
-   86 expMultiplicativa: expUnaria .
+   90 expMultiplicativa: expUnaria .
 
-    $default  reduce usando la regla 86 (expMultiplicativa)
+    $default  reduce usando la regla 90 (expMultiplicativa)
 
 
 estado 137
 
-   74 expAnd: expAnd AND expIgualdad .
-   76 expIgualdad: expIgualdad . IGUALDAD expRelacional
-   77            | expIgualdad . DESIGUALDAD expRelacional
+   78 expAnd: expAnd AND expIgualdad .
+   80 expIgualdad: expIgualdad . IGUALDAD expRelacional
+   81            | expIgualdad . DESIGUALDAD expRelacional
 
     IGUALDAD     desplazar e ir al estado 90
     DESIGUALDAD  desplazar e ir al estado 91
 
-    $default  reduce usando la regla 74 (expAnd)
+    $default  reduce usando la regla 78 (expAnd)
 
 
 estado 138
 
-   76 expIgualdad: expIgualdad IGUALDAD expRelacional .
-   79 expRelacional: expRelacional . MAYORIGUAL expAditiva
-   80              | expRelacional . '>' expAditiva
-   81              | expRelacional . MENORIGUAL expAditiva
-   82              | expRelacional . '<' expAditiva
+   80 expIgualdad: expIgualdad IGUALDAD expRelacional .
+   83 expRelacional: expRelacional . MAYORIGUAL expAditiva
+   84              | expRelacional . '>' expAditiva
+   85              | expRelacional . MENORIGUAL expAditiva
+   86              | expRelacional . '<' expAditiva
 
     MAYORIGUAL  desplazar e ir al estado 92
     MENORIGUAL  desplazar e ir al estado 93
     '>'         desplazar e ir al estado 94
     '<'         desplazar e ir al estado 95
 
-    $default  reduce usando la regla 76 (expIgualdad)
+    $default  reduce usando la regla 80 (expIgualdad)
 
 
 estado 139
 
-   77 expIgualdad: expIgualdad DESIGUALDAD expRelacional .
-   79 expRelacional: expRelacional . MAYORIGUAL expAditiva
-   80              | expRelacional . '>' expAditiva
-   81              | expRelacional . MENORIGUAL expAditiva
-   82              | expRelacional . '<' expAditiva
+   81 expIgualdad: expIgualdad DESIGUALDAD expRelacional .
+   83 expRelacional: expRelacional . MAYORIGUAL expAditiva
+   84              | expRelacional . '>' expAditiva
+   85              | expRelacional . MENORIGUAL expAditiva
+   86              | expRelacional . '<' expAditiva
 
     MAYORIGUAL  desplazar e ir al estado 92
     MENORIGUAL  desplazar e ir al estado 93
     '>'         desplazar e ir al estado 94
     '<'         desplazar e ir al estado 95
 
-    $default  reduce usando la regla 77 (expIgualdad)
+    $default  reduce usando la regla 81 (expIgualdad)
 
 
 estado 140
 
-   79 expRelacional: expRelacional MAYORIGUAL expAditiva .
-   84 expAditiva: expAditiva . '+' expMultiplicativa
-   85           | expAditiva . '-' expMultiplicativa
+   83 expRelacional: expRelacional MAYORIGUAL expAditiva .
+   88 expAditiva: expAditiva . '+' expMultiplicativa
+   89           | expAditiva . '-' expMultiplicativa
 
     '+'  desplazar e ir al estado 96
     '-'  desplazar e ir al estado 97
 
-    $default  reduce usando la regla 79 (expRelacional)
+    $default  reduce usando la regla 83 (expRelacional)
 
 
 estado 141
 
-   81 expRelacional: expRelacional MENORIGUAL expAditiva .
-   84 expAditiva: expAditiva . '+' expMultiplicativa
-   85           | expAditiva . '-' expMultiplicativa
+   85 expRelacional: expRelacional MENORIGUAL expAditiva .
+   88 expAditiva: expAditiva . '+' expMultiplicativa
+   89           | expAditiva . '-' expMultiplicativa
 
     '+'  desplazar e ir al estado 96
     '-'  desplazar e ir al estado 97
 
-    $default  reduce usando la regla 81 (expRelacional)
+    $default  reduce usando la regla 85 (expRelacional)
 
 
 estado 142
 
-   80 expRelacional: expRelacional '>' expAditiva .
-   84 expAditiva: expAditiva . '+' expMultiplicativa
-   85           | expAditiva . '-' expMultiplicativa
+   84 expRelacional: expRelacional '>' expAditiva .
+   88 expAditiva: expAditiva . '+' expMultiplicativa
+   89           | expAditiva . '-' expMultiplicativa
 
     '+'  desplazar e ir al estado 96
     '-'  desplazar e ir al estado 97
 
-    $default  reduce usando la regla 80 (expRelacional)
+    $default  reduce usando la regla 84 (expRelacional)
 
 
 estado 143
 
-   82 expRelacional: expRelacional '<' expAditiva .
-   84 expAditiva: expAditiva . '+' expMultiplicativa
-   85           | expAditiva . '-' expMultiplicativa
+   86 expRelacional: expRelacional '<' expAditiva .
+   88 expAditiva: expAditiva . '+' expMultiplicativa
+   89           | expAditiva . '-' expMultiplicativa
 
     '+'  desplazar e ir al estado 96
     '-'  desplazar e ir al estado 97
 
-    $default  reduce usando la regla 82 (expRelacional)
+    $default  reduce usando la regla 86 (expRelacional)
 
 
 estado 144
 
-   84 expAditiva: expAditiva '+' expMultiplicativa .
-   87 expMultiplicativa: expMultiplicativa . '*' expUnaria
-   88                  | expMultiplicativa . '/' expUnaria
-   89                  | expMultiplicativa . '%' expUnaria
+   88 expAditiva: expAditiva '+' expMultiplicativa .
+   91 expMultiplicativa: expMultiplicativa . '*' expUnaria
+   92                  | expMultiplicativa . '/' expUnaria
+   93                  | expMultiplicativa . '%' expUnaria
 
     '*'  desplazar e ir al estado 98
     '/'  desplazar e ir al estado 99
     '%'  desplazar e ir al estado 100
 
-    $default  reduce usando la regla 84 (expAditiva)
+    $default  reduce usando la regla 88 (expAditiva)
 
 
 estado 145
 
-   85 expAditiva: expAditiva '-' expMultiplicativa .
-   87 expMultiplicativa: expMultiplicativa . '*' expUnaria
-   88                  | expMultiplicativa . '/' expUnaria
-   89                  | expMultiplicativa . '%' expUnaria
+   89 expAditiva: expAditiva '-' expMultiplicativa .
+   91 expMultiplicativa: expMultiplicativa . '*' expUnaria
+   92                  | expMultiplicativa . '/' expUnaria
+   93                  | expMultiplicativa . '%' expUnaria
 
     '*'  desplazar e ir al estado 98
     '/'  desplazar e ir al estado 99
     '%'  desplazar e ir al estado 100
 
-    $default  reduce usando la regla 85 (expAditiva)
+    $default  reduce usando la regla 89 (expAditiva)
 
 
 estado 146
 
-   87 expMultiplicativa: expMultiplicativa '*' expUnaria .
+   91 expMultiplicativa: expMultiplicativa '*' expUnaria .
 
-    $default  reduce usando la regla 87 (expMultiplicativa)
+    $default  reduce usando la regla 91 (expMultiplicativa)
 
 
 estado 147
 
-   88 expMultiplicativa: expMultiplicativa '/' expUnaria .
+   92 expMultiplicativa: expMultiplicativa '/' expUnaria .
 
-    $default  reduce usando la regla 88 (expMultiplicativa)
+    $default  reduce usando la regla 92 (expMultiplicativa)
 
 
 estado 148
 
-   89 expMultiplicativa: expMultiplicativa '%' expUnaria .
+   93 expMultiplicativa: expMultiplicativa '%' expUnaria .
 
-    $default  reduce usando la regla 89 (expMultiplicativa)
+    $default  reduce usando la regla 93 (expMultiplicativa)
 
 
 estado 149
 
-   67 expAsignacion: expUnaria operAsignacion expAsignacion .
+   71 expAsignacion: expUnaria operAsignacion expAsignacion .
 
-    $default  reduce usando la regla 67 (expAsignacion)
+    $default  reduce usando la regla 71 (expAsignacion)
 
 
 estado 150
 
-  105 expSufijo: expSufijo FLECHA ID .
+  109 expSufijo: expSufijo FLECHA ID .
 
-    $default  reduce usando la regla 105 (expSufijo)
+    $default  reduce usando la regla 109 (expSufijo)
 
 
 estado 151
 
-   65 exp: exp . ',' expAsignacion
-  114 listaArgumentos: exp .
+   69 exp: exp . ',' expAsignacion
+  118 listaArgumentos: exp .
 
     ','  desplazar e ir al estado 86
 
-    ','       [reduce usando la regla 114 (listaArgumentos)]
-    $default  reduce usando la regla 114 (listaArgumentos)
+    ','       [reduce usando la regla 118 (listaArgumentos)]
+    $default  reduce usando la regla 118 (listaArgumentos)
 
 
 estado 152
 
-  103 expSufijo: expSufijo '(' listaArgumentos . ')'
-  115 listaArgumentos: listaArgumentos . ',' exp
+  107 expSufijo: expSufijo '(' listaArgumentos . ')'
+  119 listaArgumentos: listaArgumentos . ',' exp
 
-    ')'  desplazar e ir al estado 172
-    ','  desplazar e ir al estado 173
+    ')'  desplazar e ir al estado 173
+    ','  desplazar e ir al estado 174
 
 
 estado 153
 
-   44 array: '[' exp . ']'
-   65 exp: exp . ',' expAsignacion
+   48 array: '[' exp . ']'
+   69 exp: exp . ',' expAsignacion
 
     ','  desplazar e ir al estado 86
-    ']'  desplazar e ir al estado 174
+    ']'  desplazar e ir al estado 175
 
 
 estado 154
 
-  104 expSufijo: expSufijo '.' ID .
+  108 expSufijo: expSufijo '.' ID .
 
-    $default  reduce usando la regla 104 (expSufijo)
+    $default  reduce usando la regla 108 (expSufijo)
 
 
 estado 155
 
-   45 array: array '[' . exp ']'
+   49 array: array '[' . exp ']'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2756,7 +2771,7 @@ estado 155
     '&'             desplazar e ir al estado 31
 
     puntero            ir al estado 36
-    exp                ir al estado 175
+    exp                ir al estado 176
     expAsignacion      ir al estado 43
     expCondicional     ir al estado 44
     expOr              ir al estado 45
@@ -2772,61 +2787,8 @@ estado 155
 
 estado 156
 
-   51 sentSeleccion: IF '(' exp ')' . sentencia
-   52              | IF '(' exp ')' . sentencia ELSE sentencia
-
-    REAL            desplazar e ir al estado 3
-    ENTERO          desplazar e ir al estado 4
-    LITERAL_CADENA  desplazar e ir al estado 5
-    INCREMENTO      desplazar e ir al estado 6
-    DECREMENTO      desplazar e ir al estado 7
-    IF              desplazar e ir al estado 8
-    SWITCH          desplazar e ir al estado 9
-    WHILE           desplazar e ir al estado 10
-    DO              desplazar e ir al estado 11
-    FOR             desplazar e ir al estado 12
-    RETURN          desplazar e ir al estado 13
-    CONTINUE        desplazar e ir al estado 14
-    BREAK           desplazar e ir al estado 15
-    CASE            desplazar e ir al estado 16
-    DEFAULT         desplazar e ir al estado 17
-    GOTO            desplazar e ir al estado 19
-    ID              desplazar e ir al estado 21
-    SIZEOF          desplazar e ir al estado 22
-    '+'             desplazar e ir al estado 23
-    '-'             desplazar e ir al estado 24
-    '*'             desplazar e ir al estado 25
-    '('             desplazar e ir al estado 26
-    '{'             desplazar e ir al estado 28
-    '~'             desplazar e ir al estado 29
-    '!'             desplazar e ir al estado 30
-    '&'             desplazar e ir al estado 31
-
-    sentencia          ir al estado 176
-    sentCompuesta      ir al estado 35
-    puntero            ir al estado 36
-    sentExpresion      ir al estado 37
-    sentSeleccion      ir al estado 38
-    sentIteracion      ir al estado 39
-    sentEtiquetada     ir al estado 40
-    sentSalto          ir al estado 41
-    exp                ir al estado 42
-    expAsignacion      ir al estado 43
-    expCondicional     ir al estado 44
-    expOr              ir al estado 45
-    expAnd             ir al estado 46
-    expIgualdad        ir al estado 47
-    expRelacional      ir al estado 48
-    expAditiva         ir al estado 49
-    expMultiplicativa  ir al estado 50
-    expUnaria          ir al estado 51
-    expSufijo          ir al estado 52
-    expPrimaria        ir al estado 53
-
-
-estado 157
-
-   53 sentSeleccion: SWITCH '(' exp ')' . sentencia
+   55 sentSeleccion: IF '(' exp ')' . sentencia
+   56              | IF '(' exp ')' . sentencia ELSE sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2877,9 +2839,9 @@ estado 157
     expPrimaria        ir al estado 53
 
 
-estado 158
+estado 157
 
-   54 sentIteracion: WHILE '(' exp ')' . sentencia
+   57 sentSeleccion: SWITCH '(' exp ')' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2930,27 +2892,46 @@ estado 158
     expPrimaria        ir al estado 53
 
 
-estado 159
+estado 158
 
-   55 sentIteracion: DO sentencia WHILE '(' . exp ')' ';'
+   58 sentIteracion: WHILE '(' exp ')' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
     LITERAL_CADENA  desplazar e ir al estado 5
     INCREMENTO      desplazar e ir al estado 6
     DECREMENTO      desplazar e ir al estado 7
-    ID              desplazar e ir al estado 54
+    IF              desplazar e ir al estado 8
+    SWITCH          desplazar e ir al estado 9
+    WHILE           desplazar e ir al estado 10
+    DO              desplazar e ir al estado 11
+    FOR             desplazar e ir al estado 12
+    RETURN          desplazar e ir al estado 13
+    CONTINUE        desplazar e ir al estado 14
+    BREAK           desplazar e ir al estado 15
+    CASE            desplazar e ir al estado 16
+    DEFAULT         desplazar e ir al estado 17
+    GOTO            desplazar e ir al estado 19
+    ID              desplazar e ir al estado 21
     SIZEOF          desplazar e ir al estado 22
     '+'             desplazar e ir al estado 23
     '-'             desplazar e ir al estado 24
     '*'             desplazar e ir al estado 25
     '('             desplazar e ir al estado 26
+    '{'             desplazar e ir al estado 28
     '~'             desplazar e ir al estado 29
     '!'             desplazar e ir al estado 30
     '&'             desplazar e ir al estado 31
 
+    sentencia          ir al estado 179
+    sentCompuesta      ir al estado 35
     puntero            ir al estado 36
-    exp                ir al estado 179
+    sentExpresion      ir al estado 37
+    sentSeleccion      ir al estado 38
+    sentIteracion      ir al estado 39
+    sentEtiquetada     ir al estado 40
+    sentSalto          ir al estado 41
+    exp                ir al estado 42
     expAsignacion      ir al estado 43
     expCondicional     ir al estado 44
     expOr              ir al estado 45
@@ -2964,9 +2945,9 @@ estado 159
     expPrimaria        ir al estado 53
 
 
-estado 160
+estado 159
 
-   56 sentIteracion: FOR '(' exp ';' . exp ';' exp ')' sentencia
+   59 sentIteracion: DO sentencia WHILE '(' . exp ')' ';'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -2998,108 +2979,146 @@ estado 160
     expPrimaria        ir al estado 53
 
 
+estado 160
+
+   60 sentIteracion: FOR '(' exp ';' . exp ';' exp ')' sentencia
+
+    REAL            desplazar e ir al estado 3
+    ENTERO          desplazar e ir al estado 4
+    LITERAL_CADENA  desplazar e ir al estado 5
+    INCREMENTO      desplazar e ir al estado 6
+    DECREMENTO      desplazar e ir al estado 7
+    ID              desplazar e ir al estado 54
+    SIZEOF          desplazar e ir al estado 22
+    '+'             desplazar e ir al estado 23
+    '-'             desplazar e ir al estado 24
+    '*'             desplazar e ir al estado 25
+    '('             desplazar e ir al estado 26
+    '~'             desplazar e ir al estado 29
+    '!'             desplazar e ir al estado 30
+    '&'             desplazar e ir al estado 31
+
+    puntero            ir al estado 36
+    exp                ir al estado 181
+    expAsignacion      ir al estado 43
+    expCondicional     ir al estado 44
+    expOr              ir al estado 45
+    expAnd             ir al estado 46
+    expIgualdad        ir al estado 47
+    expRelacional      ir al estado 48
+    expAditiva         ir al estado 49
+    expMultiplicativa  ir al estado 50
+    expUnaria          ir al estado 51
+    expSufijo          ir al estado 52
+    expPrimaria        ir al estado 53
+
+
 estado 161
 
-   57 sentEtiquetada: CASE exp ':' sentencia .
+   61 sentEtiquetada: CASE exp ':' sentencia .
 
-    $default  reduce usando la regla 57 (sentEtiquetada)
+    $default  reduce usando la regla 61 (sentEtiquetada)
 
 
 estado 162
 
-   10 declaracionODefinicion: '(' . listaParametrosDeclaracion ')' ';'
-   11                       | '(' . listaParametrosDefinicion ')' sentCompuesta
+   10 parametros: '(' . listaParametros ')' declaracionODefinicion
 
-    TIPO_DATO  desplazar e ir al estado 181
+    TIPO_DATO  desplazar e ir al estado 182
 
-    ')'       reduce usando la regla 12 (listaParametrosDeclaracion)
-    ')'       [reduce usando la regla 15 (listaParametrosDefinicion)]
-    ','       reduce usando la regla 12 (listaParametrosDeclaracion)
-    ','       [reduce usando la regla 15 (listaParametrosDefinicion)]
-    $default  reduce usando la regla 12 (listaParametrosDeclaracion)
+    $default  reduce usando la regla 13 (listaParametros)
 
-    listaParametrosDeclaracion  ir al estado 182
-    listaParametrosDefinicion   ir al estado 183
+    listaParametros  ir al estado 183
+    tipo             ir al estado 184
 
 
 estado 163
 
-    9 funcion: VOID ID $@2 declaracionODefinicion .
+    9 funcion: VOID ID $@2 parametros .
 
     $default  reduce usando la regla 9 (funcion)
 
 
 estado 164
 
-    7 funcion: TIPO_DATO ID $@1 declaracionODefinicion .
+    7 funcion: TIPO_DATO ID $@1 parametros .
 
     $default  reduce usando la regla 7 (funcion)
 
 
 estado 165
 
-  100 expUnaria: SIZEOF '(' TIPO_DATO ')' .
+  104 expUnaria: SIZEOF '(' TIPO_DATO ')' .
 
-    $default  reduce usando la regla 100 (expUnaria)
+    $default  reduce usando la regla 104 (expUnaria)
 
 
 estado 166
 
-   99 expUnaria: SIZEOF '(' expUnaria ')' .
+  103 expUnaria: SIZEOF '(' expUnaria ')' .
 
-    $default  reduce usando la regla 99 (expUnaria)
+    $default  reduce usando la regla 103 (expUnaria)
 
 
 estado 167
 
-   36 unaVarSimple: ID . $@4 tipoVariable asignacion
+   40 unaVarSimple: ID . $@4 tipoVariable asignacion
 
-    $default  reduce usando la regla 35 ($@4)
+    $default  reduce usando la regla 39 ($@4)
 
-    $@4  ir al estado 184
+    $@4  ir al estado 185
 
 
 estado 168
 
-   32 sentenciaDeclaracion: TIPO_DATO $@3 listaVarSimples . ';'
+   36 sentenciaDeclaracion: TIPO_DATO $@3 listaVarSimples . ';'
 
-    ';'  desplazar e ir al estado 185
+    ';'  desplazar e ir al estado 186
 
 
 estado 169
 
-   33 listaVarSimples: unaVarSimple .
-   34                | unaVarSimple . ',' listaVarSimples
+   37 listaVarSimples: unaVarSimple .
+   38                | unaVarSimple . ',' listaVarSimples
 
-    ','  desplazar e ir al estado 186
+    ','  desplazar e ir al estado 187
 
-    $default  reduce usando la regla 33 (listaVarSimples)
+    $default  reduce usando la regla 37 (listaVarSimples)
 
 
 estado 170
 
-   24 sentCompuesta: '{' listaDeclaraciones listaSentencias '}' .
+   27 barraN: '\n' .
 
-    $default  reduce usando la regla 24 (sentCompuesta)
+    $default  reduce usando la regla 27 (barraN)
 
 
 estado 171
 
-   30 listaSentencias: listaSentencias sentencia .
+   34 listaSentencias: listaSentencias sentencia .
 
-    $default  reduce usando la regla 30 (listaSentencias)
+    $default  reduce usando la regla 34 (listaSentencias)
 
 
 estado 172
 
-  103 expSufijo: expSufijo '(' listaArgumentos ')' .
+   25 sentCompuesta: '{' listaDeclaraciones listaSentencias barraN . '}'
+   28 barraN: barraN . '\n'
 
-    $default  reduce usando la regla 103 (expSufijo)
+    '\n'  desplazar e ir al estado 188
+    '}'   desplazar e ir al estado 189
 
 
 estado 173
 
-  115 listaArgumentos: listaArgumentos ',' . exp
+  107 expSufijo: expSufijo '(' listaArgumentos ')' .
+
+    $default  reduce usando la regla 107 (expSufijo)
+
+
+estado 174
+
+  119 listaArgumentos: listaArgumentos ',' . exp
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -3117,7 +3136,7 @@ estado 173
     '&'             desplazar e ir al estado 31
 
     puntero            ir al estado 36
-    exp                ir al estado 187
+    exp                ir al estado 190
     expAsignacion      ir al estado 43
     expCondicional     ir al estado 44
     expOr              ir al estado 45
@@ -3131,145 +3150,158 @@ estado 173
     expPrimaria        ir al estado 53
 
 
-estado 174
-
-   44 array: '[' exp ']' .
-
-    $default  reduce usando la regla 44 (array)
-
-
 estado 175
 
-   45 array: array '[' exp . ']'
-   65 exp: exp . ',' expAsignacion
+   48 array: '[' exp ']' .
 
-    ','  desplazar e ir al estado 86
-    ']'  desplazar e ir al estado 188
+    $default  reduce usando la regla 48 (array)
 
 
 estado 176
 
-   51 sentSeleccion: IF '(' exp ')' sentencia .
-   52              | IF '(' exp ')' sentencia . ELSE sentencia
+   49 array: array '[' exp . ']'
+   69 exp: exp . ',' expAsignacion
 
-    ELSE  desplazar e ir al estado 189
-
-    ELSE      [reduce usando la regla 51 (sentSeleccion)]
-    $default  reduce usando la regla 51 (sentSeleccion)
+    ','  desplazar e ir al estado 86
+    ']'  desplazar e ir al estado 191
 
 
 estado 177
 
-   53 sentSeleccion: SWITCH '(' exp ')' sentencia .
+   55 sentSeleccion: IF '(' exp ')' sentencia .
+   56              | IF '(' exp ')' sentencia . ELSE sentencia
 
-    $default  reduce usando la regla 53 (sentSeleccion)
+    ELSE  desplazar e ir al estado 192
+
+    ELSE      [reduce usando la regla 55 (sentSeleccion)]
+    $default  reduce usando la regla 55 (sentSeleccion)
 
 
 estado 178
 
-   54 sentIteracion: WHILE '(' exp ')' sentencia .
+   57 sentSeleccion: SWITCH '(' exp ')' sentencia .
 
-    $default  reduce usando la regla 54 (sentIteracion)
+    $default  reduce usando la regla 57 (sentSeleccion)
 
 
 estado 179
 
-   55 sentIteracion: DO sentencia WHILE '(' exp . ')' ';'
-   65 exp: exp . ',' expAsignacion
+   58 sentIteracion: WHILE '(' exp ')' sentencia .
 
-    ')'  desplazar e ir al estado 190
-    ','  desplazar e ir al estado 86
+    $default  reduce usando la regla 58 (sentIteracion)
 
 
 estado 180
 
-   56 sentIteracion: FOR '(' exp ';' exp . ';' exp ')' sentencia
-   65 exp: exp . ',' expAsignacion
+   59 sentIteracion: DO sentencia WHILE '(' exp . ')' ';'
+   69 exp: exp . ',' expAsignacion
 
-    ';'  desplazar e ir al estado 191
+    ')'  desplazar e ir al estado 193
     ','  desplazar e ir al estado 86
 
 
 estado 181
 
-   13 listaParametrosDeclaracion: TIPO_DATO .
-   16 listaParametrosDefinicion: TIPO_DATO . ID
+   60 sentIteracion: FOR '(' exp ';' exp . ';' exp ')' sentencia
+   69 exp: exp . ',' expAsignacion
 
-    ID  desplazar e ir al estado 192
-
-    $default  reduce usando la regla 13 (listaParametrosDeclaracion)
+    ';'  desplazar e ir al estado 194
+    ','  desplazar e ir al estado 86
 
 
 estado 182
 
-   10 declaracionODefinicion: '(' listaParametrosDeclaracion . ')' ';'
-   14 listaParametrosDeclaracion: listaParametrosDeclaracion . ',' TIPO_DATO
+   16 tipo: TIPO_DATO . opcionId
 
-    ')'  desplazar e ir al estado 193
-    ','  desplazar e ir al estado 194
+    ID  desplazar e ir al estado 195
+
+    $default  reduce usando la regla 17 (opcionId)
+
+    opcionId  ir al estado 196
 
 
 estado 183
 
-   11 declaracionODefinicion: '(' listaParametrosDefinicion . ')' sentCompuesta
-   17 listaParametrosDefinicion: listaParametrosDefinicion . ',' TIPO_DATO ID
+   10 parametros: '(' listaParametros . ')' declaracionODefinicion
+   15 listaParametros: listaParametros . ',' tipo
 
-    ')'  desplazar e ir al estado 195
-    ','  desplazar e ir al estado 196
+    ')'  desplazar e ir al estado 197
+    ','  desplazar e ir al estado 198
 
 
 estado 184
 
-   36 unaVarSimple: ID $@4 . tipoVariable asignacion
+   14 listaParametros: tipo .
 
-    '*'  desplazar e ir al estado 25
-    '['  desplazar e ir al estado 111
-
-    $default  reduce usando la regla 37 (tipoVariable)
-
-    tipoVariable  ir al estado 197
-    puntero       ir al estado 198
-    array         ir al estado 199
+    $default  reduce usando la regla 14 (listaParametros)
 
 
 estado 185
 
-   32 sentenciaDeclaracion: TIPO_DATO $@3 listaVarSimples ';' .
+   40 unaVarSimple: ID $@4 . tipoVariable asignacion
 
-    $default  reduce usando la regla 32 (sentenciaDeclaracion)
+    '*'  desplazar e ir al estado 25
+    '['  desplazar e ir al estado 111
+
+    $default  reduce usando la regla 41 (tipoVariable)
+
+    tipoVariable  ir al estado 199
+    puntero       ir al estado 200
+    array         ir al estado 201
 
 
 estado 186
 
-   34 listaVarSimples: unaVarSimple ',' . listaVarSimples
+   36 sentenciaDeclaracion: TIPO_DATO $@3 listaVarSimples ';' .
 
-    ID  desplazar e ir al estado 167
-
-    listaVarSimples  ir al estado 200
-    unaVarSimple     ir al estado 169
+    $default  reduce usando la regla 36 (sentenciaDeclaracion)
 
 
 estado 187
 
-   65 exp: exp . ',' expAsignacion
-  115 listaArgumentos: listaArgumentos ',' exp .
+   38 listaVarSimples: unaVarSimple ',' . listaVarSimples
 
-    ','  desplazar e ir al estado 86
+    ID  desplazar e ir al estado 167
 
-    ','       [reduce usando la regla 115 (listaArgumentos)]
-    $default  reduce usando la regla 115 (listaArgumentos)
+    listaVarSimples  ir al estado 202
+    unaVarSimple     ir al estado 169
 
 
 estado 188
 
-   45 array: array '[' exp ']' .
+   28 barraN: barraN '\n' .
 
-    $default  reduce usando la regla 45 (array)
+    $default  reduce usando la regla 28 (barraN)
 
 
 estado 189
 
-   52 sentSeleccion: IF '(' exp ')' sentencia ELSE . sentencia
+   25 sentCompuesta: '{' listaDeclaraciones listaSentencias barraN '}' .
+
+    $default  reduce usando la regla 25 (sentCompuesta)
+
+
+estado 190
+
+   69 exp: exp . ',' expAsignacion
+  119 listaArgumentos: listaArgumentos ',' exp .
+
+    ','  desplazar e ir al estado 86
+
+    ','       [reduce usando la regla 119 (listaArgumentos)]
+    $default  reduce usando la regla 119 (listaArgumentos)
+
+
+estado 191
+
+   49 array: array '[' exp ']' .
+
+    $default  reduce usando la regla 49 (array)
+
+
+estado 192
+
+   56 sentSeleccion: IF '(' exp ')' sentencia ELSE . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -3298,7 +3330,7 @@ estado 189
     '!'             desplazar e ir al estado 30
     '&'             desplazar e ir al estado 31
 
-    sentencia          ir al estado 201
+    sentencia          ir al estado 203
     sentCompuesta      ir al estado 35
     puntero            ir al estado 36
     sentExpresion      ir al estado 37
@@ -3320,176 +3352,16 @@ estado 189
     expPrimaria        ir al estado 53
 
 
-estado 190
-
-   55 sentIteracion: DO sentencia WHILE '(' exp ')' . ';'
-
-    ';'  desplazar e ir al estado 202
-
-
-estado 191
-
-   56 sentIteracion: FOR '(' exp ';' exp ';' . exp ')' sentencia
-
-    REAL            desplazar e ir al estado 3
-    ENTERO          desplazar e ir al estado 4
-    LITERAL_CADENA  desplazar e ir al estado 5
-    INCREMENTO      desplazar e ir al estado 6
-    DECREMENTO      desplazar e ir al estado 7
-    ID              desplazar e ir al estado 54
-    SIZEOF          desplazar e ir al estado 22
-    '+'             desplazar e ir al estado 23
-    '-'             desplazar e ir al estado 24
-    '*'             desplazar e ir al estado 25
-    '('             desplazar e ir al estado 26
-    '~'             desplazar e ir al estado 29
-    '!'             desplazar e ir al estado 30
-    '&'             desplazar e ir al estado 31
-
-    puntero            ir al estado 36
-    exp                ir al estado 203
-    expAsignacion      ir al estado 43
-    expCondicional     ir al estado 44
-    expOr              ir al estado 45
-    expAnd             ir al estado 46
-    expIgualdad        ir al estado 47
-    expRelacional      ir al estado 48
-    expAditiva         ir al estado 49
-    expMultiplicativa  ir al estado 50
-    expUnaria          ir al estado 51
-    expSufijo          ir al estado 52
-    expPrimaria        ir al estado 53
-
-
-estado 192
-
-   16 listaParametrosDefinicion: TIPO_DATO ID .
-
-    $default  reduce usando la regla 16 (listaParametrosDefinicion)
-
-
 estado 193
 
-   10 declaracionODefinicion: '(' listaParametrosDeclaracion ')' . ';'
+   59 sentIteracion: DO sentencia WHILE '(' exp ')' . ';'
 
     ';'  desplazar e ir al estado 204
 
 
 estado 194
 
-   14 listaParametrosDeclaracion: listaParametrosDeclaracion ',' . TIPO_DATO
-
-    TIPO_DATO  desplazar e ir al estado 205
-
-
-estado 195
-
-   11 declaracionODefinicion: '(' listaParametrosDefinicion ')' . sentCompuesta
-
-    '{'  desplazar e ir al estado 28
-
-    sentCompuesta  ir al estado 206
-
-
-estado 196
-
-   17 listaParametrosDefinicion: listaParametrosDefinicion ',' . TIPO_DATO ID
-
-    TIPO_DATO  desplazar e ir al estado 207
-
-
-estado 197
-
-   36 unaVarSimple: ID $@4 tipoVariable . asignacion
-
-    '='  desplazar e ir al estado 208
-
-    $default  reduce usando la regla 40 (asignacion)
-
-    asignacion  ir al estado 209
-
-
-estado 198
-
-   39 tipoVariable: puntero .
-   43 puntero: puntero . '*'
-
-    '*'  desplazar e ir al estado 210
-
-    $default  reduce usando la regla 39 (tipoVariable)
-
-
-estado 199
-
-   38 tipoVariable: array .
-   45 array: array . '[' exp ']'
-
-    '['  desplazar e ir al estado 155
-
-    $default  reduce usando la regla 38 (tipoVariable)
-
-
-estado 200
-
-   34 listaVarSimples: unaVarSimple ',' listaVarSimples .
-
-    $default  reduce usando la regla 34 (listaVarSimples)
-
-
-estado 201
-
-   52 sentSeleccion: IF '(' exp ')' sentencia ELSE sentencia .
-
-    $default  reduce usando la regla 52 (sentSeleccion)
-
-
-estado 202
-
-   55 sentIteracion: DO sentencia WHILE '(' exp ')' ';' .
-
-    $default  reduce usando la regla 55 (sentIteracion)
-
-
-estado 203
-
-   56 sentIteracion: FOR '(' exp ';' exp ';' exp . ')' sentencia
-   65 exp: exp . ',' expAsignacion
-
-    ')'  desplazar e ir al estado 211
-    ','  desplazar e ir al estado 86
-
-
-estado 204
-
-   10 declaracionODefinicion: '(' listaParametrosDeclaracion ')' ';' .
-
-    $default  reduce usando la regla 10 (declaracionODefinicion)
-
-
-estado 205
-
-   14 listaParametrosDeclaracion: listaParametrosDeclaracion ',' TIPO_DATO .
-
-    $default  reduce usando la regla 14 (listaParametrosDeclaracion)
-
-
-estado 206
-
-   11 declaracionODefinicion: '(' listaParametrosDefinicion ')' sentCompuesta .
-
-    $default  reduce usando la regla 11 (declaracionODefinicion)
-
-
-estado 207
-
-   17 listaParametrosDefinicion: listaParametrosDefinicion ',' TIPO_DATO . ID
-
-    ID  desplazar e ir al estado 212
-
-
-estado 208
-
-   41 asignacion: '=' . inicializador
+   60 sentIteracion: FOR '(' exp ';' exp ';' . exp ')' sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -3502,14 +3374,12 @@ estado 208
     '-'             desplazar e ir al estado 24
     '*'             desplazar e ir al estado 25
     '('             desplazar e ir al estado 26
-    '{'             desplazar e ir al estado 213
     '~'             desplazar e ir al estado 29
     '!'             desplazar e ir al estado 30
     '&'             desplazar e ir al estado 31
 
     puntero            ir al estado 36
-    inicializador      ir al estado 214
-    exp                ir al estado 215
+    exp                ir al estado 205
     expAsignacion      ir al estado 43
     expCondicional     ir al estado 44
     expOr              ir al estado 45
@@ -3523,23 +3393,182 @@ estado 208
     expPrimaria        ir al estado 53
 
 
+estado 195
+
+   18 opcionId: ID .
+
+    $default  reduce usando la regla 18 (opcionId)
+
+
+estado 196
+
+   16 tipo: TIPO_DATO opcionId .
+
+    $default  reduce usando la regla 16 (tipo)
+
+
+estado 197
+
+   10 parametros: '(' listaParametros ')' . declaracionODefinicion
+
+    ';'  desplazar e ir al estado 206
+    '{'  desplazar e ir al estado 28
+
+    declaracionODefinicion  ir al estado 207
+    sentCompuesta           ir al estado 208
+
+
+estado 198
+
+   15 listaParametros: listaParametros ',' . tipo
+
+    TIPO_DATO  desplazar e ir al estado 182
+
+    tipo  ir al estado 209
+
+
+estado 199
+
+   40 unaVarSimple: ID $@4 tipoVariable . asignacion
+
+    '='  desplazar e ir al estado 210
+
+    $default  reduce usando la regla 44 (asignacion)
+
+    asignacion  ir al estado 211
+
+
+estado 200
+
+   43 tipoVariable: puntero .
+   47 puntero: puntero . '*'
+
+    '*'  desplazar e ir al estado 212
+
+    $default  reduce usando la regla 43 (tipoVariable)
+
+
+estado 201
+
+   42 tipoVariable: array .
+   49 array: array . '[' exp ']'
+
+    '['  desplazar e ir al estado 155
+
+    $default  reduce usando la regla 42 (tipoVariable)
+
+
+estado 202
+
+   38 listaVarSimples: unaVarSimple ',' listaVarSimples .
+
+    $default  reduce usando la regla 38 (listaVarSimples)
+
+
+estado 203
+
+   56 sentSeleccion: IF '(' exp ')' sentencia ELSE sentencia .
+
+    $default  reduce usando la regla 56 (sentSeleccion)
+
+
+estado 204
+
+   59 sentIteracion: DO sentencia WHILE '(' exp ')' ';' .
+
+    $default  reduce usando la regla 59 (sentIteracion)
+
+
+estado 205
+
+   60 sentIteracion: FOR '(' exp ';' exp ';' exp . ')' sentencia
+   69 exp: exp . ',' expAsignacion
+
+    ')'  desplazar e ir al estado 213
+    ','  desplazar e ir al estado 86
+
+
+estado 206
+
+   11 declaracionODefinicion: ';' .
+
+    $default  reduce usando la regla 11 (declaracionODefinicion)
+
+
+estado 207
+
+   10 parametros: '(' listaParametros ')' declaracionODefinicion .
+
+    $default  reduce usando la regla 10 (parametros)
+
+
+estado 208
+
+   12 declaracionODefinicion: sentCompuesta .
+
+    $default  reduce usando la regla 12 (declaracionODefinicion)
+
+
 estado 209
 
-   36 unaVarSimple: ID $@4 tipoVariable asignacion .
+   15 listaParametros: listaParametros ',' tipo .
 
-    $default  reduce usando la regla 36 (unaVarSimple)
+    $default  reduce usando la regla 15 (listaParametros)
 
 
 estado 210
 
-   43 puntero: puntero '*' .
+   45 asignacion: '=' . inicializador
 
-    $default  reduce usando la regla 43 (puntero)
+    REAL            desplazar e ir al estado 3
+    ENTERO          desplazar e ir al estado 4
+    LITERAL_CADENA  desplazar e ir al estado 5
+    INCREMENTO      desplazar e ir al estado 6
+    DECREMENTO      desplazar e ir al estado 7
+    ID              desplazar e ir al estado 54
+    SIZEOF          desplazar e ir al estado 22
+    '+'             desplazar e ir al estado 23
+    '-'             desplazar e ir al estado 24
+    '*'             desplazar e ir al estado 25
+    '('             desplazar e ir al estado 26
+    '{'             desplazar e ir al estado 214
+    '~'             desplazar e ir al estado 29
+    '!'             desplazar e ir al estado 30
+    '&'             desplazar e ir al estado 31
+
+    puntero            ir al estado 36
+    inicializador      ir al estado 215
+    exp                ir al estado 216
+    expAsignacion      ir al estado 43
+    expCondicional     ir al estado 44
+    expOr              ir al estado 45
+    expAnd             ir al estado 46
+    expIgualdad        ir al estado 47
+    expRelacional      ir al estado 48
+    expAditiva         ir al estado 49
+    expMultiplicativa  ir al estado 50
+    expUnaria          ir al estado 51
+    expSufijo          ir al estado 52
+    expPrimaria        ir al estado 53
 
 
 estado 211
 
-   56 sentIteracion: FOR '(' exp ';' exp ';' exp ')' . sentencia
+   40 unaVarSimple: ID $@4 tipoVariable asignacion .
+
+    $default  reduce usando la regla 40 (unaVarSimple)
+
+
+estado 212
+
+   47 puntero: puntero '*' .
+
+    $default  reduce usando la regla 47 (puntero)
+
+
+estado 213
+
+   60 sentIteracion: FOR '(' exp ';' exp ';' exp ')' . sentencia
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -3568,7 +3597,7 @@ estado 211
     '!'             desplazar e ir al estado 30
     '&'             desplazar e ir al estado 31
 
-    sentencia          ir al estado 216
+    sentencia          ir al estado 217
     sentCompuesta      ir al estado 35
     puntero            ir al estado 36
     sentExpresion      ir al estado 37
@@ -3590,16 +3619,9 @@ estado 211
     expPrimaria        ir al estado 53
 
 
-estado 212
+estado 214
 
-   17 listaParametrosDefinicion: listaParametrosDefinicion ',' TIPO_DATO ID .
-
-    $default  reduce usando la regla 17 (listaParametrosDefinicion)
-
-
-estado 213
-
-   47 inicializador: '{' . listaDeInicializadores '}'
+   51 inicializador: '{' . listaDeInicializadores '}'
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -3612,15 +3634,15 @@ estado 213
     '-'             desplazar e ir al estado 24
     '*'             desplazar e ir al estado 25
     '('             desplazar e ir al estado 26
-    '{'             desplazar e ir al estado 213
+    '{'             desplazar e ir al estado 214
     '~'             desplazar e ir al estado 29
     '!'             desplazar e ir al estado 30
     '&'             desplazar e ir al estado 31
 
     puntero                 ir al estado 36
-    inicializador           ir al estado 217
-    listaDeInicializadores  ir al estado 218
-    exp                     ir al estado 215
+    inicializador           ir al estado 218
+    listaDeInicializadores  ir al estado 219
+    exp                     ir al estado 216
     expAsignacion           ir al estado 43
     expCondicional          ir al estado 44
     expOr                   ir al estado 45
@@ -3634,50 +3656,50 @@ estado 213
     expPrimaria             ir al estado 53
 
 
-estado 214
-
-   41 asignacion: '=' inicializador .
-
-    $default  reduce usando la regla 41 (asignacion)
-
-
 estado 215
 
-   46 inicializador: exp .
-   65 exp: exp . ',' expAsignacion
+   45 asignacion: '=' inicializador .
 
-    ','  desplazar e ir al estado 86
-
-    ','       [reduce usando la regla 46 (inicializador)]
-    $default  reduce usando la regla 46 (inicializador)
+    $default  reduce usando la regla 45 (asignacion)
 
 
 estado 216
 
-   56 sentIteracion: FOR '(' exp ';' exp ';' exp ')' sentencia .
+   50 inicializador: exp .
+   69 exp: exp . ',' expAsignacion
 
-    $default  reduce usando la regla 56 (sentIteracion)
+    ','  desplazar e ir al estado 86
+
+    ','       [reduce usando la regla 50 (inicializador)]
+    $default  reduce usando la regla 50 (inicializador)
 
 
 estado 217
 
-   48 listaDeInicializadores: inicializador .
+   60 sentIteracion: FOR '(' exp ';' exp ';' exp ')' sentencia .
 
-    $default  reduce usando la regla 48 (listaDeInicializadores)
+    $default  reduce usando la regla 60 (sentIteracion)
 
 
 estado 218
 
-   47 inicializador: '{' listaDeInicializadores . '}'
-   49 listaDeInicializadores: listaDeInicializadores . ',' inicializador
+   52 listaDeInicializadores: inicializador .
 
-    ','  desplazar e ir al estado 219
-    '}'  desplazar e ir al estado 220
+    $default  reduce usando la regla 52 (listaDeInicializadores)
 
 
 estado 219
 
-   49 listaDeInicializadores: listaDeInicializadores ',' . inicializador
+   51 inicializador: '{' listaDeInicializadores . '}'
+   53 listaDeInicializadores: listaDeInicializadores . ',' inicializador
+
+    ','  desplazar e ir al estado 220
+    '}'  desplazar e ir al estado 221
+
+
+estado 220
+
+   53 listaDeInicializadores: listaDeInicializadores ',' . inicializador
 
     REAL            desplazar e ir al estado 3
     ENTERO          desplazar e ir al estado 4
@@ -3690,14 +3712,14 @@ estado 219
     '-'             desplazar e ir al estado 24
     '*'             desplazar e ir al estado 25
     '('             desplazar e ir al estado 26
-    '{'             desplazar e ir al estado 213
+    '{'             desplazar e ir al estado 214
     '~'             desplazar e ir al estado 29
     '!'             desplazar e ir al estado 30
     '&'             desplazar e ir al estado 31
 
     puntero            ir al estado 36
-    inicializador      ir al estado 221
-    exp                ir al estado 215
+    inicializador      ir al estado 222
+    exp                ir al estado 216
     expAsignacion      ir al estado 43
     expCondicional     ir al estado 44
     expOr              ir al estado 45
@@ -3711,15 +3733,15 @@ estado 219
     expPrimaria        ir al estado 53
 
 
-estado 220
-
-   47 inicializador: '{' listaDeInicializadores '}' .
-
-    $default  reduce usando la regla 47 (inicializador)
-
-
 estado 221
 
-   49 listaDeInicializadores: listaDeInicializadores ',' inicializador .
+   51 inicializador: '{' listaDeInicializadores '}' .
 
-    $default  reduce usando la regla 49 (listaDeInicializadores)
+    $default  reduce usando la regla 51 (inicializador)
+
+
+estado 222
+
+   53 listaDeInicializadores: listaDeInicializadores ',' inicializador .
+
+    $default  reduce usando la regla 53 (listaDeInicializadores)

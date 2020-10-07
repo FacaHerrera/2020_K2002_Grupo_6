@@ -147,16 +147,15 @@ listaVarSimples: unaVarSimple
                | unaVarSimple ',' listaVarSimples
 ;
 
-unaVarSimple: ID {nombreID = $<cval>1; } tipoVariable asignacion
-;
+unaVarSimple: ID {nombreID = $<cval>1; } tipoVariable asignacion {contadorVariables++; }
 
-tipoVariable:         {printf("Se declaro el identificador \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
-            | array   {printf("Se declaro el array \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
-            | puntero {printf("Se declaro el puntero \"%s\" de tipo %s\n",nombreID,tipoDato); contadorVariables++; }
+tipoVariable:         {printf("Se declaro el identificador \"%s\" de tipo %s\n",nombreID,tipoDato);}
+            | array   {printf("Se declaro el array \"%s\" de tipo %s\n",nombreID,tipoDato); }
+            | puntero {printf("Se declaro el puntero \"%s\" de tipo %s\n",nombreID,tipoDato) }
 ;
 
 asignacion:
-          | '=' inicializador
+          | '=' inicializador 
 ;
 
 puntero: '*'
@@ -167,7 +166,7 @@ array: '[' exp ']'
      | array '[' exp ']'
 ;
 
-inicializador: exp
+inicializador: expAsignacion
              | '{' listaDeInicializadores '}' 
 ;
 
@@ -218,7 +217,7 @@ expAsignacion: expCondicional
              | expUnaria operAsignacion expAsignacion {$<dval>$ = $<dval>3; }
 ;
 expCondicional: expOr
-              | expOr '?' exp : expCondicional {$<dval>$ = 0; }
+              | expOr '?' exp ':' expCondicional {$<dval>$ = 0; }
 ;
 expOr: expAnd
      | expOr OR expAnd {$<dval>$ = $<dval>1 || $<dval>3; }

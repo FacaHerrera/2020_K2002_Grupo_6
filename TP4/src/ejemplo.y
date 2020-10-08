@@ -269,7 +269,7 @@ expUnaria: expSufijo
          | '!' expUnaria            {$<dval>$ = ! $<dval>2; }
          | '&' expUnaria            {$<dval>$ = $<dval>2; }
          | puntero expUnaria        {$<dval>$ = $<dval>2; }
-         | SIZEOF expUnaria {$<dval>$ = sizeof($<dval>3); }
+         | SIZEOF '(' expUnaria ')' {$<dval>$ = sizeof($<dval>3); }
          | SIZEOF '(' TIPO_DATO ')' {$<dval>$ = sizeof($<dval>3); }
 ;
 

@@ -213,67 +213,13 @@ sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN. \n
 exp: expAsignacion
    | exp ',' expAsignacion
 ;
+
 expAsignacion: expCondicional
              | expUnaria operAsignacion expAsignacion {$<dval>$ = $<dval>3; }
 ;
+
 expCondicional: expOr
               | expOr '?' exp ':' expCondicional {$<dval>$ = 0; }
-;
-expOr: expAnd
-     | expOr OR expAnd {$<dval>$ = $<dval>1 || $<dval>3; }
-;
-expAnd: expIgualdad
-      | expAnd AND expIgualdad {$<dval>$ = $<dval>1 && $<dval>3; }
-;
-expIgualdad: expRelacional
-           | expIgualdad IGUALDAD expRelacional    {$<dval>$ = $<dval>1 == $<dval>3; }
-           | expIgualdad DESIGUALDAD expRelacional {$<dval>$ = $<dval>1 != $<dval>3; }
-;
-expRelacional: expAditiva
-             | expRelacional MAYORIGUAL expAditiva {$<dval>$ = $<dval>1 >= $<dval>3; }
-             | expRelacional '>' expAditiva        {$<dval>$ = $<dval>1 > $<dval>3; }
-             | expRelacional MENORIGUAL expAditiva {$<dval>$ = $<dval>1 <= $<dval>3; }
-             | expRelacional '<' expAditiva        {$<dval>$ = $<dval>1 < $<dval>3; }
-;
-expAditiva: expMultiplicativa
-          | expAditiva '+' expMultiplicativa {$<dval>$ = $<dval>1 + $<dval>3; }
-          | expAditiva '-' expMultiplicativa {$<dval>$ = $<dval>1 - $<dval>3; }
-;
-expMultiplicativa: expUnaria
-                 | expMultiplicativa '*' expUnaria {$<dval>$ = $<dval>1 * $<dval>3; }
-                 | expMultiplicativa '/' expUnaria {if($<dval>3 == 0) {printf("ERROR/: No se puede dividir por 0 \n"); return 1; } else $<dval>$ = $<dval>1 / $<dval>3; }
-                 | expMultiplicativa '%' expUnaria {$<dval>$ = $<ival>1 % $<ival>3; }
-;
-expUnaria: expSufijo
-         | INCREMENTO expUnaria     {$<dval>$ = ++ $<dval>2; }
-         | DECREMENTO expUnaria     {$<dval>$ = -- $<dval>2; }
-         | '-' expUnaria            {$<dval>$ = - $<dval>2; }
-         | '+' expUnaria            {$<dval>$ = + $<dval>2; }
-         | '~' expUnaria            {$<dval>$ = $<dval>2; } // DUDA
-         | '!' expUnaria            {$<dval>$ = !$<dval>2; }
-         | '&' expUnaria            {$<dval>$ = $<dval>2; }
-         | puntero expUnaria        {$<dval>$ = $<dval>2; }
-         | SIZEOF '(' expUnaria ')' {$<dval>$ = sizeof($<dval>3); }
-         | SIZEOF '(' TIPO_DATO ')' {$<dval>$ = sizeof($<dval>3); }
-;
-expSufijo: expPrimaria
-         | expSufijo array                   {$<dval>$ = 0; }
-         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); }
-         | expSufijo '.' ID                  {$<dval>$ = 0; }
-         | expSufijo FLECHA ID               {$<dval>$ = 0; }
-         | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
-         | expSufijo DECREMENTO              {$<dval>$ = $<dval>2 --; }
-;
-expPrimaria: ID
-           | ENTERO         {$<dval>$ = $<ival>1; }
-           | REAL           {$<dval>$ = $<dval>1; }
-           | LITERAL_CADENA
-           | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
-;
-
-listaArgumentos: 
-               | exp
-               | listaArgumentos ',' exp
 ;
 
 operAsignacion: '='
@@ -283,6 +229,70 @@ operAsignacion: '='
               | ASIGNACION_DIVISION
 ;
 
+expOr: expAnd
+     | expOr OR expAnd {$<dval>$ = $<dval>1 || $<dval>3; }
+;
+
+expAnd: expIgualdad
+      | expAnd AND expIgualdad {$<dval>$ = $<dval>1 && $<dval>3; }
+;
+
+expIgualdad: expRelacional
+           | expIgualdad IGUALDAD expRelacional    {$<dval>$ = $<dval>1 == $<dval>3; }
+           | expIgualdad DESIGUALDAD expRelacional {$<dval>$ = $<dval>1 != $<dval>3; }
+;
+
+expRelacional: expAditiva
+             | expRelacional '<' expAditiva        {$<dval>$ = $<dval>1 < $<dval>3; }
+             | expRelacional '>' expAditiva        {$<dval>$ = $<dval>1 > $<dval>3; }
+             | expRelacional MENORIGUAL expAditiva {$<dval>$ = $<dval>1 <= $<dval>3; }
+             | expRelacional MAYORIGUAL expAditiva {$<dval>$ = $<dval>1 >= $<dval>3; }      
+;
+
+expAditiva: expMultiplicativa
+          | expAditiva '+' expMultiplicativa {$<dval>$ = $<dval>1 + $<dval>3; }
+          | expAditiva '-' expMultiplicativa {$<dval>$ = $<dval>1 - $<dval>3; }
+;
+
+expMultiplicativa: expUnaria
+                 | expMultiplicativa '*' expUnaria {$<dval>$ = $<dval>1 * $<dval>3; }
+                 | expMultiplicativa '/' expUnaria {if($<dval>3 == 0) {printf("ERROR/: No se puede dividir por 0 \n"); return 1; } else $<dval>$ = $<dval>1 / $<dval>3; }
+                 | expMultiplicativa '%' expUnaria {$<dval>$ = $<ival>1 % $<ival>3; }
+;
+
+expUnaria: expSufijo
+         | INCREMENTO expUnaria     {$<dval>$ = ++ $<dval>2; }
+         | DECREMENTO expUnaria     {$<dval>$ = -- $<dval>2; }
+         | '-' expUnaria            {$<dval>$ = - $<dval>2; }
+         | '+' expUnaria            {$<dval>$ = + $<dval>2; }
+         | '~' expUnaria            {$<dval>$ = $<dval>2; } // DUDA
+         | '!' expUnaria            {$<dval>$ = ! $<dval>2; }
+         | '&' expUnaria            {$<dval>$ = $<dval>2; }
+         | puntero expUnaria        {$<dval>$ = $<dval>2; }
+         | SIZEOF expUnaria {$<dval>$ = sizeof($<dval>3); }
+         | SIZEOF '(' TIPO_DATO ')' {$<dval>$ = sizeof($<dval>3); }
+;
+
+expSufijo: expPrimaria
+         | expSufijo array                   {$<dval>$ = 0; }
+         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); }
+         | expSufijo '.' ID                  {$<dval>$ = 0; }
+         | expSufijo FLECHA ID               {$<dval>$ = 0; }
+         | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
+         | expSufijo DECREMENTO              {$<dval>$ = $<dval>2 --; }
+;
+
+expPrimaria: ID
+           | ENTERO         {$<dval>$ = $<ival>1; }
+           | REAL           {$<dval>$ = $<dval>1; }
+           | LITERAL_CADENA
+           | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
+;
+
+listaArgumentos: 
+               | expAsignacion
+               | listaArgumentos ',' expAsignacion
+;
 
 %% 
 

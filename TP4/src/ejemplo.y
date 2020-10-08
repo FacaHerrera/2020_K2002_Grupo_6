@@ -73,7 +73,7 @@ int contadorParametros = 0;
 %left '*' '/' '%'
 %left '(' ')'
 
-
+%expect 30
 
 %% 
 

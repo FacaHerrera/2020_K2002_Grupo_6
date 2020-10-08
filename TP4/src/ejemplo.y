@@ -71,10 +71,9 @@ int contadorParametros = 0;
 %left MAYORIGUAl '>' MENORIGUAL '<'
 %left '+' '-'
 %left '*' '/' '%'
-%left '^'
 %left '(' ')'
 
-%type <dval> exp
+
 
 %% 
 
@@ -85,6 +84,7 @@ input:
 line: '\n'
     | funcion '\n'
     | sentencia '\n'
+    | error '\n' {yyerrok; }
 ;
 
 // DECLARACION DE FUNCION
@@ -159,11 +159,11 @@ asignacion:
 ;
 
 puntero: '*'
-       | puntero '*'
+       | '*' puntero
 ;
 
 array: '[' exp ']'
-     | array '[' exp ']'
+     | '[' exp ']' array
 ;
 
 inicializador: expAsignacion
@@ -207,7 +207,6 @@ sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN. \n
          | CONTINUE ';'   {printf("Se encontro una Sentencia de Salto CONTINUE.\n"); }
          | GOTO ID ';'    {printf("Se encontro una Sentencia de Salto GOTO. \n"); }
 ;
-
 
 //EXPRESIONES 
 exp: expAsignacion

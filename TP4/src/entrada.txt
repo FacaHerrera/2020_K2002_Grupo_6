@@ -9,6 +9,9 @@ int sumar(int a, int b)
 
 int resta(int a, int b) {
     int a;
+    if(34) {
+        return 43;
+    }
 }
 
 int multiplicar(double, double);

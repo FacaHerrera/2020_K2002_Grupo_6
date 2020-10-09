@@ -14,7 +14,8 @@ return(1);
 FILE* yyin;
 FILE* yyout;
 
-char* tipoDato;
+char* tipoDatoFuncion;
+char* tipoDatoVariable;
 char* tipoDatoParametro;
 char* nombreFuncion;
 char* nombreID;
@@ -88,14 +89,14 @@ line: '\n'
 ;
 
 // DECLARACION DE FUNCION
-funcion: TIPO_DATO ID {nombreFuncion = $<cval>2; tipoDato = $<cval>1;  } parametros {contadorParametros = 0; }
+funcion: TIPO_DATO ID {nombreFuncion = $<cval>2; tipoDatoFuncion = $<cval>1;  } parametros {contadorParametros = 0; }
 ;
 
 parametros: '(' listaParametros ')' saltoLinea declaracionODefinicion 
 ;
 
-declaracionODefinicion: ';'           {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDato); }
-                      | sentCompuesta {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s \n",nombreFuncion,contadorParametros,tipoDato); }
+declaracionODefinicion: ';'           {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); }
+                      | sentCompuesta {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s \n",nombreFuncion,contadorParametros,tipoDatoFuncion); }
 
 listaParametros: 
                | tipo {contadorParametros++; }
@@ -142,7 +143,7 @@ listaSentencias: sentencia
 
 
 //SENTENCIA DE DECLARACION
-sentenciaDeclaracion: TIPO_DATO {tipoDato = $<cval>1; } listaVarSimples ';' saltoLinea {printf("Se declararon %d variables de tipo %s\n",contadorVariables,$<cval>1); contadorVariables = 0; }
+sentenciaDeclaracion: TIPO_DATO {tipoDatoVariable = $<cval>1; } listaVarSimples ';' saltoLinea {printf("Se declararon %d variables de tipo %s\n",contadorVariables,$<cval>1); contadorVariables = 0; }
 ;
 
 listaVarSimples: unaVarSimple
@@ -151,9 +152,9 @@ listaVarSimples: unaVarSimple
 
 unaVarSimple: ID {nombreID = $<cval>1; } tipoVariable asignacion {contadorVariables++; }
 
-tipoVariable:         {printf("Se declaro el identificador \"%s\" de tipo %s\n",nombreID,tipoDato);}
-            | array   {printf("Se declaro el array \"%s\" de tipo %s\n",nombreID,tipoDato); }
-            | puntero {printf("Se declaro el puntero \"%s\" de tipo %s\n",nombreID,tipoDato) }
+tipoVariable:         {printf("Se declaro el identificador \"%s\" de tipo %s\n",nombreID,tipoDatoVariable);}
+            | array   {printf("Se declaro el array \"%s\" de tipo %s\n",nombreID,tipoDatoVariable); }
+            | puntero {printf("Se declaro el puntero \"%s\" de tipo %s\n",nombreID,tipoDatoVariable); }
 ;
 
 asignacion:

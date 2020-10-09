@@ -1,0 +1,1 @@
+int mostrar_consigna(char *error, char *expresion);

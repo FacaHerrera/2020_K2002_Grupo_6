@@ -1744,7 +1744,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 182 "ejemplo.y"
-    {printf ("Se encontro una EXPRESION"); ;}
+    {printf ("Se encontro una EXPRESION\n"); ;}
     break;
 
   case 56:

@@ -179,7 +179,7 @@ listaDeInicializadores: inicializador
 
 
 //SENTENCIA DE EXPRESION
-sentExpresion: exp ';' saltoLinea {printf ("Se encontro una EXPRESION"); }
+sentExpresion: exp ';' saltoLinea {printf ("Se encontro una EXPRESION\n"); }
 ;
 
 

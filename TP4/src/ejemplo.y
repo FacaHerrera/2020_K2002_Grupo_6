@@ -73,7 +73,7 @@ int contadorParametros = 0;
 %left '*' '/' '%'
 %left '(' ')'
 
-%expect 30
+%expect 47
 
 %% 
 
@@ -82,17 +82,16 @@ input:
 ;
 
 line: '\n'
-    | funcion '\n'
-    | sentencia '\n'
+    | funcion saltoLinea
+    | sentencia saltoLinea
     | error '\n' {yyerrok; }
 ;
 
 // DECLARACION DE FUNCION
-funcion: TIPO_DATO ID {tipoDato = $<cval>1; nombreFuncion = $<cval>2; } parametros {contadorParametros = 0; }
-       | VOID ID {tipoDato = $<cval>1; nombreFuncion = $<cval>2; } parametros {contadorParametros = 0; }
+funcion: TIPO_DATO ID {nombreFuncion = $<cval>2; tipoDato = $<cval>1;  } parametros {contadorParametros = 0; }
 ;
 
-parametros: '(' listaParametros ')' declaracionODefinicion 
+parametros: '(' listaParametros ')' saltoLinea declaracionODefinicion 
 ;
 
 declaracionODefinicion: ';'           {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDato); }
@@ -107,40 +106,43 @@ tipo: TIPO_DATO opcionId
 ;
 
 opcionId: 
-    | ID
+        | ID
 ;
 
 //SENTENCIA
-sentencia: sentCompuesta
+sentencia: sentCompuesta saltoLinea
          | sentExpresion
          | sentSeleccion
          | sentIteracion
-         | sentSalto
+         | sentSalto saltoLinea
          | sentEtiquetada
 ;
 
 //SENTENCIA COMPUESTA
-sentCompuesta: '{' listaDeclaraciones listaSentencias barraN '}' {printf("Se encontro una Sentencia Compuesta. \n"); }
+sentCompuesta: '{' saltoLinea decalracionOSentencia saltoLinea '}' {printf("Se encontro una Sentencia Compuesta. \n"); }
 ;
 
-barraN: 
-      | '\n'
-      | barraN '\n'
+saltoLinea: 
+          | '\n'
+          | saltoLinea '\n'
 ;
 
-listaDeclaraciones: 
-                  | sentenciaDeclaracion
+decalracionOSentencia: 
+                     | decalracionOSentencia listaDeclaraciones
+                     | decalracionOSentencia listaSentencias
+;
+
+listaDeclaraciones: sentenciaDeclaracion
                   | listaDeclaraciones sentenciaDeclaracion
 ;
 
-listaSentencias: 
-               | sentencia
+listaSentencias: sentencia
                | listaSentencias sentencia
 ;
 
 
 //SENTENCIA DE DECLARACION
-sentenciaDeclaracion: TIPO_DATO {tipoDato = $<cval>1; } listaVarSimples ';' {printf("Se declararon %d variables de tipo %s\n",contadorVariables,$<cval>1); contadorVariables = 0; }
+sentenciaDeclaracion: TIPO_DATO {tipoDato = $<cval>1; } listaVarSimples ';' saltoLinea {printf("Se declararon %d variables de tipo %s\n",contadorVariables,$<cval>1); contadorVariables = 0; }
 ;
 
 listaVarSimples: unaVarSimple
@@ -176,7 +178,7 @@ listaDeInicializadores: inicializador
 
 
 //SENTENCIA DE EXPRESION
-sentExpresion: exp ';' {printf ("El resultado de la expresion es: %g \n", $<dval>1); }
+sentExpresion: exp ';' saltoLinea {printf ("Se encontro una EXPRESION"); }
 ;
 
 
@@ -188,9 +190,9 @@ sentSeleccion: IF '(' exp ')' sentencia                {printf("Se encontro una 
 
 
 //SENTENCIA DE ITERACION
-sentIteracion: WHILE '(' exp ')' sentencia               {printf("Se encontro una Sentencia de Iteracion WHILE.\n"); }
-             | DO sentencia WHILE '(' exp ')' ';'        {printf("Se encontro una Sentencia de Iteracion DO WHILE.\n"); }
-             | FOR '(' exp ';' exp ';' exp ')' sentencia {printf("Se encontro una Sentencia de Iteracion FOR.\n"); }
+sentIteracion: WHILE '(' exp ')' sentencia                   {printf("Se encontro una Sentencia de Iteracion WHILE.\n"); }
+             | DO sentencia WHILE '(' exp ')' ';' saltoLinea {printf("Se encontro una Sentencia de Iteracion DO WHILE.\n"); }
+             | FOR '(' exp ';' exp ';' exp ')' sentencia     {printf("Se encontro una Sentencia de Iteracion FOR.\n"); }
 ;
 
 
@@ -305,7 +307,6 @@ void main(){
    #ifdef BISON_DEBUG
         yydebug = 1;
 #endif 
-   printf("Ingrese una expresion para resolver:\n");
    yyout = fopen("salida.txt","w");
    yyin = fopen("entrada.txt", "r");
    yyparse();

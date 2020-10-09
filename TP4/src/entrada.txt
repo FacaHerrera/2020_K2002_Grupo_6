@@ -1,3 +1,14 @@
-int sumar(int a, int b) {
-    return a + b;
+int sumar(int a, int b) 
+{
+    int a;
+    if(34) {
+        return 43;
+    }
+    char c = a;
 }
+
+int resta(int a, int b) {
+    int a;
+}
+
+int multiplicar(double, double);

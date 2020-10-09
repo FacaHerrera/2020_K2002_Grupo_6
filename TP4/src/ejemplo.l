@@ -24,9 +24,8 @@ CARACTER_IMPRIMIBLE [ -~]
 
 \"([^\"]|$)*\" {strcpy(yylval.cval,yytext); return LITERAL_CADENA; }
 
-char|float|int|long|short|double {strcpy(yylval.cval,yytext); return TIPO_DATO; }
+char|float|int|long|short|double|void {strcpy(yylval.cval,yytext); return TIPO_DATO; }
 
-void {strcpy(yylval.cval,yytext); return VOID; }
 if {return IF; }
 else {return ELSE; }
 switch {return SWITCH; }

@@ -65,7 +65,6 @@ goto {return GOTO; }
 "!" {return '!'; }
 "~" {return '~'; }
 "?" {return '?'; }
-"\n" {return '\n'; } 
 
 "||" {return OR; }
 "&&" {return AND; }

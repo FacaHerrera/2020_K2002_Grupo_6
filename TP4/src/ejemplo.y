@@ -74,7 +74,7 @@ int contadorParametros = 0;
 %left '*' '/' '%'
 %left '(' ')'
 
-%expect 47
+%expect 33
 
 %% 
 
@@ -82,17 +82,16 @@ input:
      | input line
 ;
 
-line: '\n'
-    | funcion saltoLinea
-    | sentencia saltoLinea
-    | error '\n' {yyerrok; }
+line: funcion
+    | sentencia
+    | error ';' {yyerrok; }
 ;
 
 // DECLARACION DE FUNCION
 funcion: TIPO_DATO ID {nombreFuncion = $<cval>2; tipoDatoFuncion = $<cval>1;  } parametros {contadorParametros = 0; }
 ;
 
-parametros: '(' listaParametros ')' saltoLinea declaracionODefinicion 
+parametros: '(' listaParametros ')' declaracionODefinicion 
 ;
 
 declaracionODefinicion: ';'           {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); }
@@ -103,7 +102,17 @@ listaParametros:
                | listaParametros ',' tipo {contadorParametros++; }
 ;
 
-tipo: TIPO_DATO opcionId
+tipo: TIPO_DATO opcionArray opcionPuntero opcionId
+;
+
+opcionPuntero: 
+             | '*'
+             | opcionPuntero '*'
+;
+
+opcionArray: 
+           | '[' ']'
+           | opcionArray '[' ']'
 ;
 
 opcionId: 
@@ -111,21 +120,16 @@ opcionId:
 ;
 
 //SENTENCIA
-sentencia: sentCompuesta saltoLinea
+sentencia: sentCompuesta
          | sentExpresion
          | sentSeleccion
          | sentIteracion
-         | sentSalto saltoLinea
+         | sentSalto
          | sentEtiquetada
 ;
 
 //SENTENCIA COMPUESTA
-sentCompuesta: '{' saltoLinea decalracionOSentencia saltoLinea '}' {printf("Se encontro una Sentencia Compuesta. \n"); }
-;
-
-saltoLinea: 
-          | '\n'
-          | saltoLinea '\n'
+sentCompuesta: '{' decalracionOSentencia '}' {printf("Se encontro una Sentencia Compuesta. \n"); }
 ;
 
 decalracionOSentencia: 
@@ -143,7 +147,7 @@ listaSentencias: sentencia
 
 
 //SENTENCIA DE DECLARACION
-sentenciaDeclaracion: TIPO_DATO {tipoDatoVariable = $<cval>1; } listaVarSimples ';' saltoLinea {printf("Se declararon %d variables de tipo %s\n",contadorVariables,$<cval>1); contadorVariables = 0; }
+sentenciaDeclaracion: TIPO_DATO {tipoDatoVariable = $<cval>1; } listaVarSimples ';' {printf("Se declararon %d variables de tipo %s\n",contadorVariables,$<cval>1); contadorVariables = 0; }
 ;
 
 listaVarSimples: unaVarSimple
@@ -179,7 +183,8 @@ listaDeInicializadores: inicializador
 
 
 //SENTENCIA DE EXPRESION
-sentExpresion: exp ';' saltoLinea {printf ("Se encontro una EXPRESION"); }
+sentExpresion: exp ';' {printf ("Se encontro una EXPRESION. \n"); }
+             | ';'
 ;
 
 
@@ -191,9 +196,9 @@ sentSeleccion: IF '(' exp ')' sentencia                {printf("Se encontro una 
 
 
 //SENTENCIA DE ITERACION
-sentIteracion: WHILE '(' exp ')' sentencia                   {printf("Se encontro una Sentencia de Iteracion WHILE.\n"); }
-             | DO sentencia WHILE '(' exp ')' ';' saltoLinea {printf("Se encontro una Sentencia de Iteracion DO WHILE.\n"); }
-             | FOR '(' exp ';' exp ';' exp ')' sentencia     {printf("Se encontro una Sentencia de Iteracion FOR.\n"); }
+sentIteracion: WHILE '(' exp ')' sentencia               {printf("Se encontro una Sentencia de Iteracion WHILE.\n"); }
+             | DO sentencia WHILE '(' exp ')' ';'        {printf("Se encontro una Sentencia de Iteracion DO WHILE.\n"); }
+             | FOR '(' expOp ';' expOp ';' expOp ')' sentencia {printf("Se encontro una Sentencia de Iteracion FOR.\n"); }
 ;
 
 
@@ -205,13 +210,18 @@ sentEtiquetada: CASE exp ':' sentencia {printf("Se encontro una Sentencia de Eti
 
 
 //SENTENCIA DE SALTO
-sentSalto: RETURN exp ';' {printf("Se encontro una Sentencia de Salto RETURN. \n"); }
+sentSalto: RETURN expOp ';' {printf("Se encontro una Sentencia de Salto RETURN. \n"); }
          | BREAK ';'      {printf("Se encontro una Sentencia de Salto BREAK.\n"); }
          | CONTINUE ';'   {printf("Se encontro una Sentencia de Salto CONTINUE.\n"); }
          | GOTO ID ';'    {printf("Se encontro una Sentencia de Salto GOTO. \n"); }
 ;
 
-//EXPRESIONES 
+//EXPRESIONES
+
+expOp: 
+     | exp
+;
+
 exp: expAsignacion
    | exp ',' expAsignacion
 ;
@@ -288,6 +298,7 @@ expPrimaria: ID
            | ENTERO         {$<dval>$ = $<ival>1; }
            | REAL           {$<dval>$ = $<dval>1; }
            | LITERAL_CADENA
+           | '\'' expPrimaria '\''
            | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
 ;
 

@@ -1,17 +1,9 @@
-int sumar(int a, int b) 
+int len(char* expresion)
 {
-    int a;
-    if(34) {
-        return 43;
+    int i =0;
+    while(expresion[i] != '\0')
+    {
+        i++;
     }
-    char c = a;
+    return i-1;
 }
-
-int resta(int a, int b) {
-    int a;
-    if(34) {
-        return 43;
-    }
-}
-
-int multiplicar(double, double);

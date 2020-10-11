@@ -11,11 +11,11 @@ int yywrap(){
 return(1);
 }
 
-FILE* yyin;
-FILE* yyout;
+extern FILE* yyin;
+extern FILE* yyout;
 
-char* tipoDatoFuncion;
 char* tipoDatoVariable;
+char* tipoDatoFuncion;
 char* tipoDatoParametro;
 char* nombreFuncion;
 char* nombreID;
@@ -59,10 +59,11 @@ int contadorParametros = 0;
 %token <cval> BREAK
 %token <cval> CASE
 %token <cval> DEFAULT
-%token <cval> VOID
 %token <cval> GOTO
 
 %token <cval> TIPO_DATO
+%token <cval> CLASE_ALMACENAMIENTO
+%token <cval> STRUCT_UNION
 %token <cval> ID
 %token <cval> SIZEOF
 
@@ -74,7 +75,7 @@ int contadorParametros = 0;
 %left '*' '/' '%'
 %left '(' ')'
 
-%expect 33
+%expect 31
 
 %% 
 
@@ -82,44 +83,137 @@ input:
      | input line
 ;
 
-line: funcion
+line: declaracionExterna
     | sentencia
     | error ';' {yyerrok; }
 ;
 
-// DECLARACION DE FUNCION
-funcion: TIPO_DATO ID {nombreFuncion = $<cval>2; tipoDatoFuncion = $<cval>1;  } parametros {contadorParametros = 0; }
+//DECLARACIONES
+declaracion: especDeclaracion listaDeclaradoresBis ';' {tipoDatoFuncion = $<cval>1; nombreFuncion = $<cval>2;}
 ;
 
-parametros: '(' listaParametros ')' declaracionODefinicion 
+especDeclaracionBis:
+                   | especDeclaracion
 ;
 
-declaracionODefinicion: ';'           {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); }
-                      | sentCompuesta {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s \n",nombreFuncion,contadorParametros,tipoDatoFuncion); }
-
-listaParametros: 
-               | tipo {contadorParametros++; }
-               | listaParametros ',' tipo {contadorParametros++; }
+especDeclaracion: especClase especDeclaracionBis
+                | especTipo especDeclaracionBis
 ;
 
-tipo: TIPO_DATO opcionArray opcionPuntero opcionId
+listaDeclaradoresBis:
+                    | listaDeclaradores
 ;
 
-opcionPuntero: 
-             | '*'
-             | opcionPuntero '*'
+listaDeclaradores: declarador
+                 | listaDeclaradores ',' declarador
 ;
 
-opcionArray: 
-           | '[' ']'
-           | opcionArray '[' ']'
+declarador: decla
+          | decla '=' inicializador
 ;
 
-opcionId: 
-        | ID
+inicializador: expAsignacion
+             | '{' listaDeInicializadores '}'
 ;
 
-//SENTENCIA
+listaDeInicializadores: inicializador
+                      | listaDeInicializadores ',' inicializador
+;
+
+especClase: CLASE_ALMACENAMIENTO
+;
+
+especTipo: TIPO_DATO
+         | especStructUnion
+;
+
+especStructUnion: STRUCT_UNION ID opcionLista
+                | STRUCT_UNION '{' listaDeclaracionesStruct '}'
+;
+
+listaDeclaracionesStruct: declaracionStruct
+                        | listaDeclaracionesStruct declaracionStruct
+;
+
+declaracionStruct: listaCalificadores declaradoresStruct ';'
+;
+
+listaCalificadores: especTipo listaCalificadoresBis
+;
+
+listaCalificadoresBis: 
+                     | listaCalificadores
+;
+
+opcionLista: 
+           | '{' listaDeclaracionesStruct '}'
+;
+
+declaradoresStruct: declaStruct
+                  | declaradoresStruct ',' declaStruct
+;
+
+declaStruct: decla
+           | declaBis ':' expCondicional
+;
+
+decla: puntero declaradorDirecto
+     | declaradorDirecto
+;
+
+declaBis: 
+        | decla
+;
+
+declaradorDirecto: ID {printf("Se declara la variable %s de tipo %s  \n",$<cval>1,tipoDatoFuncion); }
+                 | declaradorDirecto '[' expCondicionalBis ']' {printf("Se declara el arreglo %s de tipo %s  \n",nombreFuncion,tipoDatoFuncion); }
+                 | declaradorDirecto '(' listaTiposParametros ')' {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); contadorParametros = 0; }
+                 | declaradorDirecto '(' listaIdentificadores ')' {printf("Se invoca la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); contadorParametros = 0; }
+;
+
+listaTiposParametros: listaParametros
+                    | listaParametros ',' '.' '.' '.'
+;
+
+listaTiposParametrosBis:
+                       | listaTiposParametros
+;
+
+listaParametros: declaracionParametro {contadorParametros++; }
+               | listaParametros ',' declaracionParametro {contadorParametros++; }
+;
+
+declaracionParametro: especDeclaracion decla
+                    | especDeclaracion declaradorAbstracto
+;
+
+listaIdentificadores: 
+                    | ID {contadorParametros++; }
+                    | listaIdentificadores ',' ID {contadorParametros++; }
+;
+
+nombreTipo: listaCalificadores declaradorAbstractoBis
+;
+
+declaradorAbstracto: puntero declaradorAbstractoDirecto
+                   | declaradorAbstractoDirecto
+                   | puntero
+;
+
+declaradorAbstractoBis:
+                      | declaradorAbstracto
+;
+
+declaradorAbstractoDirecto: '(' declaradorAbstracto ')'
+                          | declaradorAbstractoDirecto opcionExpresion
+                          | opcionExpresion
+;
+
+opcionExpresion: '['expCondicionalBis ']'
+               | '(' listaTiposParametrosBis ')'
+;
+
+//SENTENCIAS
 sentencia: sentCompuesta
          | sentExpresion
          | sentSeleccion
@@ -128,7 +222,10 @@ sentencia: sentCompuesta
          | sentEtiquetada
 ;
 
-//SENTENCIA COMPUESTA
+sentExpresion: exp ';'
+             | ';'       
+;
+
 sentCompuesta: '{' decalracionOSentencia '}' {printf("Se encontro una Sentencia Compuesta. \n"); }
 ;
 
@@ -137,97 +234,50 @@ decalracionOSentencia:
                      | decalracionOSentencia listaSentencias
 ;
 
-listaDeclaraciones: sentenciaDeclaracion
-                  | listaDeclaraciones sentenciaDeclaracion
+listaDeclaraciones: declaracion
+                  | listaDeclaraciones declaracion
+;
+
+listaDeclaracionesBis:
+                     | listaDeclaraciones
 ;
 
 listaSentencias: sentencia
                | listaSentencias sentencia
 ;
 
-
-//SENTENCIA DE DECLARACION
-sentenciaDeclaracion: TIPO_DATO {tipoDatoVariable = $<cval>1; } listaVarSimples ';' {printf("Se declararon %d variables de tipo %s\n",contadorVariables,$<cval>1); contadorVariables = 0; }
-;
-
-listaVarSimples: unaVarSimple
-               | unaVarSimple ',' listaVarSimples
-;
-
-unaVarSimple: ID {nombreID = $<cval>1; } tipoVariable asignacion {contadorVariables++; }
-
-tipoVariable:         {printf("Se declaro el identificador \"%s\" de tipo %s\n",nombreID,tipoDatoVariable);}
-            | array   {printf("Se declaro el array \"%s\" de tipo %s\n",nombreID,tipoDatoVariable); }
-            | puntero {printf("Se declaro el puntero \"%s\" de tipo %s\n",nombreID,tipoDatoVariable); }
-;
-
-asignacion:
-          | '=' inicializador 
-;
-
 puntero: '*'
        | '*' puntero
 ;
 
-array: '[' exp ']'
-     | '[' exp ']' array
-;
-
-inicializador: expAsignacion
-             | '{' listaDeInicializadores '}' 
-;
-
-listaDeInicializadores: inicializador
-                      | listaDeInicializadores ',' inicializador
-;
-
-
-//SENTENCIA DE EXPRESION
-<<<<<<< HEAD
-sentExpresion: exp ';' {printf ("Se encontro una EXPRESION. \n"); }
-             | ';'
-=======
-sentExpresion: exp ';' saltoLinea {printf ("Se encontro una EXPRESION\n"); }
->>>>>>> d6e53e5e7ed51693441330159c1494ed4eb54e34
-;
-
-
-//SENTENCIA DE SELECCION
 sentSeleccion: IF '(' exp ')' sentencia                {printf("Se encontro una Sentencia de Seleccion IF.\n"); }
              | IF '(' exp ')' sentencia ELSE sentencia {printf("Se encontro una Sentencia de Seleccion IF/ELSE.\n"); }
              | SWITCH '(' exp ')' sentencia            {printf("Se enconto una Sentencia de Seleccion SWITCH.\n"); }
 ;
 
-
-//SENTENCIA DE ITERACION
 sentIteracion: WHILE '(' exp ')' sentencia               {printf("Se encontro una Sentencia de Iteracion WHILE.\n"); }
              | DO sentencia WHILE '(' exp ')' ';'        {printf("Se encontro una Sentencia de Iteracion DO WHILE.\n"); }
              | FOR '(' expOp ';' expOp ';' expOp ')' sentencia {printf("Se encontro una Sentencia de Iteracion FOR.\n"); }
 ;
 
-
-//SENTENCIA DE ETIQUETA
-sentEtiquetada: CASE exp ':' sentencia {printf("Se encontro una Sentencia de Etiqueta CASE.\n"); }
+sentEtiquetada: CASE expCondicional ':' sentencia {printf("Se encontro una Sentencia de Etiqueta CASE.\n"); }
               | DEFAULT ':' sentencia  {printf("Se encontro una Sentencia de Etiqueta DEFAULT.\n"); }
               | ID ':' sentencia
 ;
 
-
-//SENTENCIA DE SALTO
 sentSalto: RETURN expOp ';' {printf("Se encontro una Sentencia de Salto RETURN. \n"); }
          | BREAK ';'      {printf("Se encontro una Sentencia de Salto BREAK.\n"); }
          | CONTINUE ';'   {printf("Se encontro una Sentencia de Salto CONTINUE.\n"); }
          | GOTO ID ';'    {printf("Se encontro una Sentencia de Salto GOTO. \n"); }
 ;
 
-//EXPRESIONES
-
-expOp: 
-     | exp
-;
-
+//EXPRESIONES 
 exp: expAsignacion
    | exp ',' expAsignacion
+;
+
+expOp:
+     | exp
 ;
 
 expAsignacion: expCondicional
@@ -236,6 +286,10 @@ expAsignacion: expCondicional
 
 expCondicional: expOr
               | expOr '?' exp ':' expCondicional {$<dval>$ = 0; }
+;
+
+expCondicionalBis:
+                 | expCondicional
 ;
 
 operAsignacion: '='
@@ -286,11 +340,11 @@ expUnaria: expSufijo
          | '&' expUnaria            {$<dval>$ = $<dval>2; }
          | puntero expUnaria        {$<dval>$ = $<dval>2; }
          | SIZEOF '(' expUnaria ')' {$<dval>$ = sizeof($<dval>3); }
-         | SIZEOF '(' TIPO_DATO ')' {$<dval>$ = sizeof($<dval>3); }
+         | SIZEOF '(' nombreTipo ')' {$<dval>$ = sizeof($<dval>3); }
 ;
 
 expSufijo: expPrimaria
-         | expSufijo array                   {$<dval>$ = 0; }
+         | expSufijo '[' exp ']'             {$<dval>$ = 0; }
          | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); }
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
@@ -302,7 +356,6 @@ expPrimaria: ID
            | ENTERO         {$<dval>$ = $<ival>1; }
            | REAL           {$<dval>$ = $<dval>1; }
            | LITERAL_CADENA
-           | '\'' expPrimaria '\''
            | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
 ;
 
@@ -310,6 +363,15 @@ listaArgumentos:
                | expAsignacion
                | listaArgumentos ',' expAsignacion
 ;
+
+//DEFINICIONES EXTERNAS
+declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); contadorParametros = 0; }
+                  | declaracion
+;
+
+definicionFuncion: especDeclaracion decla listaDeclaracionesBis sentCompuesta {nombreFuncion = $<cval>2; tipoDatoFuncion = $<cval>1;}
+;
+
 
 %% 
 
@@ -323,6 +385,7 @@ void main(){
    #ifdef BISON_DEBUG
         yydebug = 1;
 #endif 
+   printf("Ingrese una expresion para resolver:\n");
    yyout = fopen("salida.txt","w");
    yyin = fopen("entrada.txt", "r");
    yyparse();

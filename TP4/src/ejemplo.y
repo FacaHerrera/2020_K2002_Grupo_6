@@ -183,12 +183,8 @@ listaDeInicializadores: inicializador
 
 
 //SENTENCIA DE EXPRESION
-<<<<<<< HEAD
 sentExpresion: exp ';' {printf ("Se encontro una EXPRESION. \n"); }
              | ';'
-=======
-sentExpresion: exp ';' saltoLinea {printf ("Se encontro una EXPRESION\n"); }
->>>>>>> d6e53e5e7ed51693441330159c1494ed4eb54e34
 ;
 
 

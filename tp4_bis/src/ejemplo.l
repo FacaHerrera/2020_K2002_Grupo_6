@@ -14,6 +14,13 @@ DIGITO_HEXADECIMAL [0-9A-Fa-f]
 DIGITO_DECIMAL [0-9]
 DIGITO_OCTAL [0-7]
 CARACTER_IMPRIMIBLE [ -~]
+CONSTANTE_CARACTER {CARACTER_C}|{SECUENCIA_DE_ESCAPE}
+SECUENCIA_DE_ESCAPE {ESCAPE_SIMPLE_1}|{ESCAPE_SIMPLE_2}|{ESCAPE_OCTAL}|{ESCAPE_HEXADECIMAL}
+ESCAPE_SIMPLE_1 [\a\b\f\n\r\t\v]
+ESCAPE_SIMPLE_2 (\\\\)|(\\?)|(\\\")|(\\\')
+ESCAPE_OCTAL \\{DIGITO_OCTAL}{1,3}
+ESCAPE_HEXADECIMAL \\x{DIGITO_HEXADECIMAL}{1,2}
+CARACTER_C [^\'\\]
 
 %%
 
@@ -21,7 +28,8 @@ CARACTER_IMPRIMIBLE [ -~]
 0{DIGITO_OCTAL}* {yylval.ival = strtol(yytext, NULL, 0); return ENTERO; }
 0[xX]{DIGITO_HEXADECIMAL}+ {yylval.ival = strtol(yytext, NULL, 0); return ENTERO; }
 ((({DIGITO_DECIMAL}+\.{DIGITO_DECIMAL}+)|{DIGITO_DECIMAL}+\.)((e?[+-]?{DIGITO_DECIMAL}+)|E?[+-]?{DIGITO_DECIMAL}+)[fFlL]?)|([1-9]{DIGITO_DECIMAL}*((e[+-]?{DIGITO_DECIMAL}+)|E[+-]?{DIGITO_DECIMAL}+)[fFlL]?) {yylval.dval = atof(yytext); return REAL; }
-
+null|NULL {strcpy(yylval.cval,yytext); return NULL1; }
+\'{CONSTANTE_CARACTER}?\' {strcpy(yylval.cval,yytext); return CTE_CARACTER; }
 \"([^\"]|$)*\" {strcpy(yylval.cval,yytext); return LITERAL_CADENA; }
 
 void|char|float|int|long|short|double {strcpy(yylval.cval,yytext); return TIPO_DATO; }
@@ -68,7 +76,6 @@ goto {return GOTO; }
 "~" {return '~'; }
 "?" {return '?'; }
 
-
 "||" {return OR; }
 "&&" {return AND; }
 "==" {return IGUALDAD; }
@@ -87,4 +94,5 @@ goto {return GOTO; }
 \/\/{CARACTER_IMPRIMIBLE}* {printf("Se encontro el comentario simple: \"%s\". \n",yytext); }
 \/\*(([^\*]|$)|(\*([^\/]|$)))*\*\/ {printf("Se encontro el comentario multiple: \"%s\". \n",yytext); }
 
+[^\n\t' '] {printf("Se encontro un error lexico: %s\n", yytext); }
 %%

@@ -22,6 +22,9 @@ char* nombreID;
 
 int contadorVariables = 0;
 int contadorParametros = 0;
+int tip = 0;
+int tipDecla = 0;
+int cantidad = 0;
 
 %}
 
@@ -60,22 +63,24 @@ int contadorParametros = 0;
 %token <cval> CASE
 %token <cval> DEFAULT
 %token <cval> GOTO
+%token <cval> NULL1
 
 %token <cval> TIPO_DATO
 %token <cval> CLASE_ALMACENAMIENTO
 %token <cval> STRUCT_UNION
 %token <cval> ID
 %token <cval> SIZEOF
+%token <cval> CTE_CARACTER
 
 %left OR
 %left AND
 %left IGUALDAD DESIGUALDAD
-%left MAYORIGUAl '>' MENORIGUAL '<'
+%left MAYORIGUAL '>' MENORIGUAL '<'
 %left '+' '-'
 %left '*' '/' '%'
 %left '(' ')'
 
-%expect 31
+%expect 33
 
 %% 
 
@@ -89,7 +94,7 @@ line: declaracionExterna
 ;
 
 //DECLARACIONES
-declaracion: especDeclaracion listaDeclaradoresBis ';' {tipoDatoFuncion = $<cval>1; nombreFuncion = $<cval>2;}
+declaracion: especDeclaracion listaDeclaradoresBis ';' {tipoDatoFuncion = $<cval>1; nombreFuncion = $<cval>2}
 ;
 
 especDeclaracionBis:
@@ -104,12 +109,12 @@ listaDeclaradoresBis:
                     | listaDeclaradores
 ;
 
-listaDeclaradores: declarador
-                 | listaDeclaradores ',' declarador
+listaDeclaradores: declarador {cantidad = 1;}
+                 | listaDeclaradores ',' declarador {cantidad = 2;}
 ;
 
-declarador: decla
-          | decla '=' inicializador
+declarador: decla {tipDecla = 1; }
+          | decla '=' inicializador {tipDecla = 2;}
 ;
 
 inicializador: expAsignacion
@@ -165,10 +170,9 @@ declaBis:
         | decla
 ;
 
-declaradorDirecto: ID {printf("Se declara la variable %s de tipo %s  \n",$<cval>1,tipoDatoFuncion); }
-                 | declaradorDirecto '[' expCondicionalBis ']' {printf("Se declara el arreglo %s de tipo %s  \n",nombreFuncion,tipoDatoFuncion); }
-                 | declaradorDirecto '(' listaTiposParametros ')' {printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); contadorParametros = 0; }
-                 | declaradorDirecto '(' listaIdentificadores ')' {printf("Se invoca la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); contadorParametros = 0; }
+declaradorDirecto: ID {tip = 1;}
+                 | declaradorDirecto '[' expCondicionalBis ']' {tip = 2;}
+                 | declaradorDirecto '(' listaTiposParametros ')' {tip = 3;}
 ;
 
 listaTiposParametros: listaParametros
@@ -185,11 +189,6 @@ listaParametros: declaracionParametro {contadorParametros++; }
 
 declaracionParametro: especDeclaracion decla
                     | especDeclaracion declaradorAbstracto
-;
-
-listaIdentificadores: 
-                    | ID {contadorParametros++; }
-                    | listaIdentificadores ',' ID {contadorParametros++; }
 ;
 
 nombreTipo: listaCalificadores declaradorAbstractoBis
@@ -234,8 +233,8 @@ decalracionOSentencia:
                      | decalracionOSentencia listaSentencias
 ;
 
-listaDeclaraciones: declaracion
-                  | listaDeclaraciones declaracion
+listaDeclaraciones: declaracionExterna
+                  | listaDeclaraciones declaracionExterna
 ;
 
 listaDeclaracionesBis:
@@ -353,9 +352,11 @@ expSufijo: expPrimaria
 ;
 
 expPrimaria: ID
-           | ENTERO         {$<dval>$ = $<ival>1; }
+           | ENTERO         {$<dval>$ = $<ival>1;}
            | REAL           {$<dval>$ = $<dval>1; }
+           | CTE_CARACTER
            | LITERAL_CADENA
+           | NULL1
            | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
 ;
 
@@ -366,7 +367,52 @@ listaArgumentos:
 
 //DEFINICIONES EXTERNAS
 declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); contadorParametros = 0; }
-                  | declaracion
+                  | declaracion {
+                       switch(tip){
+                         case 1:
+                              if(tipDecla == 1){
+                                   if(cantidad == 1){
+                                        printf("Se declara la variable %s de tipo %s  \n",nombreFuncion,tipoDatoFuncion); 
+                                   }
+                                   else if(cantidad == 2){
+                                        printf("Se declaran variables de tipo %s  \n",tipoDatoFuncion);
+                                   } 
+                              }
+                              else if(tipDecla == 2){
+                                   if(cantidad == 1){
+                                        printf("Se inicializa la variable %s de tipo %s \n",nombreFuncion,tipoDatoFuncion); 
+                                   }
+                                   else if(cantidad == 2){
+                                        printf("Se inicializan variables de tipo %s \n",tipoDatoFuncion);
+                                   } 
+                              }
+                              break;
+                         case 2:
+                              if(tipDecla == 1){
+                                   if(cantidad == 1){
+                                        printf("Se declara el arreglo %s de tipo %s  \n",nombreFuncion,tipoDatoFuncion);
+                                   }
+                                   else if(cantidad == 2){
+                                        printf("Se declaran arreglos de tipo %s \n",tipoDatoFuncion);
+                                   }  
+                              }
+                              else if(tipDecla == 2){
+                                   if(cantidad == 1){
+                                        printf("Se inicializa el arreglo %s de tipo %s \n",nombreFuncion,tipoDatoFuncion);
+                                   }
+                                   else if(cantidad == 2){
+                                        printf("Se inicializan arreglos de tipo %s \n",tipoDatoFuncion);
+                                   }   
+                              }
+                              break;
+                         case 3:
+                              if(tipDecla == 1){
+                                   printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); 
+                                   contadorParametros = 0;
+                              }
+                              break;     
+                       }
+                  }
 ;
 
 definicionFuncion: especDeclaracion decla listaDeclaracionesBis sentCompuesta {nombreFuncion = $<cval>2; tipoDatoFuncion = $<cval>1;}

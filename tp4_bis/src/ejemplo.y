@@ -80,8 +80,6 @@ int cantidad = 0;
 %left '*' '/' '%'
 %left '(' ')'
 
-%expect 33
-
 %% 
 
 input:
@@ -101,7 +99,7 @@ especDeclaracionBis:
                    | especDeclaracion
 ;
 
-especDeclaracion: especClase especDeclaracionBis
+especDeclaracion: CLASE_ALMACENAMIENTO especDeclaracionBis
                 | especTipo especDeclaracionBis
 ;
 
@@ -123,9 +121,6 @@ inicializador: expAsignacion
 
 listaDeInicializadores: inicializador
                       | listaDeInicializadores ',' inicializador
-;
-
-especClase: CLASE_ALMACENAMIENTO
 ;
 
 especTipo: TIPO_DATO
@@ -271,7 +266,16 @@ sentSalto: RETURN expOp ';' {printf("Se encontro una Sentencia de Salto RETURN. 
 ;
 
 //EXPRESIONES 
-exp: expAsignacion {printf("El resultado de la expresion es: %g\n", $<dval>1); }
+expPrimaria: ID
+           | ENTERO         {$<dval>$ = $<ival>1;}
+           | REAL           {$<dval>$ = $<dval>1; }
+           | CTE_CARACTER
+           | LITERAL_CADENA
+           | NULL1
+           | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
+;
+
+exp: expAsignacion {printf("Se encontro una expresion. \n"); }
    | exp ',' expAsignacion
 ;
 
@@ -349,15 +353,6 @@ expSufijo: expPrimaria
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
          | expSufijo DECREMENTO              {$<dval>$ = $<dval>2 --; }
-;
-
-expPrimaria: ID
-           | ENTERO         {$<dval>$ = $<ival>1;}
-           | REAL           {$<dval>$ = $<dval>1; }
-           | CTE_CARACTER
-           | LITERAL_CADENA
-           | NULL1
-           | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
 ;
 
 listaArgumentos: 

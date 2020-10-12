@@ -1,6 +1,8 @@
 int automata(char *expresion, char *error){
+	int a = NULL;
 	char tipoError[70];
-	int len = 0, inicio = 0, estado = 0, columna = 0, vPila = 0;
+	int len = 0;
+	int inicio = 0, estado = 0, columna = 0, vPila = 0;
 	struct recorrido 	estado00 = {0,0}, estado01 = {0,1}, 
 						estado10 = {1,0}, estado11 = {1,1}, 
 						estado02 = {0,2}, estado03 = {0,3}, 

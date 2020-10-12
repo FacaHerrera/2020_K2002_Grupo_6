@@ -1751,7 +1751,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 115 "ejemplo.y"
-    {tipDecla = 2;;}
+    {tipDecla = 2; ;}
     break;
 
   case 42:
@@ -2419,7 +2419,6 @@ void main(){
    #ifdef BISON_DEBUG
         yydebug = 1;
 #endif 
-   printf("Ingrese una expresion para resolver:\n");
    yyout = fopen("salida.txt","w");
    yyin = fopen("entrada.txt", "r");
    yyparse();

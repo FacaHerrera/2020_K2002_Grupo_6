@@ -1091,7 +1091,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 99 "ejemplo.l"
+#line 98 "ejemplo.l"
 ECHO;
 	YY_BREAK
 #line 1098 "lex.yy.c"
@@ -1980,4 +1980,4 @@ int main()
 	return 0;
 	}
 #endif
-#line 99 "ejemplo.l"
+#line 98 "ejemplo.l"

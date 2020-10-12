@@ -112,10 +112,10 @@ listaDeclaradores: declarador {cantidad = 1;}
 ;
 
 declarador: decla {tipDecla = 1; }
-          | decla '=' inicializador {tipDecla = 2;}
+          | decla '=' inicializador {tipDecla = 2; }
 ;
 
-inicializador: expAsignacion
+inicializador: expAsignacion 
              | '{' listaDeInicializadores '}'
 ;
 
@@ -426,7 +426,6 @@ void main(){
    #ifdef BISON_DEBUG
         yydebug = 1;
 #endif 
-   printf("Ingrese una expresion para resolver:\n");
    yyout = fopen("salida.txt","w");
    yyin = fopen("entrada.txt", "r");
    yyparse();

@@ -67,12 +67,13 @@
      CASE = 283,
      DEFAULT = 284,
      GOTO = 285,
-     TIPO_DATO = 286,
-     CLASE_ALMACENAMIENTO = 287,
-     STRUCT_UNION = 288,
-     ID = 289,
-     SIZEOF = 290,
-     MAYORIGUAl = 291
+     NULL1 = 286,
+     TIPO_DATO = 287,
+     CLASE_ALMACENAMIENTO = 288,
+     STRUCT_UNION = 289,
+     ID = 290,
+     SIZEOF = 291,
+     CTE_CARACTER = 292
    };
 #endif
 
@@ -83,7 +84,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 28 "../src/ejemplo.y"
+#line 31 "../src/ejemplo.y"
 
   int ival;
   double dval;
@@ -92,7 +93,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 96 "ejemplo.tab.h"
+#line 97 "ejemplo.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

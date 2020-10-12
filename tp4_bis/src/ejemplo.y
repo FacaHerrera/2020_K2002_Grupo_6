@@ -271,7 +271,7 @@ sentSalto: RETURN expOp ';' {printf("Se encontro una Sentencia de Salto RETURN. 
 ;
 
 //EXPRESIONES 
-exp: expAsignacion
+exp: expAsignacion {printf("El resultado de la expresion es: %g\n", $<dval>1); }
    | exp ',' expAsignacion
 ;
 

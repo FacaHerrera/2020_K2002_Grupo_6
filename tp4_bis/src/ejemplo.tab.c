@@ -75,6 +75,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "tablaDeSimbolos.h"
 
 extern int yylex();
 int yyerror (char* );
@@ -97,10 +98,14 @@ int tip = 0;
 int tipDecla = 0;
 int cantidad = 0;
 
+ListaVariables *listaVariables = NULL;
+ListaParametros *listaParametros = NULL;
+ListaFunciones *listaFunciones = NULL;
+
 
 
 /* Line 189 of yacc.c  */
-#line 104 "ejemplo.tab.c"
+#line 109 "ejemplo.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -172,7 +177,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 31 "ejemplo.y"
+#line 36 "ejemplo.y"
 
   int ival;
   double dval;
@@ -181,7 +186,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 185 "ejemplo.tab.c"
+#line 190 "ejemplo.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -193,7 +198,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 197 "ejemplo.tab.c"
+#line 202 "ejemplo.tab.c"
 
 #ifdef short
 # undef short
@@ -542,23 +547,23 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    85,    85,    86,    89,    90,    91,    95,    98,    99,
-     102,   103,   106,   107,   110,   111,   114,   115,   118,   119,
-     122,   123,   126,   127,   130,   131,   134,   135,   138,   141,
-     144,   145,   148,   149,   152,   153,   156,   157,   160,   161,
-     164,   165,   168,   169,   170,   173,   174,   177,   178,   181,
-     182,   185,   186,   189,   192,   193,   194,   197,   198,   201,
-     202,   203,   206,   207,   211,   212,   213,   214,   215,   216,
-     219,   220,   223,   226,   227,   228,   231,   232,   235,   236,
-     239,   240,   243,   244,   247,   248,   249,   252,   253,   254,
-     257,   258,   259,   262,   263,   264,   265,   269,   270,   271,
-     272,   273,   274,   275,   278,   279,   282,   283,   286,   287,
-     290,   291,   294,   295,   298,   299,   300,   301,   302,   305,
-     306,   309,   310,   313,   314,   315,   318,   319,   320,   321,
-     322,   325,   326,   327,   330,   331,   332,   333,   336,   337,
-     338,   339,   340,   341,   342,   343,   344,   345,   346,   349,
-     350,   351,   352,   353,   354,   355,   358,   359,   360,   364,
-     365,   413
+       0,    90,    90,    91,    94,    95,    96,   100,   103,   104,
+     107,   108,   111,   112,   115,   116,   119,   120,   123,   124,
+     127,   128,   131,   132,   135,   136,   139,   140,   143,   146,
+     149,   150,   153,   154,   157,   158,   161,   162,   165,   166,
+     169,   170,   173,   174,   175,   178,   179,   182,   183,   186,
+     187,   190,   191,   194,   197,   198,   199,   202,   203,   206,
+     207,   208,   211,   212,   216,   217,   218,   219,   220,   221,
+     224,   225,   228,   231,   232,   233,   236,   237,   240,   241,
+     244,   245,   248,   249,   252,   253,   254,   257,   258,   259,
+     262,   263,   264,   267,   268,   269,   270,   274,   275,   276,
+     277,   278,   279,   280,   283,   284,   287,   288,   291,   292,
+     295,   296,   299,   300,   303,   304,   305,   306,   307,   310,
+     311,   314,   315,   318,   319,   320,   323,   324,   325,   326,
+     327,   330,   331,   332,   335,   336,   337,   338,   341,   342,
+     343,   344,   345,   346,   347,   348,   349,   350,   351,   354,
+     355,   356,   357,   358,   359,   360,   363,   364,   365,   369,
+     370,   420
 };
 #endif
 
@@ -1715,433 +1720,440 @@ yyreduce:
         case 6:
 
 /* Line 1455 of yacc.c  */
-#line 91 "ejemplo.y"
+#line 96 "ejemplo.y"
     {yyerrok; ;}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 95 "ejemplo.y"
+#line 100 "ejemplo.y"
     {tipoDatoFuncion = (yyvsp[(1) - (3)].cval); nombreFuncion = (yyvsp[(2) - (3)].cval);}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 110 "ejemplo.y"
-    {cantidad = 1;;}
+#line 115 "ejemplo.y"
+    {cantidad = 1; ;}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 111 "ejemplo.y"
+#line 116 "ejemplo.y"
     {cantidad = 2;;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 114 "ejemplo.y"
-    {tipDecla = 1; ;}
+#line 119 "ejemplo.y"
+    {tipDecla = 1; agregarVariable(&listaVariables, (yyvsp[(1) - (1)].cval), tipoDatoFuncion);;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 115 "ejemplo.y"
-    {tipDecla = 2; ;}
+#line 120 "ejemplo.y"
+    {tipDecla = 2; agregarVariable(&listaVariables, (yyvsp[(1) - (3)].cval), tipoDatoFuncion);;}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 168 "ejemplo.y"
+#line 173 "ejemplo.y"
     {tip = 1;;}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 169 "ejemplo.y"
+#line 174 "ejemplo.y"
     {tip = 2;;}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 170 "ejemplo.y"
+#line 175 "ejemplo.y"
     {tip = 3;;}
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 181 "ejemplo.y"
+#line 186 "ejemplo.y"
     {contadorParametros++; ;}
     break;
 
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 182 "ejemplo.y"
+#line 187 "ejemplo.y"
     {contadorParametros++; ;}
+    break;
+
+  case 51:
+
+/* Line 1455 of yacc.c  */
+#line 190 "ejemplo.y"
+    {agregarParametro(&listaParametros, (yyvsp[(2) - (2)].cval), (yyvsp[(1) - (2)].cval)); ;}
     break;
 
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 223 "ejemplo.y"
+#line 228 "ejemplo.y"
     {printf("Se encontro una Sentencia Compuesta. \n"); ;}
     break;
 
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 247 "ejemplo.y"
+#line 252 "ejemplo.y"
     {printf("Se encontro una Sentencia de Seleccion IF.\n"); ;}
     break;
 
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 248 "ejemplo.y"
+#line 253 "ejemplo.y"
     {printf("Se encontro una Sentencia de Seleccion IF/ELSE.\n"); ;}
     break;
 
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 249 "ejemplo.y"
+#line 254 "ejemplo.y"
     {printf("Se enconto una Sentencia de Seleccion SWITCH.\n"); ;}
     break;
 
   case 87:
 
 /* Line 1455 of yacc.c  */
-#line 252 "ejemplo.y"
+#line 257 "ejemplo.y"
     {printf("Se encontro una Sentencia de Iteracion WHILE.\n"); ;}
     break;
 
   case 88:
 
 /* Line 1455 of yacc.c  */
-#line 253 "ejemplo.y"
+#line 258 "ejemplo.y"
     {printf("Se encontro una Sentencia de Iteracion DO WHILE.\n"); ;}
     break;
 
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 254 "ejemplo.y"
+#line 259 "ejemplo.y"
     {printf("Se encontro una Sentencia de Iteracion FOR.\n"); ;}
     break;
 
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 257 "ejemplo.y"
+#line 262 "ejemplo.y"
     {printf("Se encontro una Sentencia de Etiqueta CASE.\n"); ;}
     break;
 
   case 91:
 
 /* Line 1455 of yacc.c  */
-#line 258 "ejemplo.y"
+#line 263 "ejemplo.y"
     {printf("Se encontro una Sentencia de Etiqueta DEFAULT.\n"); ;}
     break;
 
   case 93:
 
 /* Line 1455 of yacc.c  */
-#line 262 "ejemplo.y"
+#line 267 "ejemplo.y"
     {printf("Se encontro una Sentencia de Salto RETURN. \n"); ;}
     break;
 
   case 94:
 
 /* Line 1455 of yacc.c  */
-#line 263 "ejemplo.y"
+#line 268 "ejemplo.y"
     {printf("Se encontro una Sentencia de Salto BREAK.\n"); ;}
     break;
 
   case 95:
 
 /* Line 1455 of yacc.c  */
-#line 264 "ejemplo.y"
+#line 269 "ejemplo.y"
     {printf("Se encontro una Sentencia de Salto CONTINUE.\n"); ;}
     break;
 
   case 96:
 
 /* Line 1455 of yacc.c  */
-#line 265 "ejemplo.y"
+#line 270 "ejemplo.y"
     {printf("Se encontro una Sentencia de Salto GOTO. \n"); ;}
     break;
 
   case 98:
 
 /* Line 1455 of yacc.c  */
-#line 270 "ejemplo.y"
+#line 275 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (1)].ival);;}
     break;
 
   case 99:
 
 /* Line 1455 of yacc.c  */
-#line 271 "ejemplo.y"
+#line 276 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (1)].dval); ;}
     break;
 
   case 103:
 
 /* Line 1455 of yacc.c  */
-#line 275 "ejemplo.y"
+#line 280 "ejemplo.y"
     {(yyval.dval) = ( (yyvsp[(2) - (3)].dval) ); ;}
     break;
 
   case 104:
 
 /* Line 1455 of yacc.c  */
-#line 278 "ejemplo.y"
+#line 283 "ejemplo.y"
     {printf("Se encontro una expresion. \n"); ;}
     break;
 
   case 109:
 
 /* Line 1455 of yacc.c  */
-#line 287 "ejemplo.y"
+#line 292 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 111:
 
 /* Line 1455 of yacc.c  */
-#line 291 "ejemplo.y"
+#line 296 "ejemplo.y"
     {(yyval.dval) = 0; ;}
     break;
 
   case 120:
 
 /* Line 1455 of yacc.c  */
-#line 306 "ejemplo.y"
+#line 311 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) || (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 122:
 
 /* Line 1455 of yacc.c  */
-#line 310 "ejemplo.y"
+#line 315 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) && (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 124:
 
 /* Line 1455 of yacc.c  */
-#line 314 "ejemplo.y"
+#line 319 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) == (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 125:
 
 /* Line 1455 of yacc.c  */
-#line 315 "ejemplo.y"
+#line 320 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) != (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 127:
 
 /* Line 1455 of yacc.c  */
-#line 319 "ejemplo.y"
+#line 324 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) < (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 128:
 
 /* Line 1455 of yacc.c  */
-#line 320 "ejemplo.y"
+#line 325 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) > (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 129:
 
 /* Line 1455 of yacc.c  */
-#line 321 "ejemplo.y"
+#line 326 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) <= (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 130:
 
 /* Line 1455 of yacc.c  */
-#line 322 "ejemplo.y"
+#line 327 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) >= (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 132:
 
 /* Line 1455 of yacc.c  */
-#line 326 "ejemplo.y"
+#line 331 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) + (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 133:
 
 /* Line 1455 of yacc.c  */
-#line 327 "ejemplo.y"
+#line 332 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) - (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 135:
 
 /* Line 1455 of yacc.c  */
-#line 331 "ejemplo.y"
+#line 336 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) * (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 136:
 
 /* Line 1455 of yacc.c  */
-#line 332 "ejemplo.y"
+#line 337 "ejemplo.y"
     {if((yyvsp[(3) - (3)].dval) == 0) {printf("ERROR/: No se puede dividir por 0 \n"); return 1; } else (yyval.dval) = (yyvsp[(1) - (3)].dval) / (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 137:
 
 /* Line 1455 of yacc.c  */
-#line 333 "ejemplo.y"
+#line 338 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].ival) % (yyvsp[(3) - (3)].ival); ;}
     break;
 
   case 139:
 
 /* Line 1455 of yacc.c  */
-#line 337 "ejemplo.y"
+#line 342 "ejemplo.y"
     {(yyval.dval) = ++ (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 140:
 
 /* Line 1455 of yacc.c  */
-#line 338 "ejemplo.y"
+#line 343 "ejemplo.y"
     {(yyval.dval) = -- (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 141:
 
 /* Line 1455 of yacc.c  */
-#line 339 "ejemplo.y"
+#line 344 "ejemplo.y"
     {(yyval.dval) = - (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 142:
 
 /* Line 1455 of yacc.c  */
-#line 340 "ejemplo.y"
+#line 345 "ejemplo.y"
     {(yyval.dval) = + (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 143:
 
 /* Line 1455 of yacc.c  */
-#line 341 "ejemplo.y"
+#line 346 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 144:
 
 /* Line 1455 of yacc.c  */
-#line 342 "ejemplo.y"
+#line 347 "ejemplo.y"
     {(yyval.dval) = ! (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 145:
 
 /* Line 1455 of yacc.c  */
-#line 343 "ejemplo.y"
+#line 348 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 146:
 
 /* Line 1455 of yacc.c  */
-#line 344 "ejemplo.y"
+#line 349 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 147:
 
 /* Line 1455 of yacc.c  */
-#line 345 "ejemplo.y"
+#line 350 "ejemplo.y"
     {(yyval.dval) = sizeof((yyvsp[(3) - (4)].dval)); ;}
     break;
 
   case 148:
 
 /* Line 1455 of yacc.c  */
-#line 346 "ejemplo.y"
+#line 351 "ejemplo.y"
     {(yyval.dval) = sizeof((yyvsp[(3) - (4)].dval)); ;}
     break;
 
   case 150:
 
 /* Line 1455 of yacc.c  */
-#line 350 "ejemplo.y"
+#line 355 "ejemplo.y"
     {(yyval.dval) = 0; ;}
     break;
 
   case 151:
 
 /* Line 1455 of yacc.c  */
-#line 351 "ejemplo.y"
+#line 356 "ejemplo.y"
     {(yyval.dval) = 0; printf("Se invoco a la funcion %s \n",(yyvsp[(1) - (4)].cval)); ;}
     break;
 
   case 152:
 
 /* Line 1455 of yacc.c  */
-#line 352 "ejemplo.y"
+#line 357 "ejemplo.y"
     {(yyval.dval) = 0; ;}
     break;
 
   case 153:
 
 /* Line 1455 of yacc.c  */
-#line 353 "ejemplo.y"
+#line 358 "ejemplo.y"
     {(yyval.dval) = 0; ;}
     break;
 
   case 154:
 
 /* Line 1455 of yacc.c  */
-#line 354 "ejemplo.y"
+#line 359 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(2) - (2)].dval) ++; ;}
     break;
 
   case 155:
 
 /* Line 1455 of yacc.c  */
-#line 355 "ejemplo.y"
+#line 360 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(2) - (2)].dval) --; ;}
     break;
 
   case 159:
 
 /* Line 1455 of yacc.c  */
-#line 364 "ejemplo.y"
+#line 369 "ejemplo.y"
     {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); contadorParametros = 0; ;}
     break;
 
   case 160:
 
 /* Line 1455 of yacc.c  */
-#line 365 "ejemplo.y"
+#line 370 "ejemplo.y"
     {
                        switch(tip){
                          case 1:
                               if(tipDecla == 1){
                                    if(cantidad == 1){
-                                        printf("Se declara la variable %s de tipo %s  \n",nombreFuncion,tipoDatoFuncion); 
+                                        printf("Se declara la variable %s de tipo %s  \n",nombreFuncion,tipoDatoFuncion);
                                    }
                                    else if(cantidad == 2){
                                         printf("Se declaran variables de tipo %s  \n",tipoDatoFuncion);
@@ -2149,7 +2161,7 @@ yyreduce:
                               }
                               else if(tipDecla == 2){
                                    if(cantidad == 1){
-                                        printf("Se inicializa la variable %s de tipo %s \n",nombreFuncion,tipoDatoFuncion); 
+                                        printf("Se inicializa la variable %s de tipo %s \n",nombreFuncion,tipoDatoFuncion);
                                    }
                                    else if(cantidad == 2){
                                         printf("Se inicializan variables de tipo %s \n",tipoDatoFuncion);
@@ -2178,6 +2190,8 @@ yyreduce:
                               if(tipDecla == 1){
                                    printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); 
                                    contadorParametros = 0;
+                                   agregarFuncion(&listaFunciones,nombreFuncion,tipoDatoFuncion,&listaParametros);
+                                   listaParametros = NULL;
                               }
                               break;     
                        }
@@ -2187,14 +2201,14 @@ yyreduce:
   case 161:
 
 /* Line 1455 of yacc.c  */
-#line 413 "ejemplo.y"
+#line 420 "ejemplo.y"
     {nombreFuncion = (yyvsp[(2) - (4)].cval); tipoDatoFuncion = (yyvsp[(1) - (4)].cval);;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 2198 "ejemplo.tab.c"
+#line 2212 "ejemplo.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2406,7 +2420,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 417 "ejemplo.y"
+#line 424 "ejemplo.y"
  
 
 int yyerror (char *mensaje) 
@@ -2422,4 +2436,6 @@ void main(){
    yyout = fopen("salida.txt","w");
    yyin = fopen("entrada.txt", "r");
    yyparse();
+   imprimirVariables(&listaVariables);
+   imprimirFunciones(&listaFunciones);
 }

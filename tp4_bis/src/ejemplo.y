@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "tablaDeSimbolos.h"
 
 extern int yylex();
 int yyerror (char* );
@@ -25,6 +26,10 @@ int contadorParametros = 0;
 int tip = 0;
 int tipDecla = 0;
 int cantidad = 0;
+
+ListaVariables *listaVariables = NULL;
+ListaParametros *listaParametros = NULL;
+ListaFunciones *listaFunciones = NULL;
 
 %}
 
@@ -107,12 +112,12 @@ listaDeclaradoresBis:
                     | listaDeclaradores
 ;
 
-listaDeclaradores: declarador {cantidad = 1;}
+listaDeclaradores: declarador {cantidad = 1; }
                  | listaDeclaradores ',' declarador {cantidad = 2;}
 ;
 
-declarador: decla {tipDecla = 1; }
-          | decla '=' inicializador {tipDecla = 2; }
+declarador: decla {tipDecla = 1; agregarVariable(&listaVariables, $<cval>1, tipoDatoFuncion);}
+          | decla '=' inicializador {tipDecla = 2;}
 ;
 
 inicializador: expAsignacion 
@@ -182,7 +187,7 @@ listaParametros: declaracionParametro {contadorParametros++; }
                | listaParametros ',' declaracionParametro {contadorParametros++; }
 ;
 
-declaracionParametro: especDeclaracion decla
+declaracionParametro: especDeclaracion decla {agregarParametro(&listaParametros, $<cval>2, $<cval>1); }
                     | especDeclaracion declaradorAbstracto
 ;
 
@@ -367,7 +372,7 @@ declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d pa
                          case 1:
                               if(tipDecla == 1){
                                    if(cantidad == 1){
-                                        printf("Se declara la variable %s de tipo %s  \n",nombreFuncion,tipoDatoFuncion); 
+                                        printf("Se declara la variable %s de tipo %s  \n",nombreFuncion,tipoDatoFuncion);
                                    }
                                    else if(cantidad == 2){
                                         printf("Se declaran variables de tipo %s  \n",tipoDatoFuncion);
@@ -375,7 +380,7 @@ declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d pa
                               }
                               else if(tipDecla == 2){
                                    if(cantidad == 1){
-                                        printf("Se inicializa la variable %s de tipo %s \n",nombreFuncion,tipoDatoFuncion); 
+                                        printf("Se inicializa la variable %s de tipo %s \n",nombreFuncion,tipoDatoFuncion);
                                    }
                                    else if(cantidad == 2){
                                         printf("Se inicializan variables de tipo %s \n",tipoDatoFuncion);
@@ -404,6 +409,8 @@ declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d pa
                               if(tipDecla == 1){
                                    printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); 
                                    contadorParametros = 0;
+                                   agregarFuncion(&listaFunciones,nombreFuncion,tipoDatoFuncion,&listaParametros);
+                                   listaParametros = NULL;
                               }
                               break;     
                        }
@@ -429,4 +436,6 @@ void main(){
    yyout = fopen("salida.txt","w");
    yyin = fopen("entrada.txt", "r");
    yyparse();
+   imprimirVariables(&listaVariables);
+   imprimirFunciones(&listaFunciones);
 }

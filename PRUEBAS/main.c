@@ -32,12 +32,11 @@ int main() {
     TablaDeSimbolos tabla;
     tabla.listaVariables = NULL;
     tabla.listaFunciones = NULL;
+    
     agregarVariable(&tabla.listaVariables, "d","int");
     agregarVariable(&tabla.listaVariables, "de","int");
     agregarFuncion(&tabla.listaFunciones,"sumar","int",&funcionSumar);
-    //agregarVariableEnTabla(tabla, "d","int");
-    //agregarVariableEnTabla(tabla, "de","int");
-    //agregarFuncionEnTabla(tabla,"sumar","int",&funcionSumar);
+
     imprimirTabla(tabla);   
 }
 

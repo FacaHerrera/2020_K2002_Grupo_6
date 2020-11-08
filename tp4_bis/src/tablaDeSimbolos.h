@@ -189,23 +189,7 @@ typedef struct TablaDeSimbolos {
     struct ListaFunciones *listaFunciones;
 } TablaDeSimbolos;
 
-void inicializarTabla(TablaDeSimbolos);
-void agregarVariableEnTabla(TablaDeSimbolos, char*, char*);
-void agregarFuncionEnTabla(TablaDeSimbolos, char*, char*, ListaParametros**);
 void imprimirTabla(TablaDeSimbolos);
-
-void inicializarTabla(TablaDeSimbolos tabla) {
-    tabla.listaVariables = NULL;
-    tabla.listaVariables = NULL;
-}
-
-void agregarVariableEnTabla(TablaDeSimbolos tabla, char *nombre, char *tipo) {
-    agregarVariable(&tabla.listaVariables,nombre,tipo);
-}
-
-void agregarFuncionEnTabla(TablaDeSimbolos tabla, char *nombre, char *tipo, ListaParametros** parametros){
-    agregarFuncion(&tabla.listaFunciones,nombre,tipo,parametros);
-}
 
 void imprimirTabla(TablaDeSimbolos tabla) {
     printf("TABLA DE SIMBOLOS\n");

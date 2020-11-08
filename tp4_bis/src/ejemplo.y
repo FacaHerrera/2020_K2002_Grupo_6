@@ -117,7 +117,7 @@ listaDeclaradores: declarador {cantidad = 1; }
 ;
 
 declarador: decla {tipDecla = 1; agregarVariable(&listaVariables, $<cval>1, tipoDatoFuncion);}
-          | decla '=' inicializador {tipDecla = 2;}
+          | decla '=' inicializador {tipDecla = 2; agregarVariable(&listaVariables, $<cval>1, tipoDatoFuncion);}
 ;
 
 inicializador: expAsignacion 

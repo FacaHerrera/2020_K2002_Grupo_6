@@ -17,7 +17,6 @@ typedef struct ListaVariables{
 ListaVariables* buscarVariable(ListaVariables **,char *);
 void agregarVariable(ListaVariables** , char* , char*);
 void imprimirVariables(ListaVariables **);
-void eliminarVariable(ListaVariables **, char *);
 
 void agregarVariable(ListaVariables** variables, char* nombre, char* tipo) {
     ListaVariables *nodoNuevo = (ListaVariables *)malloc(sizeof(ListaVariables));
@@ -33,7 +32,7 @@ void agregarVariable(ListaVariables** variables, char* nombre, char* tipo) {
             aux = aux->sig;
         }
         if(buscarVariable(variables, nombre)) {
-            printf("Error Sintactico: Doble declaracion de la variable %s.\n",nombre);
+            printf("Error Semantico: Doble declaracion de la variable %s.\n",nombre);
         } else {
             aux->sig = nodoNuevo;
         }
@@ -46,22 +45,6 @@ void imprimirVariables(ListaVariables **variables){
     while(aux != NULL){
         printf("Nombre variable: %s; Tipo variable: %s;\n",aux->nombreVariable,aux->tipoVariable);
         aux = aux->sig;
-    }
-}
-
-void eliminarVariable(ListaVariables **variables, char *nombre){
-    ListaVariables* aux = *variables;
-    ListaVariables* ant = NULL;
-    while((aux != NULL) && (aux->nombreVariable != nombre)){
-        ant = aux;
-        aux = aux->sig;
-    }
-    if(aux != NULL){
-        if(ant != NULL){
-            ant->sig = aux->sig;
-        } else {
-            *variables = aux->sig;
-        }
     }
 }
 
@@ -101,7 +84,7 @@ void agregarParametro(ListaParametros** parametros, char* nombre, char* tipo) {
             aux = aux->sig;
         }
         if(buscarParametro(parametros, nombre)) {
-            printf("Error Sintactico: Doble declaracion del parametro %s.\n",nombre);
+            printf("Error Semantico: Doble declaracion del parametro %s.\n",nombre);
         } else {
             aux->sig = nodoNuevo;
         }
@@ -156,7 +139,7 @@ void agregarFuncion(ListaFunciones** funciones, char* nombre, char* tipo, ListaP
             aux = aux->sig;
         }
         if(buscarFuncion(funciones, nombre)) {
-            printf("Error Sintactico: Doble declaracion de la funcion %s.\n",nombre);
+            printf("Error Semantico: Doble declaracion de la funcion %s.\n",nombre);
         } else {
             aux->sig = nodoNuevo;
         }
@@ -181,6 +164,51 @@ void imprimirFunciones(ListaFunciones **funciones){
     }
 }
 
+int longitudParametros(ListaParametros **parametros){
+    int longitud = 0;
+    ListaParametros *aux = *parametros;
+    while(aux != NULL){
+        aux = aux->sig;
+        longitud++;
+    }
+    return longitud;
+}
+
+///////////////////
+//IDENTIFICADORES//
+///////////////////
+
+typedef struct Nodo {
+    char id[20];
+    struct Nodo *sig;
+} Nodo;
+
+int longitudId(Nodo **p){
+    int longitud = 0;
+    Nodo *aux = *p;
+    while(aux != NULL){
+        aux = aux->sig;
+        longitud++;
+    }
+    return longitud;
+}
+
+void agregarId(Nodo ** identificadores, char* identificador) {
+    Nodo *nuevo = (Nodo *)malloc(sizeof(Nodo));
+    strcpy(nuevo->id,identificador);
+    nuevo->sig = NULL;
+    if(*identificadores==NULL){
+        *identificadores = nuevo;
+    }
+    else{
+        Nodo* aux = *identificadores;
+        while(aux->sig != NULL){
+            aux = aux->sig;
+        }
+        aux->sig = nuevo;
+    }
+}
+
 /////////////////////
 //TABLA DE SIMBOLOS//
 /////////////////////
@@ -191,21 +219,35 @@ typedef struct TablaDeSimbolos {
 } TablaDeSimbolos;
 
 void imprimirTabla(TablaDeSimbolos);
+void validarInvocacion(TablaDeSimbolos , char* , Nodo *);
 
 void imprimirTabla(TablaDeSimbolos tabla) {
     printf("TABLA DE SIMBOLOS\n");
-    //eliminarFunciones(tabla);
     imprimirVariables(&tabla.listaVariables);
     imprimirFunciones(&tabla.listaFunciones);
 }
 
-
-void eliminarFunciones(TablaDeSimbolos tabla){
-    ListaVariables* aux = tabla.listaVariables;
-    while(aux != NULL) {
-        if(buscarFuncion(&tabla.listaFunciones,aux->nombreVariable)){
-            eliminarVariable(&tabla.listaVariables,aux->nombreVariable);
+void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *identificadores) {
+    ListaFunciones *funcionInvocada = buscarFuncion(&tabla.listaFunciones,nombreFuncion);
+    int i = 0;
+    if(!funcionInvocada) {
+        printf("Error Semantico en la invocacion de la funcion %s: La funcion %s no existe. \n",nombreFuncion,nombreFuncion);
+    } else {
+        ListaParametros *parametros = funcionInvocada->listaParametros;
+        if(longitudParametros(&parametros) != longitudId(&identificadores)) {
+            printf("Error Semantico en la invocacion de la funcion %s: Se invoca a la funcion con %d parametros, mientras que la funcion tiene %d parametros \n",nombreFuncion,longitudId(&identificadores), longitudParametros(&parametros));
+        } else {
+            while(parametros != NULL) {
+                ListaVariables *parametroAComparar = buscarVariable(&tabla.listaVariables, identificadores->id);
+                if(!parametroAComparar) {
+                    printf("Error semantico en la invocacion de la funcion %s: El identificador '%s' no existe. \n",nombreFuncion,identificadores->id);
+                } else if(strcmp(parametros->tipoParametro,parametroAComparar->tipoVariable)) {
+                    printf("Error Semantico en la invocacion de la funcion %s: El parametro '%s' no es de tipo %s \n",nombreFuncion,identificadores->id,parametros->tipoParametro);
+                }
+                i++;
+                parametros = parametros->sig;
+                identificadores = identificadores->sig;
+            }
         }
-        aux = aux->sig;
     }
 }

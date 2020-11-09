@@ -28,6 +28,7 @@ int tip = 0;
 int tipDecla = 0;
 int cantidad = 0;
 
+Nodo *identificadores = NULL;
 ListaParametros *listaParametros = NULL;
 TablaDeSimbolos tabla;
 
@@ -361,7 +362,7 @@ expUnaria: expSufijo
 
 expSufijo: expPrimaria
          | expSufijo '[' exp ']'             {$<dval>$ = 0; }
-         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); }
+         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); validarInvocacion(tabla,$<cval>1,identificadores); identificadores = NULL;}
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
@@ -369,8 +370,8 @@ expSufijo: expPrimaria
 ;
 
 listaArgumentos: 
-               | expAsignacion
-               | listaArgumentos ',' expAsignacion
+               | expAsignacion {agregarId(&identificadores,$<cval>1);}
+               | listaArgumentos ',' expAsignacion {agregarId(&identificadores,$<cval>3);}
 ;
 
 //DEFINICIONES EXTERNAS

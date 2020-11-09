@@ -12,7 +12,6 @@ int main() {
     agregarVariable(&lista,"a","int");
     agregarVariable(&lista,"b","char");
     imprimirVariables(&lista);
-    eliminarVariable(&lista,"b");
     imprimirVariables(&lista);
 
     ListaParametros *funcionSumar = NULL;
@@ -33,9 +32,17 @@ int main() {
     tabla.listaVariables = NULL;
     tabla.listaFunciones = NULL;
     
-    agregarVariable(&tabla.listaVariables, "d","int");
-    agregarVariable(&tabla.listaVariables, "de","int");
-    agregarFuncion(&tabla.listaFunciones,"sumar","int",&funcionSumar);
+    Nodo *identificadores = NULL;
+    agregarId(&identificadores,"a");
+    agregarId(&identificadores,"c");
+    agregarId(&identificadores,"d");
 
-    imprimirTabla(tabla);   
+    agregarVariable(&tabla.listaVariables, "c","char");
+    agregarVariable(&tabla.listaVariables, "a","int");
+    agregarFuncion(&tabla.listaFunciones,"sumar","int",&funcionSumar);
+    
+
+    imprimirTabla(tabla);
+    printf("\n");
+    validarInvocacion(tabla,"sumar",identificadores);
 }

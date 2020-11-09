@@ -1,6 +1,12 @@
 {
 	char a , w, m;
-	int d,b,c=8, z=3;
-	char sumar;
+	char d,b,c=8, z=3;
+	int o=2,p=3,q=4;
+
 	int sumar(int a, int b, int c);
+	int restar(int a, int b);	
+
+	int suma = sumar(o,p);
+	int resta = restar(c,x);
+	int division = dividir(d,b);
 }

@@ -8,11 +8,11 @@ int hola(int a, int b) {
 }
 
 int main() {
-    ListaVariables *lista = NULL;
+    /*ListaVariables *lista = NULL;
     agregarVariable(&lista,"a","int");
     agregarVariable(&lista,"b","char");
     imprimirVariables(&lista);
-    imprimirVariables(&lista);
+    imprimirVariables(&lista);*/
 
     ListaParametros *funcionSumar = NULL;
     agregarParametro(&funcionSumar, "a", "int");
@@ -28,20 +28,16 @@ int main() {
     agregarFuncion(&funciones,"restar","int",&funcionRestar);
     imprimirFunciones(&funciones);
 
-    TablaDeSimbolos tabla;
-    tabla.listaVariables = NULL;
-    tabla.listaFunciones = NULL;
-    
     Nodo *identificadores = NULL;
     agregarId(&identificadores,"a");
     agregarId(&identificadores,"c");
-    agregarId(&identificadores,"d");
 
+    TablaDeSimbolos tabla;
+    tabla.listaVariables = NULL;
+    tabla.listaFunciones = NULL;
     agregarVariable(&tabla.listaVariables, "c","char");
     agregarVariable(&tabla.listaVariables, "a","int");
     agregarFuncion(&tabla.listaFunciones,"sumar","int",&funcionSumar);
-    
-
     imprimirTabla(tabla);
     printf("\n");
     validarInvocacion(tabla,"sumar",identificadores);

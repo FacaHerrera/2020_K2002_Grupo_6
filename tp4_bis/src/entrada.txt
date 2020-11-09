@@ -1,3 +1,5 @@
+3+4
+
 {
 	char a , w, m;
 	char d,b,c=8, z=3;

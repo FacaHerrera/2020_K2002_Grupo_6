@@ -3,9 +3,22 @@
 #include <stdio.h>
 #include<string.h>
 
-//////////////////////
-//LISTA DE VARIABLES//
-//////////////////////
+typedef struct TablaDeSimbolos {
+    struct ListaVariables *listaVariables;
+    struct ListaFunciones *listaFunciones;
+} TablaDeSimbolos;
+
+typedef struct Nodo {
+    char id[20];
+    struct Nodo *sig;
+} Nodo;
+
+typedef struct Error {
+    char error[100];
+    int linea;
+    struct Error *sig;
+} Error;
+
 
 typedef struct ListaVariables{
     char nombreVariable[10];
@@ -14,16 +27,111 @@ typedef struct ListaVariables{
     struct ListaVariables *sig;
 } ListaVariables;
 
+typedef struct ListaParametros{
+    char nombreParametro[10];
+    char tipoParametro[10];
+    struct ListaParametros *sig;
+} ListaParametros;
+
+typedef struct ListaFunciones{
+    char nombreFuncion[100];
+    char tipoFuncion[10];
+    struct ListaParametros *listaParametros;
+    struct ListaFunciones *sig;
+} ListaFunciones;
+
+
+void imprimirTabla(TablaDeSimbolos);
+void validarInvocacion(TablaDeSimbolos , char* , Nodo *);
+
+int longitudNodo(Nodo **);
+void agregarNodo(Nodo **, char*);
+
+void agregarError(Error **, char*, int);
+void imprimirErrores(Error **);
+
 ListaVariables* buscarVariable(ListaVariables **,char *);
-void agregarVariable(ListaVariables** , char* , char*);
+void agregarVariable(ListaVariables**, char* , char*);
 void imprimirVariables(ListaVariables **);
+
+void agregarParametro(ListaParametros**, char*, char*);
+ListaParametros* buscarParametro(ListaParametros **, char *);
+void imprimirParametros(ListaParametros **);
+
+void agregarFuncion(ListaFunciones** , char* , char*, ListaParametros**);
+ListaFunciones* buscarFuncion(ListaFunciones **,char *);
+void imprimirFunciones(ListaFunciones**);
+
+///////////////////
+//IDENTIFICADORES//
+///////////////////
+
+int longitudNodo(Nodo **p){
+    int longitud = 0;
+    Nodo *aux = *p;
+    while(aux != NULL){
+        aux = aux->sig;
+        longitud++;
+    }
+    return longitud;
+}
+
+void agregarNodo(Nodo ** identificadores, char* identificador) {
+    Nodo *nuevo = (Nodo *)malloc(sizeof(Nodo));
+    strcpy(nuevo->id,identificador);
+    nuevo->sig = NULL;
+    if(*identificadores==NULL){
+        *identificadores = nuevo;
+    }
+    else{
+        Nodo* aux = *identificadores;
+        while(aux->sig != NULL){
+            aux = aux->sig;
+        }
+        aux->sig = nuevo;
+    }
+}
+
+///////////
+//ERRORES//
+///////////
+
+void agregarError(Error ** errores, char* error, int linea) {
+    Error *nuevo = (Error *)malloc(sizeof(Error));
+    strcpy(nuevo->error,error);
+    nuevo->linea = linea;
+    nuevo->sig = NULL;
+    if(*errores==NULL){
+        *errores = nuevo;
+    }
+    else{
+        Error* aux = *errores;
+        while(aux->sig != NULL){
+            aux = aux->sig;
+        }
+        aux->sig = nuevo;
+    }
+}
+
+void imprimirErrores(Error **errores) {
+    Error *aux = *errores;
+    printf("ERRORES\n");
+    while(aux != NULL) {
+        printf("Se encontro el %s en la linea %d.\n",aux->error,aux->linea);
+        aux = aux->sig;
+    }
+}
+
+//////////////////////
+//LISTA DE VARIABLES//
+//////////////////////
 
 void agregarVariable(ListaVariables** variables, char* nombre, char* tipo) {
     ListaVariables *nodoNuevo = (ListaVariables *)malloc(sizeof(ListaVariables));
     strcpy(nodoNuevo->tipoVariable, tipo);
     strcpy(nodoNuevo->nombreVariable, nombre);
     nodoNuevo->sig = NULL;
-    if(*variables==NULL){
+    if(*variables == NULL){
         *variables = nodoNuevo;
     }
     else{
@@ -59,16 +167,6 @@ ListaVariables* buscarVariable(ListaVariables **variables,char *nombre){
 ///////////////////////
 //LISTA DE PARAMETROS//
 ///////////////////////
-
-typedef struct ListaParametros{
-    char nombreParametro[10];
-    char tipoParametro[10];
-    struct ListaParametros *sig;
-} ListaParametros;
-
-void agregarParametro(ListaParametros**, char*, char*);
-ListaParametros* buscarParametro(ListaParametros **, char *);
-void imprimirParametros(ListaParametros **);
 
 void agregarParametro(ListaParametros** parametros, char* nombre, char* tipo) {
     ListaParametros *nodoNuevo = (ListaParametros* )malloc(sizeof(ListaParametros));
@@ -112,17 +210,6 @@ void imprimirParametros(ListaParametros **parametros){
 //////////////////////
 //LISTA DE FUNCIONES//
 //////////////////////
-
-typedef struct ListaFunciones{
-    char nombreFuncion[100];
-    char tipoFuncion[10];
-    struct ListaParametros *listaParametros;
-    struct ListaFunciones *sig;
-} ListaFunciones;
-
-void agregarFuncion(ListaFunciones** , char* , char*, ListaParametros**);
-ListaFunciones* buscarFuncion(ListaFunciones **,char *);
-void imprimirFunciones(ListaFunciones**);
 
 void agregarFuncion(ListaFunciones** funciones, char* nombre, char* tipo, ListaParametros** parametros) {
     ListaFunciones *nodoNuevo = (ListaFunciones* )malloc(sizeof(ListaFunciones));
@@ -174,52 +261,9 @@ int longitudParametros(ListaParametros **parametros){
     return longitud;
 }
 
-///////////////////
-//IDENTIFICADORES//
-///////////////////
-
-typedef struct Nodo {
-    char id[20];
-    struct Nodo *sig;
-} Nodo;
-
-int longitudId(Nodo **p){
-    int longitud = 0;
-    Nodo *aux = *p;
-    while(aux != NULL){
-        aux = aux->sig;
-        longitud++;
-    }
-    return longitud;
-}
-
-void agregarId(Nodo ** identificadores, char* identificador) {
-    Nodo *nuevo = (Nodo *)malloc(sizeof(Nodo));
-    strcpy(nuevo->id,identificador);
-    nuevo->sig = NULL;
-    if(*identificadores==NULL){
-        *identificadores = nuevo;
-    }
-    else{
-        Nodo* aux = *identificadores;
-        while(aux->sig != NULL){
-            aux = aux->sig;
-        }
-        aux->sig = nuevo;
-    }
-}
-
 /////////////////////
 //TABLA DE SIMBOLOS//
 /////////////////////
-
-typedef struct TablaDeSimbolos {
-    struct ListaVariables *listaVariables;
-    struct ListaFunciones *listaFunciones;
-} TablaDeSimbolos;
-
-void imprimirTabla(TablaDeSimbolos);
-void validarInvocacion(TablaDeSimbolos , char* , Nodo *);
 
 void imprimirTabla(TablaDeSimbolos tabla) {
     printf("TABLA DE SIMBOLOS\n");
@@ -234,8 +278,8 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *identif
         printf("Error Semantico en la invocacion de la funcion %s: La funcion %s no existe. \n",nombreFuncion,nombreFuncion);
     } else {
         ListaParametros *parametros = funcionInvocada->listaParametros;
-        if(longitudParametros(&parametros) != longitudId(&identificadores)) {
-            printf("Error Semantico en la invocacion de la funcion %s: Se invoca a la funcion con %d parametros, mientras que la funcion tiene %d parametros \n",nombreFuncion,longitudId(&identificadores), longitudParametros(&parametros));
+        if(longitudParametros(&parametros) != longitudNodo(&identificadores)) {
+            printf("Error Semantico en la invocacion de la funcion %s: Se invoca a la funcion con %d parametros, mientras que la funcion tiene %d parametros \n",nombreFuncion,longitudNodo(&identificadores), longitudParametros(&parametros));
         } else {
             while(parametros != NULL) {
                 ListaVariables *parametroAComparar = buscarVariable(&tabla.listaVariables, identificadores->id);

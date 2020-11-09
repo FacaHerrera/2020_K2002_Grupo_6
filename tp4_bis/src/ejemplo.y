@@ -6,6 +6,7 @@
 #include <math.h>
 #include "tablaDeSimbolos.h"
 
+extern int yylineno;
 extern int yylex();
 int yyerror (char* );
 int yywrap(){
@@ -32,6 +33,7 @@ Nodo *identificadores = NULL;
 ListaParametros *listaParametros = NULL;
 TablaDeSimbolos tabla;
 
+Error *errores = NULL;
 
 %}
 
@@ -95,7 +97,7 @@ input:
 
 line: declaracionExterna
     | sentencia
-    | error ';' {yyerrok; }
+    | error ';' {agregarError(&errores,"error Sintactico",yylineno-3);}
 ;
 
 //DECLARACIONES
@@ -370,8 +372,8 @@ expSufijo: expPrimaria
 ;
 
 listaArgumentos: 
-               | expAsignacion {agregarId(&identificadores,$<cval>1);}
-               | listaArgumentos ',' expAsignacion {agregarId(&identificadores,$<cval>3);}
+               | expAsignacion {agregarNodo(&identificadores,$<cval>1);}
+               | listaArgumentos ',' expAsignacion {agregarNodo(&identificadores,$<cval>3);}
 ;
 
 //DEFINICIONES EXTERNAS
@@ -450,5 +452,6 @@ void main(){
 
      yyparse();
      imprimirTabla(tabla);
+     imprimirErrores(&errores);
      system("PAUSE");
 }

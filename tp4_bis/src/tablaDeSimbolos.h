@@ -10,11 +10,12 @@
 typedef struct ListaVariables{
     char nombreVariable[10];
     char tipoVariable[10];
+    char valorVariable[10];
     struct ListaVariables *sig;
 } ListaVariables;
 
 ListaVariables* buscarVariable(ListaVariables **,char *);
-void agregarVariable(ListaVariables** , char* , char* );
+void agregarVariable(ListaVariables** , char* , char*);
 void imprimirVariables(ListaVariables **);
 void eliminarVariable(ListaVariables **, char *);
 

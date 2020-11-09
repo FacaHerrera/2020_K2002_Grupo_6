@@ -20,6 +20,7 @@ char* tipoDatoFuncion;
 char* tipoDatoParametro;
 char* nombreFuncion;
 char* nombreID;
+char* variable[20];
 
 int contadorVariables = 0;
 int contadorParametros = 0;
@@ -27,9 +28,9 @@ int tip = 0;
 int tipDecla = 0;
 int cantidad = 0;
 
-ListaVariables *listaVariables = NULL;
 ListaParametros *listaParametros = NULL;
-ListaFunciones *listaFunciones = NULL;
+TablaDeSimbolos tabla;
+
 
 %}
 
@@ -97,7 +98,14 @@ line: declaracionExterna
 ;
 
 //DECLARACIONES
-declaracion: especDeclaracion listaDeclaradoresBis ';' {tipoDatoFuncion = $<cval>1; nombreFuncion = $<cval>2}
+declaracion: especDeclaracion listaDeclaradoresBis ';' {
+          tipoDatoFuncion = $<cval>1; 
+          nombreFuncion = $<cval>2;
+          while(contadorVariables!=0){
+               contadorVariables--;
+               agregarVariable(&tabla.listaVariables, variable[contadorVariables],tipoDatoFuncion);
+          }
+     }
 ;
 
 especDeclaracionBis:
@@ -116,8 +124,8 @@ listaDeclaradores: declarador {cantidad = 1; }
                  | listaDeclaradores ',' declarador {cantidad = 2;}
 ;
 
-declarador: decla {tipDecla = 1; agregarVariable(&listaVariables, $<cval>1, tipoDatoFuncion);}
-          | decla '=' inicializador {tipDecla = 2; agregarVariable(&listaVariables, $<cval>1, tipoDatoFuncion);}
+declarador: decla {tipDecla = 1; variable[contadorVariables] = strdup($<cval>1); contadorVariables++;}
+          | decla '=' inicializador {tipDecla = 2; variable[contadorVariables] = strdup($<cval>1); contadorVariables++;}
 ;
 
 inicializador: expAsignacion 
@@ -272,7 +280,7 @@ sentSalto: RETURN expOp ';' {printf("Se encontro una Sentencia de Salto RETURN. 
 
 //EXPRESIONES 
 expPrimaria: ID
-           | ENTERO         {$<dval>$ = $<ival>1;}
+           | ENTERO         {$<dval>$ = $<ival>1;} 
            | REAL           {$<dval>$ = $<dval>1; }
            | CTE_CARACTER
            | LITERAL_CADENA
@@ -288,7 +296,7 @@ expOp:
      | exp
 ;
 
-expAsignacion: expCondicional
+expAsignacion: expCondicional 
              | expUnaria operAsignacion expAsignacion {$<dval>$ = $<dval>3; }
 ;
 
@@ -409,7 +417,7 @@ declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d pa
                               if(tipDecla == 1){
                                    printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); 
                                    contadorParametros = 0;
-                                   agregarFuncion(&listaFunciones,nombreFuncion,tipoDatoFuncion,&listaParametros);
+                                   agregarFuncion(&tabla.listaFunciones,nombreFuncion,tipoDatoFuncion,&listaParametros);
                                    listaParametros = NULL;
                               }
                               break;     
@@ -430,12 +438,16 @@ int yyerror (char *mensaje)
 
 void main(){
 
-   #ifdef BISON_DEBUG
-        yydebug = 1;
-#endif 
-   yyout = fopen("salida.txt","w");
-   yyin = fopen("entrada.txt", "r");
-   yyparse();
-   imprimirVariables(&listaVariables);
-   imprimirFunciones(&listaFunciones);
+     #ifdef BISON_DEBUG
+          yydebug = 1;
+     #endif 
+     yyout = fopen("salida.txt","w");
+     yyin = fopen("entrada.txt", "r");
+
+     tabla.listaVariables = NULL;
+     tabla.listaFunciones = NULL;
+
+     yyparse();
+     imprimirTabla(tabla);
+     system("PAUSE");
 }

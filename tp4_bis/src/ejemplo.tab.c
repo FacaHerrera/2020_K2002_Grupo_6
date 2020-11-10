@@ -87,7 +87,7 @@ return(1);
 extern FILE* yyin;
 extern FILE* yyout;
 
-char* tipoInicializador;
+char* tipoInicializador = "vacio";
 char* tipoDato;
 char* nombre;
 char* variable[20];
@@ -1732,7 +1732,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 103 "ejemplo.y"
     {
-          tipoDato = (yyvsp[(1) - (3)].cval); 
+          tipoDato = (yyvsp[(1) - (3)].cval);
           nombre = (yyvsp[(2) - (3)].cval);
           while(contadorVariables!=0){
                contadorVariables--;

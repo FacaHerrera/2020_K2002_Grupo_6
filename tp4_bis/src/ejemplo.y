@@ -16,7 +16,7 @@ return(1);
 extern FILE* yyin;
 extern FILE* yyout;
 
-char* tipoInicializador;
+char* tipoInicializador = "vacio";
 char* tipoDato;
 char* nombre;
 char* variable[20];
@@ -101,7 +101,7 @@ line: declaracionExterna
 
 //DECLARACIONES
 declaracion: especDeclaracion listaDeclaradoresBis ';' {
-          tipoDato = $<cval>1; 
+          tipoDato = $<cval>1;
           nombre = $<cval>2;
           while(contadorVariables!=0){
                contadorVariables--;

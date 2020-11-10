@@ -127,8 +127,9 @@ void imprimirErrores(Error **errores) {
 //////////////////////
 
 void agregarVariable(ListaVariables** variables, char* nombre, char* tipo, char* tipoInicializador) {
-    if(strcmp(tipo, tipoInicializador)) {
-        printf("Error Semantico: Se le asigna un valor de tipo %s a una variable de tipo %s.\n",tipo, tipoInicializador);
+    if(strcmp(tipo, tipoInicializador) && strcmp(tipoInicializador,"vacio")) {
+        if(!strcmp(tipoInicializador,"")) printf("Error Semantico: El inicializador no existe.\n");
+        else printf("Error Semantico: Se le asigna un valor de tipo %s a una variable de tipo %s.\n",tipo, tipoInicializador);
     } else {
         ListaVariables *nodoNuevo = (ListaVariables *)malloc(sizeof(ListaVariables));
         strcpy(nodoNuevo->tipoVariable, tipo);
@@ -296,7 +297,7 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
         } else {
             while(parametros != NULL) {
                 if(!strcmp(tiposDeDato->tipo,"")) {
-                    printf("Error semantico en la invocacion de la funcion %s: El identificador %d no existe. \n",nombreFuncion,i);
+                    printf("Error semantico en la invocacion de la funcion %s: El parametro %d no existe. \n",nombreFuncion,i);
                 } else if(strcmp(parametros->tipoParametro,tiposDeDato->tipo)) {
                     printf("Error Semantico en la invocacion de la funcion %s: El parametro %d no es de tipo %s. \n",nombreFuncion,i,parametros->tipoParametro);
                 }

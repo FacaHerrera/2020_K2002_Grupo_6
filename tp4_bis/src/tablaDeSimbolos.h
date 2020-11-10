@@ -23,7 +23,6 @@ typedef struct Error {
 typedef struct ListaVariables{
     char nombreVariable[10];
     char tipoVariable[10];
-    char valorVariable[10];
     struct ListaVariables *sig;
 } ListaVariables;
 
@@ -51,7 +50,7 @@ void agregarError(Error **, char*, int);
 void imprimirErrores(Error **);
 
 ListaVariables* buscarVariable(ListaVariables **,char *);
-void agregarVariable(ListaVariables**, char* , char*);
+void agregarVariable(ListaVariables**, char* , char*, char*);
 void imprimirVariables(ListaVariables **);
 char* tipoVariable(TablaDeSimbolos, char*);
 
@@ -127,23 +126,27 @@ void imprimirErrores(Error **errores) {
 //LISTA DE VARIABLES//
 //////////////////////
 
-void agregarVariable(ListaVariables** variables, char* nombre, char* tipo) {
-    ListaVariables *nodoNuevo = (ListaVariables *)malloc(sizeof(ListaVariables));
-    strcpy(nodoNuevo->tipoVariable, tipo);
-    strcpy(nodoNuevo->nombreVariable, nombre);
-    nodoNuevo->sig = NULL;
-    if(*variables == NULL){
-        *variables = nodoNuevo;
-    }
-    else{
-        ListaVariables* aux = *variables;
-        while(aux->sig != NULL){
-            aux = aux->sig;
+void agregarVariable(ListaVariables** variables, char* nombre, char* tipo, char* tipoInicializador) {
+    if(strcmp(tipo, tipoInicializador)) {
+        printf("Error Semantico: Se le asigna un valor de tipo %s a una variable de tipo %s.\n",tipo, tipoInicializador);
+    } else {
+        ListaVariables *nodoNuevo = (ListaVariables *)malloc(sizeof(ListaVariables));
+        strcpy(nodoNuevo->tipoVariable, tipo);
+        strcpy(nodoNuevo->nombreVariable, nombre);
+        nodoNuevo->sig = NULL;
+        if(*variables == NULL){
+            *variables = nodoNuevo;
         }
-        if(buscarVariable(variables, nombre)) {
-            printf("Error Semantico: Doble declaracion de la variable %s.\n",nombre);
-        } else {
-            aux->sig = nodoNuevo;
+        else{
+            ListaVariables* aux = *variables;
+            while(aux->sig != NULL){
+                aux = aux->sig;
+            }
+            if(buscarVariable(variables, nombre)) {
+                printf("Error Semantico: Doble declaracion de la variable %s.\n",nombre);
+            } else {
+                aux->sig = nodoNuevo;
+            }
         }
     }
 }

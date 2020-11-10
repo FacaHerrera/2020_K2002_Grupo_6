@@ -16,11 +16,9 @@ return(1);
 extern FILE* yyin;
 extern FILE* yyout;
 
-char* tipoDatoVariable;
-char* tipoDatoFuncion;
-char* tipoDatoParametro;
-char* nombreFuncion;
-char* nombreID;
+char* tipoInicializador;
+char* tipoDato;
+char* nombre;
 char* variable[20];
 char* tipoParametroInvocacion;
 
@@ -103,11 +101,11 @@ line: declaracionExterna
 
 //DECLARACIONES
 declaracion: especDeclaracion listaDeclaradoresBis ';' {
-          tipoDatoFuncion = $<cval>1; 
-          nombreFuncion = $<cval>2;
+          tipoDato = $<cval>1; 
+          nombre = $<cval>2;
           while(contadorVariables!=0){
                contadorVariables--;
-               agregarVariable(&tabla.listaVariables, variable[contadorVariables],tipoDatoFuncion);
+               agregarVariable(&tabla.listaVariables, variable[contadorVariables],tipoDato,tipoInicializador);
           }
      }
 ;
@@ -283,10 +281,10 @@ sentSalto: RETURN expOp ';' {printf("Se encontro una Sentencia de Salto RETURN. 
 ;
 
 //EXPRESIONES 
-expPrimaria: ID             {tipoParametroInvocacion = tipoVariable(tabla,$<cval>1);}
-           | ENTERO         {$<dval>$ = $<ival>1; tipoParametroInvocacion = "int";} 
-           | REAL           {$<dval>$ = $<dval>1; tipoParametroInvocacion = "double";}
-           | CTE_CARACTER   {tipoParametroInvocacion = "char";}
+expPrimaria: ID             {tipoParametroInvocacion = tipoInicializador = tipoVariable(tabla,$<cval>1);}
+           | ENTERO         {$<dval>$ = $<ival>1; tipoParametroInvocacion = tipoInicializador = "int";} 
+           | REAL           {$<dval>$ = $<dval>1; tipoParametroInvocacion = tipoInicializador = "double";}
+           | CTE_CARACTER   {tipoParametroInvocacion = tipoInicializador = "char";}
            | LITERAL_CADENA {tipoParametroInvocacion = "char*";}
            | NULL1
            | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
@@ -378,50 +376,50 @@ listaArgumentos:
 ;
 
 //DEFINICIONES EXTERNAS
-declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); contadorParametros = 0; }
+declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0; }
                   | declaracion {
                        switch(tip){
                          case 1:
                               if(tipDecla == 1){
                                    if(cantidad == 1){
-                                        printf("Se declara la variable %s de tipo %s  \n",nombreFuncion,tipoDatoFuncion);
+                                        printf("Se declara la variable %s de tipo %s  \n",nombre,tipoDato);
                                    }
                                    else if(cantidad == 2){
-                                        printf("Se declaran variables de tipo %s  \n",tipoDatoFuncion);
+                                        printf("Se declaran variables de tipo %s  \n",tipoDato);
                                    } 
                               }
                               else if(tipDecla == 2){
                                    if(cantidad == 1){
-                                        printf("Se inicializa la variable %s de tipo %s \n",nombreFuncion,tipoDatoFuncion);
+                                        printf("Se inicializa la variable %s de tipo %s \n",nombre,tipoDato);
                                    }
                                    else if(cantidad == 2){
-                                        printf("Se inicializan variables de tipo %s \n",tipoDatoFuncion);
+                                        printf("Se inicializan variables de tipo %s \n",tipoDato);
                                    } 
                               }
                               break;
                          case 2:
                               if(tipDecla == 1){
                                    if(cantidad == 1){
-                                        printf("Se declara el arreglo %s de tipo %s  \n",nombreFuncion,tipoDatoFuncion);
+                                        printf("Se declara el arreglo %s de tipo %s  \n",nombre,tipoDato);
                                    }
                                    else if(cantidad == 2){
-                                        printf("Se declaran arreglos de tipo %s \n",tipoDatoFuncion);
+                                        printf("Se declaran arreglos de tipo %s \n",tipoDato);
                                    }  
                               }
                               else if(tipDecla == 2){
                                    if(cantidad == 1){
-                                        printf("Se inicializa el arreglo %s de tipo %s \n",nombreFuncion,tipoDatoFuncion);
+                                        printf("Se inicializa el arreglo %s de tipo %s \n",nombre,tipoDato);
                                    }
                                    else if(cantidad == 2){
-                                        printf("Se inicializan arreglos de tipo %s \n",tipoDatoFuncion);
+                                        printf("Se inicializan arreglos de tipo %s \n",tipoDato);
                                    }   
                               }
                               break;
                          case 3:
                               if(tipDecla == 1){
-                                   printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombreFuncion,contadorParametros,tipoDatoFuncion); 
+                                   printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
                                    contadorParametros = 0;
-                                   agregarFuncion(&tabla.listaFunciones,nombreFuncion,tipoDatoFuncion,&listaParametros);
+                                   agregarFuncion(&tabla.listaFunciones,nombre,tipoDato,&listaParametros);
                                    listaParametros = NULL;
                               }
                               break;     
@@ -429,7 +427,7 @@ declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d pa
                   }
 ;
 
-definicionFuncion: especDeclaracion decla listaDeclaracionesBis sentCompuesta {nombreFuncion = $<cval>2; tipoDatoFuncion = $<cval>1;}
+definicionFuncion: especDeclaracion decla listaDeclaracionesBis sentCompuesta {nombre = $<cval>2; tipoDato = $<cval>1;}
 ;
 
 

@@ -1,8 +1,8 @@
 3+4;
 
 {
-	char a , w, m;
-	char d, b, c = 'a', z = 'b';
+	char a;
+	char d, b, c = 'a';
 	int o=2,p=3,q=4;
 
 	int sumar(int a, int b, int c);

@@ -1734,7 +1734,7 @@ yyreduce:
     {
           tipoDato = (yyvsp[(1) - (3)].cval);
           nombre = (yyvsp[(2) - (3)].cval);
-          while(contadorVariables!=0){
+          while(contadorVariables!=0 && tip != 3){
                contadorVariables--;
                agregarVariable(&tabla.listaVariables, variable[contadorVariables],tipoDato,tipoInicializador);
           }

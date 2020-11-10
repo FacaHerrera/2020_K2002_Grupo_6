@@ -103,7 +103,7 @@ line: declaracionExterna
 declaracion: especDeclaracion listaDeclaradoresBis ';' {
           tipoDato = $<cval>1;
           nombre = $<cval>2;
-          while(contadorVariables!=0){
+          while(contadorVariables!=0 && tip != 3){
                contadorVariables--;
                agregarVariable(&tabla.listaVariables, variable[contadorVariables],tipoDato,tipoInicializador);
           }

@@ -1,14 +1,14 @@
-3+4
+3+4;
 
 {
 	char a , w, m;
-	char d,b,c=8, z=3;
+	char d, b, c = 'a', z = 'b';
 	int o=2,p=3,q=4;
 
 	int sumar(int a, int b, int c);
 	int restar(int a, int b);	
 
-	int suma = sumar(o,p);
+	int suma = sumar(1,2,'c');
 	int resta = restar(c,x);
 	int division = dividir(d,b);
 }

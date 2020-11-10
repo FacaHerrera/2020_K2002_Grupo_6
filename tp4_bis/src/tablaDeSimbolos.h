@@ -9,7 +9,7 @@ typedef struct TablaDeSimbolos {
 } TablaDeSimbolos;
 
 typedef struct Nodo {
-    char id[20];
+    char tipo[20];
     struct Nodo *sig;
 } Nodo;
 
@@ -53,6 +53,7 @@ void imprimirErrores(Error **);
 ListaVariables* buscarVariable(ListaVariables **,char *);
 void agregarVariable(ListaVariables**, char* , char*);
 void imprimirVariables(ListaVariables **);
+char* tipoVariable(TablaDeSimbolos, char*);
 
 void agregarParametro(ListaParametros**, char*, char*);
 ListaParametros* buscarParametro(ListaParametros **, char *);
@@ -76,15 +77,15 @@ int longitudNodo(Nodo **p){
     return longitud;
 }
 
-void agregarNodo(Nodo ** identificadores, char* identificador) {
+void agregarNodo(Nodo ** tiposDeDato, char* tipo) {
     Nodo *nuevo = (Nodo *)malloc(sizeof(Nodo));
-    strcpy(nuevo->id,identificador);
+    strcpy(nuevo->tipo,tipo);
     nuevo->sig = NULL;
-    if(*identificadores==NULL){
-        *identificadores = nuevo;
+    if(*tiposDeDato==NULL){
+        *tiposDeDato = nuevo;
     }
     else{
-        Nodo* aux = *identificadores;
+        Nodo* aux = *tiposDeDato;
         while(aux->sig != NULL){
             aux = aux->sig;
         }
@@ -162,6 +163,15 @@ ListaVariables* buscarVariable(ListaVariables **variables,char *nombre){
         aux = aux->sig;        
     }
     return aux;
+}
+
+char* tipoVariable(TablaDeSimbolos tabla, char* nombre ) {
+    ListaVariables *variable = buscarVariable(&tabla.listaVariables,nombre);
+    if(variable) {
+        return variable->tipoVariable;
+    } else {
+        return "";
+    }
 }
 
 ///////////////////////
@@ -271,26 +281,25 @@ void imprimirTabla(TablaDeSimbolos tabla) {
     imprimirFunciones(&tabla.listaFunciones);
 }
 
-void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *identificadores) {
+void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDeDato) {
     ListaFunciones *funcionInvocada = buscarFuncion(&tabla.listaFunciones,nombreFuncion);
-    int i = 0;
+    int i = 1;
     if(!funcionInvocada) {
         printf("Error Semantico en la invocacion de la funcion %s: La funcion %s no existe. \n",nombreFuncion,nombreFuncion);
     } else {
         ListaParametros *parametros = funcionInvocada->listaParametros;
-        if(longitudParametros(&parametros) != longitudNodo(&identificadores)) {
-            printf("Error Semantico en la invocacion de la funcion %s: Se invoca a la funcion con %d parametros, mientras que la funcion tiene %d parametros \n",nombreFuncion,longitudNodo(&identificadores), longitudParametros(&parametros));
+        if(longitudParametros(&parametros) != longitudNodo(&tiposDeDato)) {
+            printf("Error Semantico en la invocacion de la funcion %s: Se invoca a la funcion con %d parametros, mientras que la funcion tiene %d parametros. \n",nombreFuncion,longitudNodo(&tiposDeDato), longitudParametros(&parametros));
         } else {
             while(parametros != NULL) {
-                ListaVariables *parametroAComparar = buscarVariable(&tabla.listaVariables, identificadores->id);
-                if(!parametroAComparar) {
-                    printf("Error semantico en la invocacion de la funcion %s: El identificador '%s' no existe. \n",nombreFuncion,identificadores->id);
-                } else if(strcmp(parametros->tipoParametro,parametroAComparar->tipoVariable)) {
-                    printf("Error Semantico en la invocacion de la funcion %s: El parametro '%s' no es de tipo %s \n",nombreFuncion,identificadores->id,parametros->tipoParametro);
+                if(!strcmp(tiposDeDato->tipo,"")) {
+                    printf("Error semantico en la invocacion de la funcion %s: El identificador %d no existe. \n",nombreFuncion,i);
+                } else if(strcmp(parametros->tipoParametro,tiposDeDato->tipo)) {
+                    printf("Error Semantico en la invocacion de la funcion %s: El parametro %d no es de tipo %s. \n",nombreFuncion,i,parametros->tipoParametro);
                 }
                 i++;
                 parametros = parametros->sig;
-                identificadores = identificadores->sig;
+                tiposDeDato = tiposDeDato->sig;
             }
         }
     }

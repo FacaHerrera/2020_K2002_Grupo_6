@@ -22,6 +22,7 @@ char* tipoDatoParametro;
 char* nombreFuncion;
 char* nombreID;
 char* variable[20];
+char* tipoParametroInvocacion;
 
 int contadorVariables = 0;
 int contadorParametros = 0;
@@ -29,7 +30,7 @@ int tip = 0;
 int tipDecla = 0;
 int cantidad = 0;
 
-Nodo *identificadores = NULL;
+Nodo *parametrosInvocacion = NULL;
 ListaParametros *listaParametros = NULL;
 TablaDeSimbolos tabla;
 
@@ -282,11 +283,11 @@ sentSalto: RETURN expOp ';' {printf("Se encontro una Sentencia de Salto RETURN. 
 ;
 
 //EXPRESIONES 
-expPrimaria: ID
-           | ENTERO         {$<dval>$ = $<ival>1;} 
-           | REAL           {$<dval>$ = $<dval>1; }
-           | CTE_CARACTER
-           | LITERAL_CADENA
+expPrimaria: ID             {tipoParametroInvocacion = tipoVariable(tabla,$<cval>1);}
+           | ENTERO         {$<dval>$ = $<ival>1; tipoParametroInvocacion = "int";} 
+           | REAL           {$<dval>$ = $<dval>1; tipoParametroInvocacion = "double";}
+           | CTE_CARACTER   {tipoParametroInvocacion = "char";}
+           | LITERAL_CADENA {tipoParametroInvocacion = "char*";}
            | NULL1
            | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
 ;
@@ -364,7 +365,7 @@ expUnaria: expSufijo
 
 expSufijo: expPrimaria
          | expSufijo '[' exp ']'             {$<dval>$ = 0; }
-         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); validarInvocacion(tabla,$<cval>1,identificadores); identificadores = NULL;}
+         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); validarInvocacion(tabla,$<cval>1,parametrosInvocacion); parametrosInvocacion = NULL;}
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
@@ -372,8 +373,8 @@ expSufijo: expPrimaria
 ;
 
 listaArgumentos: 
-               | expAsignacion {agregarNodo(&identificadores,$<cval>1);}
-               | listaArgumentos ',' expAsignacion {agregarNodo(&identificadores,$<cval>3);}
+               | expAsignacion {agregarNodo(&parametrosInvocacion,tipoParametroInvocacion);}
+               | listaArgumentos ',' expAsignacion {agregarNodo(&parametrosInvocacion,tipoParametroInvocacion);}
 ;
 
 //DEFINICIONES EXTERNAS

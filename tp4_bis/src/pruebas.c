@@ -28,9 +28,9 @@ int main() {
     agregarFuncion(&funciones,"restar","int",&funcionRestar);
     imprimirFunciones(&funciones);
 
-    Nodo *identificadores = NULL;
-    agregarId(&identificadores,"a");
-    agregarId(&identificadores,"c");
+    Nodo *tiposDeDato = NULL;
+    agregarNodo(&tiposDeDato,"int");
+    agregarNodo(&tiposDeDato,"");
 
     TablaDeSimbolos tabla;
     tabla.listaVariables = NULL;
@@ -40,5 +40,5 @@ int main() {
     agregarFuncion(&tabla.listaFunciones,"sumar","int",&funcionSumar);
     imprimirTabla(tabla);
     printf("\n");
-    validarInvocacion(tabla,"sumar",identificadores);
+    validarInvocacion(tabla,"sumar",tiposDeDato);
 }

@@ -41,26 +41,28 @@ typedef struct ListaFunciones{
 
 
 void imprimirTabla(TablaDeSimbolos);
-void validarInvocacion(TablaDeSimbolos , char* , Nodo *);
+void validarInvocacion(TablaDeSimbolos , char* , Nodo *, int);
 
 int longitudNodo(Nodo **);
 void agregarNodo(Nodo **, char*);
 
-void agregarError(Error **, char*, int);
-void imprimirErrores(Error **);
+void agregarError(char*, int);
+void imprimirErrores();
 
 ListaVariables* buscarVariable(ListaVariables **,char *);
-void agregarVariable(ListaVariables**, char* , char*, char*);
+void agregarVariable(ListaVariables**, char* , char*, char*, int);
 void imprimirVariables(ListaVariables **);
 char* tipoVariable(TablaDeSimbolos, char*);
 
-void agregarParametro(ListaParametros**, char*, char*);
+void agregarParametro(ListaParametros**, char*, char*, int);
 ListaParametros* buscarParametro(ListaParametros **, char *);
 void imprimirParametros(ListaParametros **);
 
-void agregarFuncion(ListaFunciones** , char* , char*, ListaParametros**);
+void agregarFuncion(ListaFunciones** , char* , char*, ListaParametros**, int);
 ListaFunciones* buscarFuncion(ListaFunciones **,char *);
 void imprimirFunciones(ListaFunciones**);
+
+Error **errores = NULL;
 
 ///////////////////
 //IDENTIFICADORES//
@@ -96,7 +98,7 @@ void agregarNodo(Nodo ** tiposDeDato, char* tipo) {
 //ERRORES//
 ///////////
 
-void agregarError(Error ** errores, char* error, int linea) {
+void agregarError(char* error, int linea) {
     Error *nuevo = (Error *)malloc(sizeof(Error));
     strcpy(nuevo->error,error);
     nuevo->linea = linea;
@@ -113,7 +115,7 @@ void agregarError(Error ** errores, char* error, int linea) {
     }
 }
 
-void imprimirErrores(Error **errores) {
+void imprimirErrores() {
     Error *aux = *errores;
     printf("ERRORES\n");
     while(aux != NULL) {
@@ -126,7 +128,7 @@ void imprimirErrores(Error **errores) {
 //LISTA DE VARIABLES//
 //////////////////////
 
-void agregarVariable(ListaVariables** variables, char* nombre, char* tipo, char* tipoInicializador) {
+void agregarVariable(ListaVariables** variables, char* nombre, char* tipo, char* tipoInicializador, int linea) {
     if(strcmp(tipo, tipoInicializador) && strcmp(tipoInicializador,"vacio")) {
         if(!strcmp(tipoInicializador,"")) printf("Error Semantico: El inicializador no existe.\n");
         else printf("Error Semantico: Se le asigna un valor de tipo %s a una variable de tipo %s.\n",tipo, tipoInicializador);
@@ -182,7 +184,7 @@ char* tipoVariable(TablaDeSimbolos tabla, char* nombre ) {
 //LISTA DE PARAMETROS//
 ///////////////////////
 
-void agregarParametro(ListaParametros** parametros, char* nombre, char* tipo) {
+void agregarParametro(ListaParametros** parametros, char* nombre, char* tipo, int linea) {
     ListaParametros *nodoNuevo = (ListaParametros* )malloc(sizeof(ListaParametros));
     strcpy(nodoNuevo->nombreParametro, nombre);
     strcpy(nodoNuevo->tipoParametro, tipo);
@@ -225,7 +227,7 @@ void imprimirParametros(ListaParametros **parametros){
 //LISTA DE FUNCIONES//
 //////////////////////
 
-void agregarFuncion(ListaFunciones** funciones, char* nombre, char* tipo, ListaParametros** parametros) {
+void agregarFuncion(ListaFunciones** funciones, char* nombre, char* tipo, ListaParametros** parametros, int linea) {
     ListaFunciones *nodoNuevo = (ListaFunciones* )malloc(sizeof(ListaFunciones));
     strcpy(nodoNuevo->tipoFuncion, tipo);
     strcpy(nodoNuevo->nombreFuncion, nombre);
@@ -285,7 +287,7 @@ void imprimirTabla(TablaDeSimbolos tabla) {
     imprimirFunciones(&tabla.listaFunciones);
 }
 
-void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDeDato) {
+void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDeDato, int linea) {
     ListaFunciones *funcionInvocada = buscarFuncion(&tabla.listaFunciones,nombreFuncion);
     int i = 1;
     if(!funcionInvocada) {

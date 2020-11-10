@@ -32,8 +32,6 @@ Nodo *parametrosInvocacion = NULL;
 ListaParametros *listaParametros = NULL;
 TablaDeSimbolos tabla;
 
-Error *errores = NULL;
-
 %}
 
 %union {
@@ -96,7 +94,7 @@ input:
 
 line: declaracionExterna
     | sentencia
-    | error ';' {agregarError(&errores,"error Sintactico",yylineno-3);}
+    | error ';' {agregarError("error Sintactico",yylineno-3);}
 ;
 
 //DECLARACIONES
@@ -105,7 +103,7 @@ declaracion: especDeclaracion listaDeclaradoresBis ';' {
           nombre = $<cval>2;
           while(contadorVariables!=0 && tip != 3){
                contadorVariables--;
-               agregarVariable(&tabla.listaVariables, variable[contadorVariables],tipoDato,tipoInicializador);
+               agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno-3);
           }
      }
 ;
@@ -197,7 +195,7 @@ listaParametros: declaracionParametro {contadorParametros++; }
                | listaParametros ',' declaracionParametro {contadorParametros++; }
 ;
 
-declaracionParametro: especDeclaracion decla {agregarParametro(&listaParametros, $<cval>2, $<cval>1); }
+declaracionParametro: especDeclaracion decla {agregarParametro(&listaParametros, $<cval>2, $<cval>1,yylineno-3); }
                     | especDeclaracion declaradorAbstracto
 ;
 
@@ -235,7 +233,7 @@ sentExpresion: exp ';'
              | ';'       
 ;
 
-sentCompuesta: '{' decalracionOSentencia '}' {printf("Se encontro una Sentencia Compuesta. \n"); }
+sentCompuesta: '{' decalracionOSentencia '}' {/*printf("Se encontro una Sentencia Compuesta. \n");*/ }
 ;
 
 decalracionOSentencia: 
@@ -259,25 +257,25 @@ puntero: '*'
        | '*' puntero
 ;
 
-sentSeleccion: IF '(' exp ')' sentencia                {printf("Se encontro una Sentencia de Seleccion IF.\n"); }
-             | IF '(' exp ')' sentencia ELSE sentencia {printf("Se encontro una Sentencia de Seleccion IF/ELSE.\n"); }
-             | SWITCH '(' exp ')' sentencia            {printf("Se enconto una Sentencia de Seleccion SWITCH.\n"); }
+sentSeleccion: IF '(' exp ')' sentencia                {/*printf("Se encontro una Sentencia de Seleccion IF.\n");*/ }
+             | IF '(' exp ')' sentencia ELSE sentencia {/*printf("Se encontro una Sentencia de Seleccion IF/ELSE.\n");*/ }
+             | SWITCH '(' exp ')' sentencia            {/*printf("Se enconto una Sentencia de Seleccion SWITCH.\n");*/ }
 ;
 
-sentIteracion: WHILE '(' exp ')' sentencia               {printf("Se encontro una Sentencia de Iteracion WHILE.\n"); }
-             | DO sentencia WHILE '(' exp ')' ';'        {printf("Se encontro una Sentencia de Iteracion DO WHILE.\n"); }
-             | FOR '(' expOp ';' expOp ';' expOp ')' sentencia {printf("Se encontro una Sentencia de Iteracion FOR.\n"); }
+sentIteracion: WHILE '(' exp ')' sentencia               {/*printf("Se encontro una Sentencia de Iteracion WHILE.\n");*/ }
+             | DO sentencia WHILE '(' exp ')' ';'        {/*printf("Se encontro una Sentencia de Iteracion DO WHILE.\n");*/ }
+             | FOR '(' expOp ';' expOp ';' expOp ')' sentencia {/*printf("Se encontro una Sentencia de Iteracion FOR.\n");*/ }
 ;
 
-sentEtiquetada: CASE expCondicional ':' sentencia {printf("Se encontro una Sentencia de Etiqueta CASE.\n"); }
-              | DEFAULT ':' sentencia  {printf("Se encontro una Sentencia de Etiqueta DEFAULT.\n"); }
+sentEtiquetada: CASE expCondicional ':' sentencia {/*printf("Se encontro una Sentencia de Etiqueta CASE.\n");*/ }
+              | DEFAULT ':' sentencia  {/*printf("Se encontro una Sentencia de Etiqueta DEFAULT.\n");*/ }
               | ID ':' sentencia
 ;
 
-sentSalto: RETURN expOp ';' {printf("Se encontro una Sentencia de Salto RETURN. \n"); }
-         | BREAK ';'      {printf("Se encontro una Sentencia de Salto BREAK.\n"); }
-         | CONTINUE ';'   {printf("Se encontro una Sentencia de Salto CONTINUE.\n"); }
-         | GOTO ID ';'    {printf("Se encontro una Sentencia de Salto GOTO. \n"); }
+sentSalto: RETURN expOp ';' {/*printf("Se encontro una Sentencia de Salto RETURN. \n"); */}
+         | BREAK ';'      {/*printf("Se encontro una Sentencia de Salto BREAK.\n"); */}
+         | CONTINUE ';'   {/*printf("Se encontro una Sentencia de Salto CONTINUE.\n"); */}
+         | GOTO ID ';'    {/*printf("Se encontro una Sentencia de Salto GOTO. \n"); */}
 ;
 
 //EXPRESIONES 
@@ -290,7 +288,7 @@ expPrimaria: ID             {tipoParametroInvocacion = tipoInicializador = tipoV
            | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
 ;
 
-exp: expAsignacion {printf("Se encontro una expresion. \n"); }
+exp: expAsignacion {/*printf("Se encontro una expresion. \n"); */}
    | exp ',' expAsignacion
 ;
 
@@ -363,7 +361,7 @@ expUnaria: expSufijo
 
 expSufijo: expPrimaria
          | expSufijo '[' exp ']'             {$<dval>$ = 0; }
-         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); validarInvocacion(tabla,$<cval>1,parametrosInvocacion); parametrosInvocacion = NULL;}
+         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno-3); parametrosInvocacion = NULL;}
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
@@ -382,44 +380,44 @@ declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d pa
                          case 1:
                               if(tipDecla == 1){
                                    if(cantidad == 1){
-                                        printf("Se declara la variable %s de tipo %s  \n",nombre,tipoDato);
+                                        //printf("Se declara la variable %s de tipo %s  \n",nombre,tipoDato);
                                    }
                                    else if(cantidad == 2){
-                                        printf("Se declaran variables de tipo %s  \n",tipoDato);
+                                        //printf("Se declaran variables de tipo %s  \n",tipoDato);
                                    } 
                               }
                               else if(tipDecla == 2){
                                    if(cantidad == 1){
-                                        printf("Se inicializa la variable %s de tipo %s \n",nombre,tipoDato);
+                                        //printf("Se inicializa la variable %s de tipo %s \n",nombre,tipoDato);
                                    }
                                    else if(cantidad == 2){
-                                        printf("Se inicializan variables de tipo %s \n",tipoDato);
+                                        //printf("Se inicializan variables de tipo %s \n",tipoDato);
                                    } 
                               }
                               break;
                          case 2:
                               if(tipDecla == 1){
                                    if(cantidad == 1){
-                                        printf("Se declara el arreglo %s de tipo %s  \n",nombre,tipoDato);
+                                        //printf("Se declara el arreglo %s de tipo %s  \n",nombre,tipoDato);
                                    }
                                    else if(cantidad == 2){
-                                        printf("Se declaran arreglos de tipo %s \n",tipoDato);
+                                        //printf("Se declaran arreglos de tipo %s \n",tipoDato);
                                    }  
                               }
                               else if(tipDecla == 2){
                                    if(cantidad == 1){
-                                        printf("Se inicializa el arreglo %s de tipo %s \n",nombre,tipoDato);
+                                        //printf("Se inicializa el arreglo %s de tipo %s \n",nombre,tipoDato);
                                    }
                                    else if(cantidad == 2){
-                                        printf("Se inicializan arreglos de tipo %s \n",tipoDato);
+                                        //printf("Se inicializan arreglos de tipo %s \n",tipoDato);
                                    }   
                               }
                               break;
                          case 3:
                               if(tipDecla == 1){
-                                   printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
+                                   //printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
                                    contadorParametros = 0;
-                                   agregarFuncion(&tabla.listaFunciones,nombre,tipoDato,&listaParametros);
+                                   agregarFuncion(&tabla.listaFunciones,nombre,tipoDato,&listaParametros,yylineno-3);
                                    listaParametros = NULL;
                               }
                               break;     
@@ -451,6 +449,6 @@ void main(){
 
      yyparse();
      imprimirTabla(tabla);
-     imprimirErrores(&errores);
+     imprimirErrores();
      system("PAUSE");
 }

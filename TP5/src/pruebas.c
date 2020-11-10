@@ -14,7 +14,7 @@ int main() {
     imprimirVariables(&lista);
     imprimirVariables(&lista);*/
 
-    ListaParametros *funcionSumar = NULL;
+    /*ListaParametros *funcionSumar = NULL;
     agregarParametro(&funcionSumar, "a", "int");
     agregarParametro(&funcionSumar, "b", "int");
 
@@ -35,10 +35,10 @@ int main() {
     TablaDeSimbolos tabla;
     tabla.listaVariables = NULL;
     tabla.listaFunciones = NULL;
-    agregarVariable(&tabla.listaVariables, "c","char");
-    agregarVariable(&tabla.listaVariables, "a","int");
+    agregarVariable(&tabla.listaVariables, "c","char","int");
+    agregarVariable(&tabla.listaVariables, "a","int","int");
     agregarFuncion(&tabla.listaFunciones,"sumar","int",&funcionSumar);
     imprimirTabla(tabla);
     printf("\n");
-    validarInvocacion(tabla,"sumar",tiposDeDato);
+    validarInvocacion(tabla,"sumar",tiposDeDato); */
 }

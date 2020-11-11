@@ -104,6 +104,7 @@ declaracion: especDeclaracion listaDeclaradoresBis ';' {
           while(contadorVariables!=0 && tip != 3){
                contadorVariables--;
                agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno);
+               tipoInicializador = "vacio";
           }
      }
 ;
@@ -361,7 +362,7 @@ expUnaria: expSufijo
 
 expSufijo: expPrimaria
          | expSufijo '[' exp ']'             {$<dval>$ = 0; }
-         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno); parametrosInvocacion = NULL;}
+         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno); parametrosInvocacion = NULL; tipoInicializador = tipoFuncion(tabla,$<cval>1);}
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }

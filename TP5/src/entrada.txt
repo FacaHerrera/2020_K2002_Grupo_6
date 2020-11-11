@@ -1,4 +1,6 @@
+int sumar(int a);
+
 {
-	int sumar(int b, int b);
-	
+
+	int a = sumar(3);
 }

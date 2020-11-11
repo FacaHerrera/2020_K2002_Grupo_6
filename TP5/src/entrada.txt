@@ -1,6 +1,6 @@
-int sumar(int a);
+int sumar(int a, int b);
 
 {
-
-	int a = sumar(3);
+	int a = 3;
+	char 34;
 }

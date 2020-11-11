@@ -125,8 +125,18 @@ listaDeclaradores: declarador {cantidad = 1; }
                  | listaDeclaradores ',' declarador {cantidad = 2;}
 ;
 
-declarador: decla {tipDecla = 1; variable[contadorVariables] = strdup($<cval>1); contadorVariables++;}
-          | decla '=' inicializador {tipDecla = 2; variable[contadorVariables] = strdup($<cval>1); contadorVariables++;}
+declarador: decla { tipDecla = 1; 
+                    if(tip!=3){
+                         variable[contadorVariables] = strdup($<cval>1); 
+                         contadorVariables++;
+                    }
+                  }
+          | decla '=' inicializador {   tipDecla = 2; 
+                                        if(tip!=3){
+                                             variable[contadorVariables] = strdup($<cval>1); 
+                                             contadorVariables++;
+                                        }
+                                   }
 ;
 
 inicializador: expAsignacion 
@@ -375,7 +385,7 @@ listaArgumentos:
 ;
 
 //DEFINICIONES EXTERNAS
-declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0; }
+declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ }
                   | declaracion {
                        switch(tip){
                          case 1:

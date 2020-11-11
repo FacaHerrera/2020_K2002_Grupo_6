@@ -94,7 +94,7 @@ input:
 
 line: declaracionExterna
     | sentencia
-    | error ';' {agregarError("error Sintactico",yylineno-3);}
+    | error ';' {agregarError(&errores,"Error Sintactico",yylineno);}
 ;
 
 //DECLARACIONES
@@ -103,7 +103,7 @@ declaracion: especDeclaracion listaDeclaradoresBis ';' {
           nombre = $<cval>2;
           while(contadorVariables!=0 && tip != 3){
                contadorVariables--;
-               agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno-3);
+               agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno);
           }
      }
 ;
@@ -195,7 +195,7 @@ listaParametros: declaracionParametro {contadorParametros++; }
                | listaParametros ',' declaracionParametro {contadorParametros++; }
 ;
 
-declaracionParametro: especDeclaracion decla {agregarParametro(&listaParametros, $<cval>2, $<cval>1,yylineno-3); }
+declaracionParametro: especDeclaracion decla {agregarParametro(&listaParametros, $<cval>2, $<cval>1,yylineno); }
                     | especDeclaracion declaradorAbstracto
 ;
 
@@ -361,7 +361,7 @@ expUnaria: expSufijo
 
 expSufijo: expPrimaria
          | expSufijo '[' exp ']'             {$<dval>$ = 0; }
-         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno-3); parametrosInvocacion = NULL;}
+         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; printf("Se invoco a la funcion %s \n",$<cval>1); validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno); parametrosInvocacion = NULL;}
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
@@ -417,7 +417,7 @@ declaracionExterna: definicionFuncion {printf("Se define la funcion %s con %d pa
                               if(tipDecla == 1){
                                    //printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
                                    contadorParametros = 0;
-                                   agregarFuncion(&tabla.listaFunciones,nombre,tipoDato,&listaParametros,yylineno-3);
+                                   agregarFuncion(&tabla.listaFunciones,nombre,tipoDato,&listaParametros,yylineno);
                                    listaParametros = NULL;
                               }
                               break;     
@@ -449,6 +449,6 @@ void main(){
 
      yyparse();
      imprimirTabla(tabla);
-     imprimirErrores();
+     imprimirErrores(&errores);
      system("PAUSE");
 }

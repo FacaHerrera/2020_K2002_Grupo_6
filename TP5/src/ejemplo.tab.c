@@ -1722,7 +1722,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 97 "ejemplo.y"
-    {agregarError("error Sintactico",yylineno-3);;}
+    {agregarError(&errores,"Error Sintactico",yylineno);;}
     break;
 
   case 7:
@@ -1734,7 +1734,7 @@ yyreduce:
           nombre = (yyvsp[(2) - (3)].cval);
           while(contadorVariables!=0 && tip != 3){
                contadorVariables--;
-               agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno-3);
+               agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno);
           }
      ;}
     break;
@@ -1806,7 +1806,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 198 "ejemplo.y"
-    {agregarParametro(&listaParametros, (yyvsp[(2) - (2)].cval), (yyvsp[(1) - (2)].cval),yylineno-3); ;}
+    {agregarParametro(&listaParametros, (yyvsp[(2) - (2)].cval), (yyvsp[(1) - (2)].cval),yylineno); ;}
     break;
 
   case 72:
@@ -2135,7 +2135,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 364 "ejemplo.y"
-    {(yyval.dval) = 0; printf("Se invoco a la funcion %s \n",(yyvsp[(1) - (4)].cval)); validarInvocacion(tabla,(yyvsp[(1) - (4)].cval),parametrosInvocacion,yylineno-3); parametrosInvocacion = NULL;;}
+    {(yyval.dval) = 0; printf("Se invoco a la funcion %s \n",(yyvsp[(1) - (4)].cval)); validarInvocacion(tabla,(yyvsp[(1) - (4)].cval),parametrosInvocacion,yylineno); parametrosInvocacion = NULL;;}
     break;
 
   case 152:
@@ -2233,7 +2233,7 @@ yyreduce:
                               if(tipDecla == 1){
                                    //printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
                                    contadorParametros = 0;
-                                   agregarFuncion(&tabla.listaFunciones,nombre,tipoDato,&listaParametros,yylineno-3);
+                                   agregarFuncion(&tabla.listaFunciones,nombre,tipoDato,&listaParametros,yylineno);
                                    listaParametros = NULL;
                               }
                               break;     
@@ -2484,6 +2484,6 @@ void main(){
 
      yyparse();
      imprimirTabla(tabla);
-     imprimirErrores();
+     imprimirErrores(&errores);
      system("PAUSE");
 }

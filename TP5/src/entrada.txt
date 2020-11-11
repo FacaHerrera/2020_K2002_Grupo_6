@@ -1,7 +1,6 @@
-3+4
-2;
-5
-
+3+4;
+5;
 {
+	char df = $;
 	int sumar(int a);
 }

@@ -1,6 +1,6 @@
 #include<math.h>
 #include<stdlib.h>
-#include <stdio.h>
+#include<stdio.h>
 #include<string.h>
 
 typedef struct TablaDeSimbolos {
@@ -18,7 +18,6 @@ typedef struct Error {
     int linea;
     struct Error *sig;
 } Error;
-
 
 typedef struct ListaVariables{
     char nombreVariable[10];
@@ -38,7 +37,6 @@ typedef struct ListaFunciones{
     struct ListaParametros *listaParametros;
     struct ListaFunciones *sig;
 } ListaFunciones;
-
 
 void imprimirTabla(TablaDeSimbolos);
 void validarInvocacion(TablaDeSimbolos , char* , Nodo *, int);
@@ -103,8 +101,8 @@ void agregarError(char* error, int linea) {
     strcpy(nuevo->error,error);
     nuevo->linea = linea;
     nuevo->sig = NULL;
-    if(*errores==NULL){
-        *errores = nuevo;
+    if(&*errores==NULL){
+        errores = &nuevo;
     }
     else{
         Error* aux = *errores;
@@ -116,11 +114,10 @@ void agregarError(char* error, int linea) {
 }
 
 void imprimirErrores() {
-    Error *aux = *errores;
     printf("ERRORES\n");
-    while(aux != NULL) {
-        printf("Se encontro el %s en la linea %d.\n",aux->error,aux->linea);
-        aux = aux->sig;
+    while(&*errores != NULL) {
+        printf("Se encontro el %s en la linea %d.\n",(*errores)->error,(*errores)->linea);
+        (*errores) = (*errores)->sig;
     }
 }
 
@@ -130,7 +127,7 @@ void imprimirErrores() {
 
 void agregarVariable(ListaVariables** variables, char* nombre, char* tipo, char* tipoInicializador, int linea) {
     if(strcmp(tipo, tipoInicializador) && strcmp(tipoInicializador,"vacio")) {
-        if(!strcmp(tipoInicializador,"")) printf("Error Semantico: El inicializador no existe.\n");
+        if(tipoInicializador == NULL) printf("Error Semantico: El inicializador no existe.\n");
         else printf("Error Semantico: Se le asigna un valor de tipo %s a una variable de tipo %s.\n",tipo, tipoInicializador);
     } else {
         ListaVariables *nodoNuevo = (ListaVariables *)malloc(sizeof(ListaVariables));
@@ -176,7 +173,7 @@ char* tipoVariable(TablaDeSimbolos tabla, char* nombre ) {
     if(variable) {
         return variable->tipoVariable;
     } else {
-        return "";
+        return NULL;
     }
 }
 
@@ -223,6 +220,16 @@ void imprimirParametros(ListaParametros **parametros){
     }
 }
 
+int longitudParametros(ListaParametros **parametros){
+    int longitud = 0;
+    ListaParametros *aux = *parametros;
+    while(aux != NULL){
+        aux = aux->sig;
+        longitud++;
+    }
+    return longitud;
+}
+
 //////////////////////
 //LISTA DE FUNCIONES//
 //////////////////////
@@ -267,16 +274,6 @@ void imprimirFunciones(ListaFunciones **funciones){
     }
 }
 
-int longitudParametros(ListaParametros **parametros){
-    int longitud = 0;
-    ListaParametros *aux = *parametros;
-    while(aux != NULL){
-        aux = aux->sig;
-        longitud++;
-    }
-    return longitud;
-}
-
 /////////////////////
 //TABLA DE SIMBOLOS//
 /////////////////////
@@ -298,7 +295,7 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
             printf("Error Semantico en la invocacion de la funcion %s: Se invoca a la funcion con %d parametros, mientras que la funcion tiene %d parametros. \n",nombreFuncion,longitudNodo(&tiposDeDato), longitudParametros(&parametros));
         } else {
             while(parametros != NULL) {
-                if(!strcmp(tiposDeDato->tipo,"")) {
+                if(tiposDeDato->tipo == NULL) {
                     printf("Error semantico en la invocacion de la funcion %s: El parametro %d no existe. \n",nombreFuncion,i);
                 } else if(strcmp(parametros->tipoParametro,tiposDeDato->tipo)) {
                     printf("Error Semantico en la invocacion de la funcion %s: El parametro %d no es de tipo %s. \n",nombreFuncion,i,parametros->tipoParametro);

@@ -20,7 +20,11 @@ char* tipoInicializador = "vacio";
 char* tipoDato;
 char* nombre;
 char* variable[20];
+char* variableExpresion[20];
 char* tipoParametroInvocacion;
+
+char flagError = 0;
+char flagOperacionBinaria = 0; 
 
 int contadorVariables = 0;
 int contadorParametros = 0;
@@ -28,10 +32,12 @@ int tip = 0;
 int tipDecla = 0;
 int cantidad = 0;
 int cantidadPuntero = 0;
+int contadorVariableExpresion = 0;
 
 Nodo *parametrosInvocacion = NULL;
 ListaParametros *listaParametros = NULL;
 TablaDeSimbolos tabla;
+
 
 %}
 
@@ -102,12 +108,63 @@ line: declaracionExterna
 declaracion: especDeclaracion listaDeclaradoresBis ';' {
           tipoDato = $<cval>1;
           nombre = $<cval>2;
+          while(contadorVariableExpresion){
+               if(contadorVariableExpresion == 1 || !strcmp(variableExpresion[0],variableExpresion[contadorVariableExpresion-1])) {
+                    contadorVariableExpresion--;
+                    tipoInicializador = variableExpresion[0];
+               }
+               else if(flagOperacionBinaria==1) {
+
+                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere sumar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                    strcpy(error,"Se quiere sumar un valor de tipo ");
+                    strcat(error,variableExpresion[0]);
+                    strcat(error," a un valor de tipo ");
+                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                    agregarError(&errores, error, yylineno);
+                    flagError = 1;
+                    contadorVariableExpresion = 0;
+               }
+               else if(flagOperacionBinaria==2) {
+
+                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere restar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                    strcpy(error,"Se quiere restar un valor de tipo ");
+                    strcat(error,variableExpresion[0]);
+                    strcat(error," a un valor de tipo ");
+                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                    agregarError(&errores, error, yylineno);
+                    flagError = 1;
+                    contadorVariableExpresion = 0;
+               }
+               else if(flagOperacionBinaria==3) {
+
+                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere multiplicar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                    strcpy(error,"Se quiere multiplicar un valor de tipo ");
+                    strcat(error,variableExpresion[0]);
+                    strcat(error," a un valor de tipo ");
+                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                    agregarError(&errores, error, yylineno);
+                    flagError = 1;
+                    contadorVariableExpresion = 0;
+               }
+               else if(flagOperacionBinaria==4) {
+
+                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere dividir un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                    strcpy(error,"Se quiere dividir un valor de tipo ");
+                    strcat(error,variableExpresion[0]);
+                    strcat(error," a un valor de tipo ");
+                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                    agregarError(&errores, error, yylineno);
+                    flagError = 1;
+                    contadorVariableExpresion = 0;
+               } 
+          }
           while(contadorVariables!=0 && tip != 3){
-               printf("%d", contadorVariables);
                contadorVariables--;
-               agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno);
+               agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno, flagError);
                tipoInicializador = "vacio";
           }
+          flagError = 0;
+          flagOperacionBinaria = 0;
      }
 ;
 
@@ -314,17 +371,17 @@ sentSalto: RETURN expOp ';' {/*printf("Se encontro una Sentencia de Salto RETURN
 ;
 
 //EXPRESIONES 
-expPrimaria: ID             {tipoParametroInvocacion = tipoInicializador = tipoVariable(tabla,$<cval>1);}
-           | ENTERO         {$<dval>$ = $<ival>1; tipoParametroInvocacion = tipoInicializador = "int";} 
-           | REAL           {$<dval>$ = $<dval>1; tipoParametroInvocacion = tipoInicializador = "double";}
-           | CTE_CARACTER   {tipoParametroInvocacion = tipoInicializador = "char";}
-           | LITERAL_CADENA {tipoParametroInvocacion = "char*";}
+expPrimaria: ID             {tipoParametroInvocacion = tipoInicializador = variableExpresion[contadorVariableExpresion] = tipoVariable(tabla,$<cval>1); contadorVariableExpresion++;}
+           | ENTERO         {$<dval>$ = $<ival>1; tipoParametroInvocacion = variableExpresion[contadorVariableExpresion] = tipoInicializador = "int"; contadorVariableExpresion++;} 
+           | REAL           {$<dval>$ = $<dval>1; tipoParametroInvocacion = variableExpresion[contadorVariableExpresion] = tipoInicializador = "double"; contadorVariableExpresion++;}
+           | CTE_CARACTER   {tipoParametroInvocacion = tipoInicializador = variableExpresion[contadorVariableExpresion] = "char"; contadorVariableExpresion++;}
+           | LITERAL_CADENA {tipoParametroInvocacion = variableExpresion[contadorVariableExpresion] = "char*"; contadorVariableExpresion++;}
            | NULL1
            | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
 ;
 
-exp: expAsignacion {/*printf("Se encontro una expresion. \n"); */}
-   | exp ',' expAsignacion
+exp: expAsignacion 
+   | exp ',' expAsignacion 
 ;
 
 expOp:
@@ -363,7 +420,7 @@ expIgualdad: expRelacional
            | expIgualdad DESIGUALDAD expRelacional {$<dval>$ = $<dval>1 != $<dval>3; }
 ;
 
-expRelacional: expAditiva
+expRelacional: expAditiva 
              | expRelacional '<' expAditiva        {$<dval>$ = $<dval>1 < $<dval>3; }
              | expRelacional '>' expAditiva        {$<dval>$ = $<dval>1 > $<dval>3; }
              | expRelacional MENORIGUAL expAditiva {$<dval>$ = $<dval>1 <= $<dval>3; }
@@ -371,13 +428,13 @@ expRelacional: expAditiva
 ;
 
 expAditiva: expMultiplicativa
-          | expAditiva '+' expMultiplicativa {$<dval>$ = $<dval>1 + $<dval>3; }
-          | expAditiva '-' expMultiplicativa {$<dval>$ = $<dval>1 - $<dval>3; }
+          | expAditiva '+' expMultiplicativa {$<dval>$ = $<dval>1 + $<dval>3; flagOperacionBinaria = 1;}
+          | expAditiva '-' expMultiplicativa {$<dval>$ = $<dval>1 - $<dval>3; flagOperacionBinaria = 2; }
 ;
 
 expMultiplicativa: expUnaria
-                 | expMultiplicativa '*' expUnaria {$<dval>$ = $<dval>1 * $<dval>3; }
-                 | expMultiplicativa '/' expUnaria {if($<dval>3 == 0) {printf("ERROR/: No se puede dividir por 0 \n"); return 1; } else $<dval>$ = $<dval>1 / $<dval>3; }
+                 | expMultiplicativa '*' expUnaria {$<dval>$ = $<dval>1 * $<dval>3;  flagOperacionBinaria = 3;}
+                 | expMultiplicativa '/' expUnaria {if($<dval>3 == 0) {agregarError(&errores,"ERROR/: No se puede dividir por 0",yylineno);} else {$<dval>$ = $<dval>1 / $<dval>3;  flagOperacionBinaria = 4;}}
                  | expMultiplicativa '%' expUnaria {$<dval>$ = $<ival>1 % $<ival>3; }
 ;
 

@@ -96,9 +96,9 @@ goto {return GOTO; }
 \/\/{CARACTER_IMPRIMIBLE}* {printf("Se encontro el comentario simple: \"%s\". \n",yytext); }
 \/\*(([^\*]|$)|(\*([^\/]|$)))*\*\/ {printf("Se encontro el comentario multiple: \"%s\". \n",yytext); }
 
-[^\n\t' '] {char *error = malloc(strlen("Error Lexico: ") + strlen(yytext) + strlen(" ") + 1);
+[^\n\t' '] {/*char *error = malloc(strlen("Error Lexico: ") + strlen(yytext) + strlen(" ") + 1);
             strcpy(error, "Error Semantico en la invocacion de la funcion ");
             strcat(error, yytext);
-            strcat(error, " ")
-            agregarError(&errores, error, linea);}
+            strcat(error, " ");
+            agregarError(&errores, error, yylineno);*/}
 %%

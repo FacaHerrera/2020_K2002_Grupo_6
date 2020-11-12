@@ -1137,14 +1137,18 @@ YY_RULE_SETUP
 case 63:
 YY_RULE_SETUP
 #line 99 "ejemplo.l"
-{printf("Se encontro un error lexico: %s\n", yytext); }
+{/*char *error = malloc(strlen("Error Lexico: ") + strlen(yytext) + strlen(" ") + 1);
+            strcpy(error, "Error Semantico en la invocacion de la funcion ");
+            strcat(error, yytext);
+            strcat(error, " ");
+            agregarError(&errores, error, yylineno);*/}
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 100 "ejemplo.l"
+#line 104 "ejemplo.l"
 ECHO;
 	YY_BREAK
-#line 1148 "lex.yy.c"
+#line 1152 "lex.yy.c"
 			case YY_STATE_EOF(INITIAL):
 				yyterminate();
 
@@ -2028,4 +2032,4 @@ int main()
 	return 0;
 	}
 #endif
-#line 100 "ejemplo.l"
+#line 104 "ejemplo.l"

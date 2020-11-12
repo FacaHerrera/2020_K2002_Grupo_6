@@ -27,6 +27,7 @@ int contadorParametros = 0;
 int tip = 0;
 int tipDecla = 0;
 int cantidad = 0;
+int cantidadPuntero = 0;
 
 Nodo *parametrosInvocacion = NULL;
 ListaParametros *listaParametros = NULL;
@@ -102,6 +103,7 @@ declaracion: especDeclaracion listaDeclaradoresBis ';' {
           tipoDato = $<cval>1;
           nombre = $<cval>2;
           while(contadorVariables!=0 && tip != 3){
+               printf("%d", contadorVariables);
                contadorVariables--;
                agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno);
                tipoInicializador = "vacio";
@@ -125,18 +127,8 @@ listaDeclaradores: declarador {cantidad = 1; }
                  | listaDeclaradores ',' declarador {cantidad = 2;}
 ;
 
-declarador: decla { tipDecla = 1; 
-                    if(tip!=3){
-                         variable[contadorVariables] = strdup($<cval>1); 
-                         contadorVariables++;
-                    }
-                  }
-          | decla '=' inicializador {   tipDecla = 2; 
-                                        if(tip!=3){
-                                             variable[contadorVariables] = strdup($<cval>1); 
-                                             contadorVariables++;
-                                        }
-                                   }
+declarador: decla1 { tipDecla = 1; }
+          | decla1 '=' inicializador {   tipDecla = 2; }
 ;
 
 inicializador: expAsignacion 
@@ -177,21 +169,52 @@ declaradoresStruct: declaStruct
                   | declaradoresStruct ',' declaStruct
 ;
 
-declaStruct: decla
+declaStruct: decla1
            | declaBis ':' expCondicional
 ;
 
-decla: puntero declaradorDirecto
-     | declaradorDirecto
+decla1: puntero declaradorDirecto   {
+                                        if(tip!=3){
+                                             variable[contadorVariables] = (char*)malloc(strlen($<cval>2)+cantidadPuntero);
+                                             strcat(variable[contadorVariables],""); 
+                                             while(cantidadPuntero!=0){
+                                                  strcat(variable[contadorVariables], "*");
+                                                  cantidadPuntero--;
+                                             }
+                                             strcat(variable[contadorVariables],$<cval>2); 
+                                             contadorVariables++;
+                                        }
+
+                                   }                   
+     | declaradorDirecto {
+                              if(tip!=3){
+                                   variable[contadorVariables] = strdup($<cval>1); 
+                                   contadorVariables++;
+                              }
+                         }
+;
+
+decla2: puntero declaradorDirecto   {
+                                        nombre = (char*)malloc(strlen($<cval>2)+cantidadPuntero);
+                                        while(cantidadPuntero!=0){
+                                             strcat(nombre, "*");
+                                             cantidadPuntero--;
+                                        }
+                                        strcat(nombre, $<cval>2);
+
+                                   }                   
+     | declaradorDirecto {
+                              nombre = strdup($<cval>1);
+                         }
 ;
 
 declaBis: 
-        | decla
+        | decla1
 ;
 
 declaradorDirecto: ID {tip = 1;}
                  | declaradorDirecto '[' expCondicionalBis ']' {tip = 2;}
-                 | declaradorDirecto '(' listaTiposParametros ')' {tip = 3;}
+                 | declaradorDirecto '(' listaTiposParametrosBis ')' {tip = 3;}
 ;
 
 listaTiposParametros: listaParametros
@@ -206,16 +229,17 @@ listaParametros: declaracionParametro {contadorParametros++; }
                | listaParametros ',' declaracionParametro {contadorParametros++; }
 ;
 
-declaracionParametro: especDeclaracion decla {agregarParametro(&listaParametros, $<cval>2, $<cval>1,yylineno); }
+declaracionParametro: especDeclaracion {agregarParametro(&listaParametros, "-", $<cval>1,yylineno); }
+                    | especDeclaracion decla2 {agregarParametro(&listaParametros, nombre, $<cval>1,yylineno);}
                     | especDeclaracion declaradorAbstracto
 ;
 
 nombreTipo: listaCalificadores declaradorAbstractoBis
 ;
 
-declaradorAbstracto: puntero declaradorAbstractoDirecto
+declaradorAbstracto: puntero declaradorAbstractoDirecto 
                    | declaradorAbstractoDirecto
-                   | puntero
+                   | puntero {agregarParametro(&listaParametros, "*-", $<cval>1,yylineno); }
 ;
 
 declaradorAbstractoBis:
@@ -264,8 +288,8 @@ listaSentencias: sentencia
                | listaSentencias sentencia
 ;
 
-puntero: '*'
-       | '*' puntero
+puntero: '*' {cantidadPuntero++;}
+       | '*' puntero {cantidadPuntero++;}
 ;
 
 sentSeleccion: IF '(' exp ')' sentencia                {/*printf("Se encontro una Sentencia de Seleccion IF.\n");*/ }
@@ -385,7 +409,7 @@ listaArgumentos:
 ;
 
 //DEFINICIONES EXTERNAS
-declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ }
+declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDefinidas,nombre,tipoDato,&listaParametros,yylineno); cantidadPuntero = 0;}
                   | declaracion {
                        switch(tip){
                          case 1:
@@ -428,7 +452,8 @@ declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d 
                               if(tipDecla == 1){
                                    //printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
                                    contadorParametros = 0;
-                                   agregarFuncion(&tabla.listaFunciones,nombre,tipoDato,&listaParametros,yylineno);
+                                   agregarFuncion(&tabla.listaFuncionesDeclaradas,nombre,tipoDato,&listaParametros,yylineno);
+                                   cantidadPuntero = 0;
                                    listaParametros = NULL;
                               }
                               break;     
@@ -436,7 +461,7 @@ declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d 
                   }
 ;
 
-definicionFuncion: especDeclaracion decla listaDeclaracionesBis sentCompuesta {nombre = $<cval>2; tipoDato = $<cval>1;}
+definicionFuncion: especDeclaracion decla2 listaDeclaracionesBis sentCompuesta {nombre = $<cval>2; tipoDato = $<cval>1;}
 ;
 
 
@@ -456,8 +481,9 @@ void main(){
      yyin = fopen("entrada.txt", "r");
 
      tabla.listaVariables = NULL;
-     tabla.listaFunciones = NULL;
-
+     tabla.listaFuncionesDeclaradas = NULL;
+     tabla.listaFuncionesDefinidas = NULL;
+     
      yyparse();
      imprimirTabla(tabla);
      imprimirErrores(&errores);

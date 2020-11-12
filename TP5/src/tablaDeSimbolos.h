@@ -5,7 +5,8 @@
 
 typedef struct TablaDeSimbolos {
     struct ListaVariables *listaVariables;
-    struct ListaFunciones *listaFunciones;
+    struct ListaFunciones *listaFuncionesDefinidas;
+    struct ListaFunciones *listaFuncionesDeclaradas;
 } TablaDeSimbolos;
 
 typedef struct Nodo {
@@ -41,7 +42,7 @@ typedef struct ListaFunciones{
 Error *errores = NULL;
 
 void imprimirTabla(TablaDeSimbolos);
-void validarInvocacion(TablaDeSimbolos , char* , Nodo *, int);
+void validarInvocacion(TablaDeSimbolos , char* tete, Nodo *, int);
 
 int longitudNodo(Nodo **);
 void agregarNodo(Nodo **, char*);
@@ -56,13 +57,13 @@ char* tipoVariable(TablaDeSimbolos, char*);
 
 void agregarParametro(ListaParametros**, char*, char*, int);
 ListaParametros* buscarParametro(ListaParametros **, char *);
-void imprimirParametros(ListaParametros **, int, int, int, int, char);
+void imprimirParametros(ListaParametros **, int, int, int, int, int, char);
 ListaParametros* parametrosIguales(ListaParametros**);
 void eliminarParametro(ListaParametros **, char*);
 
 void agregarFuncion(ListaFunciones** , char* , char*, ListaParametros**, int);
 ListaFunciones* buscarFuncion(ListaFunciones **,char *);
-void imprimirFunciones(ListaFunciones**);
+void imprimirFunciones(ListaFunciones**, char*);
 char* tipoFuncion(TablaDeSimbolos, char*);
 
 char *centrar(char *, int);
@@ -119,7 +120,7 @@ void agregarError(Error **errores, char* error, int linea) {
 }
 
 void imprimirErrores(Error **errores){
-    int i, ancho, columnas = 2, anchoC1 = 50, anchoC2 = 50;
+    int i, ancho, columnas = 2, anchoC1 = 150, anchoC2 = 10;
     ancho = anchoC1 + anchoC2;
     char ultimo;
     char titulo[20] = "LISTA DE ERRORES";
@@ -128,7 +129,7 @@ void imprimirErrores(Error **errores){
     char snum[10];
 
     Error *aux = *errores;
-    printf("HOLA: %s\n", aux->error);
+
     if(aux != NULL){
         printf("\n\n\n");
         printf("%c", 201);
@@ -321,7 +322,7 @@ ListaParametros* parametrosIguales(ListaParametros** parametros) {
 
 ListaParametros* buscarParametro(ListaParametros **parametros, char *nombre){
     ListaParametros* aux = *parametros;
-    while((aux != NULL) && (strcmp(aux->nombreParametro,nombre) != 0)){
+    while((aux != NULL) && (strcmp(aux->nombreParametro,nombre) != 0 || strcmp(aux->nombreParametro,"-") == 0 || strcmp(aux->nombreParametro,"*-") == 0)){
         aux = aux->sig;        
     }
     return aux;
@@ -401,26 +402,26 @@ ListaFunciones* buscarFuncion(ListaFunciones **funciones,char *nombre){
     return aux;
 }
 
-void imprimirFunciones(ListaFunciones **funciones){
-    int i, ancho, columnas = 3, anchoC1 = 50, anchoC2 = 50, anchoC3 = 50, anchoC31 = 25, anchoC32 = 25;
+void imprimirFunciones(ListaFunciones **funciones, char* titulo){
+    int i, ancho, columnas = 3, anchoC1 = 50, anchoC2 = 50, anchoC3 = 60, anchoC31 = 10, anchoC32 = 30, anchoC33 = 20;
     ancho = anchoC1 + anchoC2 + anchoC3;
     char ultimo;
-    char titulo[20] = "LISTA DE FUNCIONES";
     char titulo0[20] = "NOMBRE FUNCION";
     char titulo1[20] = "TIPO FUNCION";
     char titulo2[20] = "PARAMETROS";
-    char titulo21[20] = "NOMBRE";
-    char titulo22[20] = "TIPO";
+    char titulo21[20] = "N*";
+    char titulo22[20] = "NOMBRE";
+    char titulo23[20] = "TIPO";
 
     ListaFunciones *aux = *funciones;
 
     if(aux != NULL){
         printf("\n\n\n");
         printf("%c", 201);
-        for(i=0; i < ancho+(columnas-1); i++) printf("%c", 205);
+        for(i=0; i < ancho+(columnas-1)+2; i++) printf("%c", 205);
         printf("%c", 187);
         printf("\n%c", 186);
-        printf("%s", centrar(titulo, ancho));
+        printf("%s", centrar(titulo, ancho+2));
 
         printf("  %c\n", 186);
         printf("%c", 204);
@@ -428,15 +429,15 @@ void imprimirFunciones(ListaFunciones **funciones){
         printf("%c", 203);
         for(i=0; i < anchoC2; i++) printf("%c", 205);
         printf("%c", 203);
-        for(i=0; i < anchoC3; i++) printf("%c", 205);
+        for(i=0; i < anchoC3+2; i++) printf("%c", 205);
         printf("%c\n", 185);
 
         printf("%c", 186);
         printf("%s", centrar(" ", anchoC1));
         printf("%c", 186);
-        printf("%s", centrar("", anchoC2));
+        printf("%s", centrar(" ", anchoC2));
         printf("%c", 186);
-        printf("%s", centrar(titulo2, anchoC3));
+        printf("%s", centrar(titulo2, anchoC3+2));
         printf("%c\n", 186);
 
         printf("%c", 186);
@@ -446,7 +447,9 @@ void imprimirFunciones(ListaFunciones **funciones){
         printf("%c", 204);
         for(i=0; i < anchoC31; i++) printf("%c", 205);
         printf("%c", 203);
-        for(i=0; i < anchoC32-1; i++) printf("%c", 205);
+        for(i=0; i < anchoC32; i++) printf("%c", 205);
+        printf("%c", 203);
+        for(i=0; i < anchoC33; i++) printf("%c", 205);
         printf("%c\n", 185); 
 
         printf("%c", 186);
@@ -455,8 +458,10 @@ void imprimirFunciones(ListaFunciones **funciones){
         printf("%s", centrar(" ", anchoC2));
         printf("%c", 186);
         printf("%s", centrar(titulo21, anchoC31));
-        printf(" %c", 186);
+        printf("%c", 186);
         printf("%s", centrar(titulo22, anchoC32));
+        printf("%c", 186);
+        printf("%s", centrar(titulo23, anchoC33));
         printf("%c\n", 186);
 
         printf("%c", 204);
@@ -466,7 +471,9 @@ void imprimirFunciones(ListaFunciones **funciones){
         printf("%c", 206);
         for(i=0; i < anchoC31; i++) printf("%c", 205);
         printf("%c", 206);
-        for(i=0; i < anchoC32-1; i++) printf("%c", 205);
+        for(i=0; i < anchoC32; i++) printf("%c", 205);
+        printf("%c", 206);
+        for(i=0; i < anchoC33; i++) printf("%c", 205);
         printf("%c\n", 185); 
 
         while(aux != NULL){
@@ -477,7 +484,7 @@ void imprimirFunciones(ListaFunciones **funciones){
             printf("%c", 186);
             if(aux->sig==NULL) ultimo = 1;
             else ultimo = 0;
-            imprimirParametros(&aux->listaParametros, anchoC1, anchoC2 , anchoC31, anchoC32, ultimo);
+            imprimirParametros(&aux->listaParametros, anchoC1, anchoC2 , anchoC31, anchoC32, anchoC33, ultimo);
             aux = aux->sig;
         }
         printf("%c", 200);
@@ -487,20 +494,26 @@ void imprimirFunciones(ListaFunciones **funciones){
         printf("%c", 202);
         for(i=0; i < anchoC31; i++) printf("%c", 205);
         printf("%c", 202);
-        for(i=0; i < anchoC32-1; i++) printf("%c", 205);
+        for(i=0; i < anchoC32; i++) printf("%c", 205);
+        printf("%c", 202);
+        for(i=0; i < anchoC33; i++) printf("%c", 205);
         printf("%c\n", 188);
         
     }
 }
 
-void imprimirParametros(ListaParametros **parametros, int anchoC1, int anchoC2, int ancho1, int ancho2, char ultimo){
+void imprimirParametros(ListaParametros **parametros, int anchoC1, int anchoC2, int ancho1, int ancho2, int ancho3, char ultimo){
     ListaParametros *aux = *parametros;
     int i = 1;
+    char snum[10];
     while(aux != NULL){
+        itoa(i, snum, 10);
         if(i==1){
-            printf("%s", centrar(aux->nombreParametro, ancho1));
-            printf(" %c", 186);
-            printf("%s", centrar(aux->tipoParametro, ancho2));
+            printf("%s", centrar(snum, ancho1));
+            printf("%c", 186);
+            printf("%s", centrar(aux->nombreParametro, ancho2));
+            printf("%c", 186);
+            printf("%s", centrar(aux->tipoParametro, ancho3));
             printf("%c\n", 186);
         }
         else{
@@ -509,10 +522,12 @@ void imprimirParametros(ListaParametros **parametros, int anchoC1, int anchoC2, 
             printf("%c", 186);
             printf("%s", centrar(" ", anchoC2));
             printf("%c", 186);
-            printf("%s", centrar(aux->nombreParametro, ancho1));
-            printf(" %c", 186);
-            printf("%s", centrar(aux->tipoParametro, ancho2));
-            printf( "%c\n", 186);
+            printf("%s", centrar(snum, ancho1));
+            printf("%c", 186);
+            printf("%s", centrar(aux->nombreParametro, ancho2));
+            printf("%c", 186);
+            printf("%s", centrar(aux->tipoParametro, ancho3));
+            printf("%c\n", 186);
         }
         aux = aux->sig;
         if(aux==NULL && !ultimo){
@@ -523,18 +538,34 @@ void imprimirParametros(ListaParametros **parametros, int anchoC1, int anchoC2, 
             printf("%c", 206);
             for(i=0; i < ancho1; i++) printf("%c", 205);
             printf("%c", 206);
-            for(i=0; i < ancho2-1; i++) printf("%c", 205);
+            for(i=0; i < ancho2; i++) printf("%c", 205);
+            printf("%c", 206);
+            for(i=0; i < ancho3; i++) printf("%c", 205);
             printf("%c\n", 185); 
         }
         i++;
     }
+    if(i==1){
+        printf("%s", centrar("0", ancho1));
+        printf("%c", 186);
+        printf("%s", centrar("NO TIENE", ancho2));
+        printf("%c", 186);
+        printf("%s", centrar("NO TIENE", ancho3));
+        printf("%c\n", 186);
+    }
 }
 
 char* tipoFuncion(TablaDeSimbolos tabla, char* nombre) {
-    ListaFunciones *funcion = buscarFuncion(&tabla.listaFunciones,nombre);
-    if(funcion) {
+    ListaFunciones *funcion;
+    if(buscarFuncion(&tabla.listaFuncionesDeclaradas,nombre)) {
+        funcion = buscarFuncion(&tabla.listaFuncionesDeclaradas,nombre);
         return funcion->tipoFuncion;
-    } else {
+    } 
+    else if(buscarFuncion(&tabla.listaFuncionesDefinidas,nombre)) {
+        funcion = buscarFuncion(&tabla.listaFuncionesDefinidas,nombre);
+        return funcion->tipoFuncion;
+    }
+    else{
         return "";
     }
 }
@@ -545,11 +576,12 @@ char* tipoFuncion(TablaDeSimbolos tabla, char* nombre) {
 
 void imprimirTabla(TablaDeSimbolos tabla) {
     imprimirVariables(&tabla.listaVariables);
-    imprimirFunciones(&tabla.listaFunciones);
+    imprimirFunciones(&tabla.listaFuncionesDeclaradas, "LISTA DE FUNCIONES DECLARADAS");
+    imprimirFunciones(&tabla.listaFuncionesDefinidas, "LISTA DE FUNCIONES DEFINIDAS");
 }
 
 void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDeDato, int linea) {
-    ListaFunciones *funcionInvocada = buscarFuncion(&tabla.listaFunciones,nombreFuncion);
+    ListaFunciones *funcionInvocada = buscarFuncion(&tabla.listaFuncionesDeclaradas,nombreFuncion);
     int i = 1;
     if(!funcionInvocada) {
         char *error = malloc(strlen("Error Semantico en la invocacion de la funcion ") + strlen(nombreFuncion) + strlen(": La funcion ") + strlen(nombreFuncion) + strlen(" no existe") + 1);

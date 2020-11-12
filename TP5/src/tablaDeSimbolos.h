@@ -126,9 +126,9 @@ void imprimirErrores(Error **errores){
     char titulo0[20] = "ERROR";
     char titulo1[20] = "LINEA";
     char snum[10];
-    
-    Error *aux = *errores;
 
+    Error *aux = *errores;
+    printf("HOLA: %s\n", aux->error);
     if(aux != NULL){
         printf("\n\n\n");
         printf("%c", 201);

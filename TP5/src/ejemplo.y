@@ -233,7 +233,7 @@ declaStruct: decla1
 decla1: puntero declaradorDirecto   {
                                         if(tip!=3){
                                              variable[contadorVariables] = (char*)malloc(strlen($<cval>2)+cantidadPuntero);
-                                             strcat(variable[contadorVariables],""); 
+                                             strcpy(variable[contadorVariables],"\0"); 
                                              while(cantidadPuntero!=0){
                                                   strcat(variable[contadorVariables], "*");
                                                   cantidadPuntero--;
@@ -253,6 +253,7 @@ decla1: puntero declaradorDirecto   {
 
 decla2: puntero declaradorDirecto   {
                                         nombre = (char*)malloc(strlen($<cval>2)+cantidadPuntero);
+                                        strcpy(nombre, "\0");
                                         while(cantidadPuntero!=0){
                                              strcat(nombre, "*");
                                              cantidadPuntero--;
@@ -466,7 +467,7 @@ listaArgumentos:
 ;
 
 //DEFINICIONES EXTERNAS
-declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDefinidas,nombre,tipoDato,&listaParametros,yylineno); cantidadPuntero = 0;}
+declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDefinidas,nombre,tipoDato,&listaParametros,yylineno); contadorParametros = 0; listaParametros = NULL; cantidadPuntero = 0;}
                   | declaracion {
                        switch(tip){
                          case 1:

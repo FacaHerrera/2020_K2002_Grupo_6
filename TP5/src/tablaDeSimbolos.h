@@ -185,7 +185,7 @@ void agregarVariable(ListaVariables** variables, char* nombre, char* tipo, char*
             if(!strcmp(tipoInicializador,"")) {
                 agregarError(&errores, "Error Semantico: El inicializador no existe", linea);
             } else {
-                char *error = malloc(strlen(tipo)+strlen(tipoInicializador)+strlen("Error Semantico: Se le asigna un valor de tipo ")+strlen(" a una variable de tipo ") + 1);
+                char *error = (char *)malloc(strlen(tipo)+strlen(tipoInicializador)+strlen("Error Semantico: Se le asigna un valor de tipo ")+strlen(" a una variable de tipo ") + 1);
                 strcpy(error,"Error Semantico: Se le asigna un valor de tipo ");
                 strcat(error,tipoInicializador);
                 strcat(error," a una variable de tipo ");
@@ -207,7 +207,7 @@ void agregarVariable(ListaVariables** variables, char* nombre, char* tipo, char*
                     aux = aux->sig;
                 }
                 if(buscarVariable(variables, nombre)) {
-                    char *error = malloc(strlen("Error Semantico: Doble declaracion de la variable ")+strlen(nombre) + 1);
+                    char *error = (char *)malloc(strlen("Error Semantico: Doble declaracion de la variable ")+strlen(nombre) + 1);
                     strcpy(error, "Error Semantico: Doble declaracion de la variable ");
                     strcat(error, nombre);
                     agregarError(&errores, error, linea);
@@ -365,7 +365,7 @@ void eliminarParametro(ListaParametros **parametros, char* v){
 void agregarFuncion(ListaFunciones** funciones, char* nombre, char* tipo, ListaParametros** parametros, int linea) {
     ListaParametros *parametroIgual = parametrosIguales(parametros);
     if(parametroIgual) {
-        char *error = malloc(strlen("Error Semantico en la funcion ") + strlen(nombre) + strlen(": Doble declaracion del parametro ") + strlen(parametroIgual->nombreParametro) + 1);
+        char *error = (char *)malloc(strlen("Error Semantico en la funcion ") + strlen(nombre) + strlen(": Doble declaracion del parametro ") + strlen(parametroIgual->nombreParametro) + 1);
         strcpy(error, "Error Semantico en la funcion ");
         strcat(error, nombre);
         strcat(error,": Doble declaracion del parametro ");
@@ -386,7 +386,7 @@ void agregarFuncion(ListaFunciones** funciones, char* nombre, char* tipo, ListaP
                 aux = aux->sig;
             }
             if(buscarFuncion(funciones, nombre)) {
-                char *error = malloc(strlen("Error Semantico: Doble declaracion de la funcion ")+strlen(nombre) + 1);
+                char *error = (char *)malloc(strlen("Error Semantico: Doble declaracion de la funcion ")+strlen(nombre) + 1);
                 strcpy(error, "Error Semantico: Doble declaracion de la funcion ");
                 strcat(error, nombre);
                 agregarError(&errores, error, linea);
@@ -555,6 +555,17 @@ void imprimirParametros(ListaParametros **parametros, int anchoC1, int anchoC2, 
         printf("%c", 186);
         printf("%s", centrar("NO TIENE", ancho3));
         printf("%c\n", 186);
+        printf("%c", 204);
+        for(i=0; i < anchoC1; i++) printf("%c", 205);
+        printf("%c", 206);
+        for(i=0; i < anchoC2; i++) printf("%c", 205);
+        printf("%c", 206);
+        for(i=0; i < ancho1; i++) printf("%c", 205);
+        printf("%c", 206);
+        for(i=0; i < ancho2; i++) printf("%c", 205);
+        printf("%c", 206);
+        for(i=0; i < ancho3; i++) printf("%c", 205);
+        printf("%c\n", 185); 
     }
 }
 
@@ -587,7 +598,7 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
     ListaFunciones *funcionInvocada = buscarFuncion(&tabla.listaFuncionesDeclaradas,nombreFuncion);
     int i = 1;
     if(!funcionInvocada) {
-        char *error = malloc(strlen("Error Semantico en la invocacion de la funcion ") + strlen(nombreFuncion) + strlen(": La funcion ") + strlen(nombreFuncion) + strlen(" no existe") + 1);
+        char *error = (char *)malloc(strlen("Error Semantico en la invocacion de la funcion ") + strlen(nombreFuncion) + strlen(": La funcion ") + strlen(nombreFuncion) + strlen(" no existe") + 1);
         strcpy(error, "Error Semantico en la invocacion de la funcion ");
         strcat(error, nombreFuncion);
         strcat(error, ": La funcion ");
@@ -601,7 +612,7 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
             sprintf(longitud1, "%d", longitudParametros(&parametros));
             char longitud2[100];
             sprintf(longitud2, "%d", longitudNodo(&tiposDeDato));
-            char *error = malloc(strlen("Error Semantico en la invocacion de la funcion ") + strlen(": Se invoca a la funcion con ") + strlen(nombreFuncion) + strlen(" parametros, mientras que la funcion tiene ") +strlen(longitud1) + strlen(" parametros") + 1);
+            char *error = (char *)malloc(strlen("Error Semantico en la invocacion de la funcion ") + strlen(": Se invoca a la funcion con ") + strlen(nombreFuncion) + strlen(" parametros, mientras que la funcion tiene ") +strlen(longitud1) + strlen(" parametros") + 1);
             strcpy(error, "Error Semantico en la invocacion de la funcion ");
             strcat(error, nombreFuncion);
             strcat(error, ": Se invoca a la funcion con ");
@@ -615,7 +626,7 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
                 if(!strcmp(tiposDeDato->tipo,"")) {
                     char numeroParametro[100];
                     sprintf(numeroParametro, "%d", i);
-                    char *error = malloc(strlen("Error semantico en la invocacion de la funcion ") + strlen(nombreFuncion) + strlen(": El parametro ") + strlen(" no existe") + 2);
+                    char *error = (char *)malloc(strlen("Error semantico en la invocacion de la funcion ") + strlen(nombreFuncion) + strlen(": El parametro ") + strlen(" no existe") + 2);
                     strcpy(error, "Error Semantico en la invocacion de la funcion ");
                     strcat(error, nombreFuncion);
                     strcat(error, ": El parametro ");

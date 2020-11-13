@@ -1,6 +1,8 @@
 void mostrar_menu(void);
 int verificar_txt(char *);
 int automata(char *);
+int suma(int, int);
+int resta(int, int);
 
 int main() {
 	int a = 2+"hola";
@@ -13,4 +15,12 @@ int main() {
 
 int verificar_txt(char *archivo){
 	
+}
+
+int suma(int a, int b){
+	int a;
+}
+
+int resta(int a, int b){
+
 }

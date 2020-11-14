@@ -52,6 +52,7 @@ default {return DEFAULT; }
 sizeof {return SIZEOF; }
 goto {return GOTO; }
 
+([A-Z]|"_")([a-zA-Z]|{DIGITO_DECIMAL}|"_")* {strcpy(yylval.cval,yytext); return IDBIS;}
 ([a-zA-Z]|"_")([a-zA-Z]|{DIGITO_DECIMAL}|"_")* {strcpy(yylval.cval,yytext); return ID;}
 
 "+" {return '+'; }

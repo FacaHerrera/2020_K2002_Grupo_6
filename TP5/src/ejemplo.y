@@ -17,7 +17,9 @@ extern FILE* yyin;
 extern FILE* yyout;
 
 char* tipoInicializador = "vacio";
-char* tipoDato;
+char* tipoDato = "";
+char* tipoDatoFuncion;
+char* tipoDatoPuntero;
 char* nombre;
 char* variable[20];
 char* variableExpresion[20];
@@ -25,6 +27,7 @@ char* tipoParametroInvocacion;
 
 char flagError = 0;
 char flagOperacionBinaria = 0; 
+char flagArray = 0;
 
 int contadorVariables = 0;
 int contadorParametros = 0;
@@ -34,8 +37,8 @@ int cantidad = 0;
 int cantidadPuntero = 0;
 int contadorVariableExpresion = 0;
 
-Nodo *parametrosInvocacion = NULL;
-ListaParametros *listaParametros = NULL;
+Nodo *parametrosInvocacion;
+ListaParametros *listaParametros;
 TablaDeSimbolos tabla;
 
 
@@ -82,6 +85,7 @@ TablaDeSimbolos tabla;
 %token <cval> CLASE_ALMACENAMIENTO
 %token <cval> STRUCT_UNION
 %token <cval> ID
+%token <cval> IDBIS
 %token <cval> SIZEOF
 %token <cval> CTE_CARACTER
 
@@ -106,63 +110,73 @@ line: declaracionExterna
 
 //DECLARACIONES
 declaracion: especDeclaracion listaDeclaradoresBis ';' {
-          tipoDato = $<cval>1;
           nombre = $<cval>2;
-          while(contadorVariableExpresion){
-               if(contadorVariableExpresion == 1 || !strcmp(variableExpresion[0],variableExpresion[contadorVariableExpresion-1])) {
-                    contadorVariableExpresion--;
-                    tipoInicializador = variableExpresion[0];
-               }
-               else if(flagOperacionBinaria==1) {
+          if(!flagArray){
+               while(contadorVariableExpresion){
+                    if(contadorVariableExpresion == 1 || !strcmp(variableExpresion[0],variableExpresion[contadorVariableExpresion-1])) {
+                         contadorVariableExpresion--;
+                         tipoInicializador = variableExpresion[0];
+                    }
+                    else if(flagOperacionBinaria==1) {
 
-                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere sumar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                    strcpy(error,"Se quiere sumar un valor de tipo ");
-                    strcat(error,variableExpresion[0]);
-                    strcat(error," a un valor de tipo ");
-                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                    agregarError(&errores, error, yylineno);
-                    flagError = 1;
-                    contadorVariableExpresion = 0;
-               }
-               else if(flagOperacionBinaria==2) {
+                         char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere sumar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                         strcpy(error,"Se quiere sumar un valor de tipo ");
+                         strcat(error,variableExpresion[0]);
+                         strcat(error," a un valor de tipo ");
+                         strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                         agregarError(&errores, error, yylineno);
+                         flagError = 1;
+                         contadorVariableExpresion = 0;
+                    }
+                    else if(flagOperacionBinaria==2) {
 
-                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere restar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                    strcpy(error,"Se quiere restar un valor de tipo ");
-                    strcat(error,variableExpresion[0]);
-                    strcat(error," a un valor de tipo ");
-                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                    agregarError(&errores, error, yylineno);
-                    flagError = 1;
-                    contadorVariableExpresion = 0;
-               }
-               else if(flagOperacionBinaria==3) {
+                         char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere restar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                         strcpy(error,"Se quiere restar un valor de tipo ");
+                         strcat(error,variableExpresion[0]);
+                         strcat(error," a un valor de tipo ");
+                         strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                         agregarError(&errores, error, yylineno);
+                         flagError = 1;
+                         contadorVariableExpresion = 0;
+                    }
+                    else if(flagOperacionBinaria==3) {
 
-                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere multiplicar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                    strcpy(error,"Se quiere multiplicar un valor de tipo ");
-                    strcat(error,variableExpresion[0]);
-                    strcat(error," a un valor de tipo ");
-                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                    agregarError(&errores, error, yylineno);
-                    flagError = 1;
-                    contadorVariableExpresion = 0;
-               }
-               else if(flagOperacionBinaria==4) {
+                         char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere multiplicar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                         strcpy(error,"Se quiere multiplicar un valor de tipo ");
+                         strcat(error,variableExpresion[0]);
+                         strcat(error," a un valor de tipo ");
+                         strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                         agregarError(&errores, error, yylineno);
+                         flagError = 1;
+                         contadorVariableExpresion = 0;
+                    }
+                    else if(flagOperacionBinaria==4) {
 
-                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere dividir un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                    strcpy(error,"Se quiere dividir un valor de tipo ");
-                    strcat(error,variableExpresion[0]);
-                    strcat(error," a un valor de tipo ");
-                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                    agregarError(&errores, error, yylineno);
-                    flagError = 1;
-                    contadorVariableExpresion = 0;
-               } 
+                         char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere dividir un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                         strcpy(error,"Se quiere dividir un valor de tipo ");
+                         strcat(error,variableExpresion[0]);
+                         strcat(error," a un valor de tipo ");
+                         strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                         agregarError(&errores, error, yylineno);
+                         flagError = 1;
+                         contadorVariableExpresion = 0;
+                    } 
+               }
+               while(contadorVariables!=0 && tip != 3){
+                    contadorVariables--;
+                    agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno, flagError);
+                    tipoInicializador = "vacio";
+               }
+               
           }
-          while(contadorVariables!=0 && tip != 3){
-               contadorVariables--;
-               agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno, flagError);
+          else{
+               agregarVariable(&tabla.listaVariables, variable[0], tipoDato, tipoInicializador, yylineno, flagError);
                tipoInicializador = "vacio";
           }
+          strcpy(tipoDato, "");
+          contadorVariableExpresion = 0;
+          contadorVariables = 0;
+          flagArray = 0;
           flagError = 0;
           flagOperacionBinaria = 0;
      }
@@ -173,7 +187,11 @@ especDeclaracionBis:
 ;
 
 especDeclaracion: CLASE_ALMACENAMIENTO especDeclaracionBis
-                | especTipo especDeclaracionBis
+                | especTipo especDeclaracionBis   {
+                                                       tipoDatoFuncion = (char*)malloc(strlen(tipoDato));
+                                                       if(strcmp(tipoDato,"")) strcpy(tipoDatoFuncion, tipoDato);
+                                                       tipoDato = strdup($<cval>1);
+                                                  }
 ;
 
 listaDeclaradoresBis:
@@ -189,15 +207,16 @@ declarador: decla1 { tipDecla = 1; }
 ;
 
 inicializador: expAsignacion 
-             | '{' listaDeInicializadores '}'
+             | '{' listaDeInicializadores '}' {flagArray = 1;}
 ;
 
 listaDeInicializadores: inicializador
                       | listaDeInicializadores ',' inicializador
 ;
 
-especTipo: TIPO_DATO
-         | especStructUnion
+especTipo: TIPO_DATO 
+         | especStructUnion 
+         | IDBIS 
 ;
 
 especStructUnion: STRUCT_UNION ID opcionLista
@@ -232,14 +251,22 @@ declaStruct: decla1
 
 decla1: puntero declaradorDirecto   {
                                         if(tip!=3){
-                                             variable[contadorVariables] = (char*)malloc(strlen($<cval>2)+cantidadPuntero);
+                                             tipoDato = (char*)realloc(tipoDato, strlen(tipoDato)+cantidadPuntero);
+                                             while(cantidadPuntero!=0){
+                                                  strcat(tipoDato, "*");
+                                                  cantidadPuntero--;
+                                             }
+                                             variable[contadorVariables] = $<cval>2;
+                                             contadorVariables++;
+
+                                             /*variable[contadorVariables] = (char*)malloc(strlen($<cval>2)+cantidadPuntero);
                                              strcpy(variable[contadorVariables],"\0"); 
                                              while(cantidadPuntero!=0){
                                                   strcat(variable[contadorVariables], "*");
                                                   cantidadPuntero--;
                                              }
                                              strcat(variable[contadorVariables],$<cval>2); 
-                                             contadorVariables++;
+                                             contadorVariables++;*/
                                         }
 
                                    }                   
@@ -252,16 +279,17 @@ decla1: puntero declaradorDirecto   {
 ;
 
 decla2: puntero declaradorDirecto   {
-                                        nombre = (char*)malloc(strlen($<cval>2)+cantidadPuntero);
-                                        strcpy(nombre, "\0");
+                                        tipoDatoPuntero = (char*)realloc(tipoDatoPuntero, cantidadPuntero);
                                         while(cantidadPuntero!=0){
-                                             strcat(nombre, "*");
+                                             strcat(tipoDatoPuntero, "*");
                                              cantidadPuntero--;
                                         }
-                                        strcat(nombre, $<cval>2);
+                                        nombre = strdup($<cval>2);
 
                                    }                   
      | declaradorDirecto {
+                              tipoDatoPuntero = (char*)malloc(strlen(""));
+                              strcpy(tipoDatoPuntero, ""); 
                               nombre = strdup($<cval>1);
                          }
 ;
@@ -279,7 +307,10 @@ listaTiposParametros: listaParametros
                     | listaParametros ',' '.' '.' '.'
 ;
 
-listaTiposParametrosBis:
+listaTiposParametrosBis: {
+                              tipoDatoFuncion = (char*)malloc(strlen(tipoDato));
+                              strcpy(tipoDatoFuncion, tipoDato);
+                         }
                        | listaTiposParametros
 ;
 
@@ -288,7 +319,13 @@ listaParametros: declaracionParametro {contadorParametros++; }
 ;
 
 declaracionParametro: especDeclaracion {agregarParametro(&listaParametros, "-", $<cval>1,yylineno); }
-                    | especDeclaracion decla2 {agregarParametro(&listaParametros, nombre, $<cval>1,yylineno);}
+                    | especDeclaracion decla2 {
+                                                  char* aux = (char*)malloc(strlen($<cval>1)+strlen(tipoDatoPuntero));
+                                                  strcpy(aux, $<cval>1);
+                                                  strcat(aux, tipoDatoPuntero);
+                                                  agregarParametro(&listaParametros, nombre, aux,yylineno);
+                                                  cantidadPuntero = 0;
+                                             }
                     | especDeclaracion declaradorAbstracto
 ;
 
@@ -297,7 +334,16 @@ nombreTipo: listaCalificadores declaradorAbstractoBis
 
 declaradorAbstracto: puntero declaradorAbstractoDirecto 
                    | declaradorAbstractoDirecto
-                   | puntero {agregarParametro(&listaParametros, "*-", $<cval>1,yylineno); }
+                   | puntero  {
+                                   tipoDatoPuntero = (char*)realloc(tipoDatoPuntero, strlen($<cval>1)+cantidadPuntero);
+                                   strcpy(tipoDatoPuntero, $<cval>1);
+                                   while(cantidadPuntero!=0){
+                                        strcat(tipoDatoPuntero, "*");
+                                        cantidadPuntero--;
+                                   }
+                                   agregarParametro(&listaParametros, "-", tipoDatoPuntero,yylineno); 
+                                   cantidadPuntero = 0;
+                              }
 ;
 
 declaradorAbstractoBis:
@@ -342,12 +388,15 @@ listaDeclaracionesBis:
                      | listaDeclaraciones
 ;
 
-listaSentencias: sentencia
+listaSentencias: sentencia 
                | listaSentencias sentencia
 ;
 
-puntero: '*' {cantidadPuntero++;}
-       | '*' puntero {cantidadPuntero++;}
+puntero: '*' punteroBis {cantidadPuntero++;}
+;
+
+punteroBis:
+          | '*' punteroBis {cantidadPuntero++;}
 ;
 
 sentSeleccion: IF '(' exp ')' sentencia                {/*printf("Se encontro una Sentencia de Seleccion IF.\n");*/ }
@@ -372,13 +421,35 @@ sentSalto: RETURN expOp ';' {/*printf("Se encontro una Sentencia de Salto RETURN
 ;
 
 //EXPRESIONES 
-expPrimaria: ID             {tipoParametroInvocacion = tipoInicializador = variableExpresion[contadorVariableExpresion] = tipoVariable(tabla,$<cval>1); contadorVariableExpresion++;}
-           | ENTERO         {$<dval>$ = $<ival>1; tipoParametroInvocacion = variableExpresion[contadorVariableExpresion] = tipoInicializador = "int"; contadorVariableExpresion++;} 
-           | REAL           {$<dval>$ = $<dval>1; tipoParametroInvocacion = variableExpresion[contadorVariableExpresion] = tipoInicializador = "double"; contadorVariableExpresion++;}
-           | CTE_CARACTER   {tipoParametroInvocacion = tipoInicializador = variableExpresion[contadorVariableExpresion] = "char"; contadorVariableExpresion++;}
-           | LITERAL_CADENA {tipoParametroInvocacion = variableExpresion[contadorVariableExpresion] = "char*"; contadorVariableExpresion++;}
+expPrimaria: ID               {
+                                   tipoParametroInvocacion = tipoInicializador = tipoVariable(tabla,$<cval>1); 
+                                   variableExpresion[contadorVariableExpresion] = strdup(tipoVariable(tabla,$<cval>1));
+                                   contadorVariableExpresion++;
+                              }
+           | ENTERO           {
+                                   $<dval>$ = $<ival>1; 
+                                   tipoParametroInvocacion = tipoInicializador = "int"; 
+                                   variableExpresion[contadorVariableExpresion] = strdup("int");
+                                   contadorVariableExpresion++;
+                              } 
+           | REAL             {
+                                   $<dval>$ = $<dval>1; 
+                                   tipoParametroInvocacion = tipoInicializador = "double"; 
+                                   variableExpresion[contadorVariableExpresion] = strdup("double");
+                                   contadorVariableExpresion++;
+                              }
+           | CTE_CARACTER     {
+                                   tipoParametroInvocacion = tipoInicializador = "char"; 
+                                   variableExpresion[contadorVariableExpresion] = strdup("char");
+                                   contadorVariableExpresion++;
+                              }
+           | LITERAL_CADENA   {
+                                   tipoParametroInvocacion = "char*"; 
+                                   variableExpresion[contadorVariableExpresion] = strdup("char*");
+                                   contadorVariableExpresion++;
+                              }
            | NULL1
-           | '(' exp ')'    {$<dval>$ = ( $<dval>2 ); }
+           | '(' exp ')'      {$<dval>$ = ( $<dval>2 ); }
 ;
 
 exp: expAsignacion 
@@ -454,7 +525,7 @@ expUnaria: expSufijo
 
 expSufijo: expPrimaria
          | expSufijo '[' exp ']'             {$<dval>$ = 0; }
-         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno); parametrosInvocacion = NULL; tipoInicializador = tipoFuncion(tabla,$<cval>1);}
+         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno); parametrosInvocacion = NULL; tipoInicializador = tipoFuncion(tabla,$<cval>1); contadorVariableExpresion = 0;}
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
@@ -467,7 +538,7 @@ listaArgumentos:
 ;
 
 //DEFINICIONES EXTERNAS
-declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDefinidas,nombre,tipoDato,&listaParametros,yylineno); contadorParametros = 0; listaParametros = NULL; cantidadPuntero = 0;}
+declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombre,tipoDatoFuncion,&listaParametros,yylineno, 1); contadorParametros = 0; listaParametros = NULL; cantidadPuntero = 0;}
                   | declaracion {
                        switch(tip){
                          case 1:
@@ -510,7 +581,7 @@ declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d 
                               if(tipDecla == 1){
                                    //printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
                                    contadorParametros = 0;
-                                   agregarFuncion(&tabla.listaFuncionesDeclaradas,nombre,tipoDato,&listaParametros,yylineno);
+                                   agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombre,tipoDatoFuncion,&listaParametros,yylineno, 0);
                                    cantidadPuntero = 0;
                                    listaParametros = NULL;
                               }
@@ -519,7 +590,7 @@ declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d 
                   }
 ;
 
-definicionFuncion: especDeclaracion decla2 listaDeclaracionesBis sentCompuesta {nombre = $<cval>2; tipoDato = $<cval>1;}
+definicionFuncion: especDeclaracion decla2 listaDeclaracionesBis sentCompuesta {nombre = $<cval>2;}
 ;
 
 
@@ -527,7 +598,7 @@ definicionFuncion: especDeclaracion decla2 listaDeclaracionesBis sentCompuesta {
 
 int yyerror (char *mensaje) 
 {
-  printf ("Error Sintactico: %s\n", mensaje);
+  //printf ("Error Sintactico: %s\n", mensaje);
 }
 
 void main(){
@@ -541,7 +612,9 @@ void main(){
      tabla.listaVariables = NULL;
      tabla.listaFuncionesDeclaradas = NULL;
      tabla.listaFuncionesDefinidas = NULL;
-     
+     listaParametros = NULL;
+     parametrosInvocacion = NULL;
+
      yyparse();
      imprimirTabla(tabla);
      imprimirErrores(&errores);

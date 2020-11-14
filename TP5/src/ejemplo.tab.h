@@ -72,8 +72,9 @@
      CLASE_ALMACENAMIENTO = 288,
      STRUCT_UNION = 289,
      ID = 290,
-     SIZEOF = 291,
-     CTE_CARACTER = 292
+     IDBIS = 291,
+     SIZEOF = 292,
+     CTE_CARACTER = 293
    };
 #endif
 
@@ -84,7 +85,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 44 "ejemplo.y"
+#line 47 "ejemplo.y"
 
   int ival;
   double dval;
@@ -93,7 +94,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 97 "ejemplo.tab.h"
+#line 98 "ejemplo.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

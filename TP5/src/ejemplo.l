@@ -11,25 +11,51 @@
 
 option noyywrap
 
-LETRA [a-zA-z]
-DIGITO_HEXADECIMAL [0-9A-Fa-f]
-DIGITO_DECIMAL [0-9]
-DIGITO_OCTAL [0-7]
-CARACTER_IMPRIMIBLE [ -~]
-CONSTANTE_CARACTER {CARACTER_C}|{SECUENCIA_DE_ESCAPE}
+LETRA [a-zA-Z]
+GUION_BAJO "_"
+NUMERO_DECIMAL 0|{NUMERO_DECIMAL_SIN_CERO}
+NUMERO_DECIMAL_SIN_CERO [1-9]
+NUMERO_HEXADECIMAL ({NUMERO_DECIMAL}|{LETRA})
+PREFIJO_HEXADECIMAL 0[xX]
+NUMERO_OCTAL [0-7]
+SECUENCIA_DE_DIGITOS {NUMERO_DECIMAL}+
+SUFIJO_ENTERO ([uU][lL]?[lL]?)|([lL][lL]?[uU]?)
+FRACCION {SECUENCIA_DE_DIGITOS}?\.{SECUENCIA_DE_DIGITOS}|{SECUENCIA_DE_DIGITOS}\.
+EXPONENTE [eE]{SIGNO}?{SECUENCIA_DE_DIGITOS}
+SIGNO [+-]
+SUFIJO_REAL [fFlL]
+CARACTER_C [^\'\\]
+CARACTER_S [^\"\\]
 SECUENCIA_DE_ESCAPE {ESCAPE_SIMPLE_1}|{ESCAPE_SIMPLE_2}|{ESCAPE_OCTAL}|{ESCAPE_HEXADECIMAL}
 ESCAPE_SIMPLE_1 [\a\b\f\n\r\t\v]
 ESCAPE_SIMPLE_2 (\\\\)|(\\?)|(\\\")|(\\\')
-ESCAPE_OCTAL \\{DIGITO_OCTAL}{1,3}
-ESCAPE_HEXADECIMAL \\x{DIGITO_HEXADECIMAL}{1,2}
-CARACTER_C [^\'\\]
+ESCAPE_OCTAL \\{NUMERO_OCTAL}{1,3}
+ESCAPE_HEXADECIMAL \\x{NUMERO_HEXADECIMAL}{1,2}
+CONSTANTE_CARACTER {CARACTER_C}|{SECUENCIA_DE_ESCAPE}
+CONSTANTE_CADENA {CARACTER_S}|{SECUENCIA_DE_ESCAPE}
+TIPOS_DE_DATO (char)|(const)|(double)|(enum)|(float)|(int)|(long)|(short)|(signed)|(struct)|(typedef)|(union)|(unsigned)|(void)
+ESTRUCTURAS_DE_CONTROL (break)|(case)|(continue)|(default)|(do)|(else)|(for)|(goto)|(if)|(return)|(switch)|(while)
+OTRAS (auto)|(extern)|(register)|(static)|(volatile)|(sizeof)
+PALABRA_RESERVADA {TIPOS_DE_DATO}|{ESTRUCTURAS_DE_CONTROL}|{OTRAS}
+IDENTIFICADOR ({LETRA}|{GUION_BAJO})({LETRA}|{NUMERO_DECIMAL}|{GUION_BAJO})*
+CONSTANTE {CONSTANTE_DECIMAL}|{CONSTANTE_HEXADECIMAL}|{CONSTANTE_OCTAL}|\'{CONSTANTE_CARACTER}?\'|\"{CONSTANTE_CADENA}*\"
+CONSTANTE_DECIMAL {NUMERO_DECIMAL_SIN_CERO}{NUMERO_DECIMAL}*{SUFIJO_ENTERO}?
+CONSTANTE_HEXADECIMAL {PREFIJO_HEXADECIMAL}{NUMERO_HEXADECIMAL}+{SUFIJO_ENTERO}? 
+CONSTANTE_OCTAL 0{NUMERO_OCTAL}*{SUFIJO_ENTERO}?
+COMENTARIO_SIMPLE \/\/.*
+COMENTARIO_MULTIPLE \/\*(\*+[^\*\/]|[^\*])*\*+\/
+CARACTER_IMPRIMIBLE [ -~]
 
 %%
 
-[1-9]{DIGITO_DECIMAL}* {yylval.ival = atoi(yytext); return ENTERO; }
-0{DIGITO_OCTAL}* {yylval.ival = strtol(yytext, NULL, 0); return ENTERO; }
-0[xX]{DIGITO_HEXADECIMAL}+ {yylval.ival = strtol(yytext, NULL, 0); return ENTERO; }
-((({DIGITO_DECIMAL}+\.{DIGITO_DECIMAL}+)|{DIGITO_DECIMAL}+\.)((e?[+-]?{DIGITO_DECIMAL}+)|E?[+-]?{DIGITO_DECIMAL}+)[fFlL]?)|([1-9]{DIGITO_DECIMAL}*((e[+-]?{DIGITO_DECIMAL}+)|E[+-]?{DIGITO_DECIMAL}+)[fFlL]?) {yylval.dval = atof(yytext); return REAL; }
+#define(" ")+{IDENTIFICADOR}(" ")*({PALABRA_RESERVADA}|{CONSTANTE})? { return DEFINE;}
+#include(" ")+\<([\\\/\.]*{IDENTIFICADOR}[\\\/]*)+\.[a-z]*\> { return INCLUDE;}
+#include(" ")+\"([\\\/\.]*{IDENTIFICADOR}[\\\/]*)+\.[a-z]*\" { return INCLUDE;}
+
+[1-9]{NUMERO_DECIMAL}* {yylval.ival = atoi(yytext); return ENTERO; }
+0{NUMERO_OCTAL}* {yylval.ival = strtol(yytext, NULL, 0); return ENTERO; }
+0[xX]{NUMERO_HEXADECIMAL}+ {yylval.ival = strtol(yytext, NULL, 0); return ENTERO; }
+{FRACCION}{EXPONENTE}?{SUFIJO_REAL}?|{SECUENCIA_DE_DIGITOS}{EXPONENTE}{SUFIJO_REAL}? {yylval.dval = atof(yytext); return REAL; }
 null|NULL {strcpy(yylval.cval,yytext); return NULL1; }
 \'{CONSTANTE_CARACTER}?\' {strcpy(yylval.cval,yytext); return CTE_CARACTER; }
 \"([^\"]|$)*\" {strcpy(yylval.cval,yytext); return LITERAL_CADENA; }
@@ -52,8 +78,8 @@ default {return DEFAULT; }
 sizeof {return SIZEOF; }
 goto {return GOTO; }
 
-([A-Z]|"_")([a-zA-Z]|{DIGITO_DECIMAL}|"_")* {strcpy(yylval.cval,yytext); return IDBIS;}
-([a-zA-Z]|"_")([a-zA-Z]|{DIGITO_DECIMAL}|"_")* {strcpy(yylval.cval,yytext); return ID;}
+([A-Z]|"_")([a-zA-Z]|{NUMERO_DECIMAL}|"_")* {strcpy(yylval.cval,yytext); return IDBIS;}
+{IDENTIFICADOR} {strcpy(yylval.cval,yytext); return ID;}
 
 "+" {return '+'; }
 "-" {return '-'; }
@@ -94,8 +120,8 @@ goto {return GOTO; }
 "->" {return FLECHA; }
 
 
-\/\/{CARACTER_IMPRIMIBLE}* {printf("Se encontro el comentario simple: \"%s\". \n",yytext); }
-\/\*(([^\*]|$)|(\*([^\/]|$)))*\*\/ {printf("Se encontro el comentario multiple: \"%s\". \n",yytext); }
+{COMENTARIO_SIMPLE} { return COMENTARIO_SIMPLE;}
+{COMENTARIO_MULTIPLE} { return COMENTARIO_MULTIPLE;}
 
 [^\n\t' '] {/*char *error = malloc(strlen("Error Lexico: ") + strlen(yytext) + strlen(" ") + 1);
             strcpy(error, "Error Semantico en la invocacion de la funcion ");

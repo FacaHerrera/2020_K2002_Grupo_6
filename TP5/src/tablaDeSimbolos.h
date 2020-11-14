@@ -387,8 +387,8 @@ void agregarFuncion(ListaFunciones** funcionesDeclaradas, ListaFunciones** funci
             sprintf(longitud1, "%d", longitudParametros(&parametrosBIS1));
             char longitud2[100];
             sprintf(longitud2, "%d", longitudParametros(&parametrosBIS));
-            char *error = (char *)malloc(strlen("Error Semantico en la invocacion de la funcion ") + strlen(nombre) + strlen(": Se invoca a la funcion con ") + strlen(longitud2) + strlen(" parametros, mientras que la funcion tiene ") +strlen(longitud1) + strlen(" parametros") + 1);
-            strcpy(error, "Error Semantico en la invocacion de la funcion ");
+            char *error = (char *)malloc(strlen("Error Semantico en la definicion de la funcion ") + strlen(nombre) + strlen(": Se invoca a la funcion con ") + strlen(longitud2) + strlen(" parametros, mientras que la funcion tiene ") +strlen(longitud1) + strlen(" parametros") + 1);
+            strcpy(error, "Error Semantico en la definicion de la funcion ");
             strcat(error, nombre);
             strcat(error, ": Se invoca a la funcion con ");
             strcat(error, longitud1);
@@ -404,7 +404,7 @@ void agregarFuncion(ListaFunciones** funcionesDeclaradas, ListaFunciones** funci
                         char numeroParametro[100];
                         sprintf(numeroParametro, "%d", i);
                         char *error = malloc(strlen("Error semantico en la definición de la funcion ") + strlen(nombre) + strlen(": El parametro ") + strlen(" no es de tipo ") + strlen(parametrosBIS->tipoParametro) + 2);
-                        strcpy(error, "Error Semantico en la invocacion de la funcion ");
+                        strcpy(error, "Error Semantico en la definicion de la funcion ");
                         strcat(error, nombre);
                         strcat(error, ": El parametro ");
                         strcat(error, numeroParametro);

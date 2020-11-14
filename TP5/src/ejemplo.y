@@ -88,6 +88,10 @@ TablaDeSimbolos tabla;
 %token <cval> IDBIS
 %token <cval> SIZEOF
 %token <cval> CTE_CARACTER
+%token <cval> INCLUDE
+%token <cval> DEFINE
+%token <cval> COMENTARIO_SIMPLE
+%token <cval> COMENTARIO_MULTIPLE
 
 %left OR
 %left AND
@@ -105,6 +109,8 @@ input:
 
 line: declaracionExterna
     | sentencia
+    | INCLUDE
+    | DEFINE
     | error ';' {agregarError(&errores,"Error Sintactico",yylineno);}
 ;
 

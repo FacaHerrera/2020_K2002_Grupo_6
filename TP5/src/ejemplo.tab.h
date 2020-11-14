@@ -74,7 +74,11 @@
      ID = 290,
      IDBIS = 291,
      SIZEOF = 292,
-     CTE_CARACTER = 293
+     CTE_CARACTER = 293,
+     INCLUDE = 294,
+     DEFINE = 295,
+     COMENTARIO_SIMPLE = 296,
+     COMENTARIO_MULTIPLE = 297
    };
 #endif
 
@@ -94,7 +98,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 98 "ejemplo.tab.h"
+#line 102 "ejemplo.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

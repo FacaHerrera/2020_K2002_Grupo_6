@@ -77,7 +77,8 @@
      INCLUDE = 293,
      DEFINE = 294,
      COMENTARIO_SIMPLE = 295,
-     COMENTARIO_MULTIPLE = 296
+     COMENTARIO_MULTIPLE = 296,
+     ERROR_LEXICO = 297
    };
 #endif
 
@@ -97,7 +98,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 101 "ejemplo.tab.h"
+#line 102 "ejemplo.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

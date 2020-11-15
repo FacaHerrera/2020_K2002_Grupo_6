@@ -98,6 +98,7 @@ TablaDeSimbolos tabla;
 %token <cval> DEFINE
 %token <cval> COMENTARIO_SIMPLE
 %token <cval> COMENTARIO_MULTIPLE
+%token <cval> ERROR_LEXICO
 
 %left OR
 %left AND
@@ -118,6 +119,12 @@ line: '\n'
     | sentencia opcionBarraN
     | INCLUDE '\n' {agregarFuncionesExternas(&tabla.listaFuncionesExternas, &tabla.listaVariablesExternas, $<cval>1);}
     | lineaControl '\n' 
+    | ERROR_LEXICO  {
+                         char *error = malloc(strlen("Error Lexico: ") + strlen($<cval>1) + 1);
+                         strcpy(error, "Error Lexico: ");
+                         strcat(error, $<cval>1);
+                         agregarError(&errores, error, yylineno);
+                    }
     | error '\n' {agregarError(&errores,"Error Sintactico",yylineno); listaParametros = NULL; cantidadPuntero = 0; contadorParametros = 0;}
 ;
 

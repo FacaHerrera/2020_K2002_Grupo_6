@@ -31,7 +31,7 @@ int mostrar_consigna(char * archivoSalida){
 	verificar_txt(archivo1);
 	return escanear_archivo(archivo1, archivoSalida);
 }
-$
+
 int escanear_archivo(char *archivo6, char* archivoSalida6){
 	char *datos;
 	int a=2+"hola";

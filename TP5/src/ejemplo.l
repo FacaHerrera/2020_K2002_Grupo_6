@@ -123,9 +123,5 @@ goto {return GOTO; }
 {COMENTARIO_SIMPLE} {strcpy(yylval.cval,yytext); return COMENTARIO_SIMPLE;}
 {COMENTARIO_MULTIPLE} {strcpy(yylval.cval,yytext); return COMENTARIO_MULTIPLE;}
 
-[^\n\t' '] {/*char *error = malloc(strlen("Error Lexico: ") + strlen(yytext) + strlen(" ") + 1);
-            strcpy(error, "Error Semantico en la invocacion de la funcion ");
-            strcat(error, yytext);
-            strcat(error, " ");
-            agregarError(&errores, error, yylineno);*/}
+[^\t' '] {strcpy(yylval.cval,yytext); return ERROR_LEXICO;}
 %%

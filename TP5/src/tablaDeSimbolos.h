@@ -5,7 +5,9 @@
 
 typedef struct TablaDeSimbolos {
     struct ListaVariables *listaVariables;
+    struct ListaVariables *listaParametros;
     struct ListaVariables *listaVariablesExternas;
+    struct ListaVariables *listaVariablesAuxiliares;
     struct ListaFunciones *listaFuncionesDefinidas;
     struct ListaFunciones *listaFuncionesDeclaradas;
     struct ListaFunciones *listaFuncionesExternas;
@@ -24,23 +26,16 @@ typedef struct Error {
 } Error;
 
 typedef struct ListaVariables{
-    char* nombreVariable;
-    char* tipoVariable;
+    char* nombre;
+    char* tipo;
     char flagArray;
     struct ListaVariables *sig;
 } ListaVariables;
 
-typedef struct ListaParametros{
-    char* nombreParametro;
-    char* tipoParametro;
-    char flagArray;
-    struct ListaParametros *sig;
-} ListaParametros;
-
 typedef struct ListaFunciones{
     char* nombreFuncion;
     char* tipoFuncion;
-    struct ListaParametros *listaParametros;
+    struct ListaVariables *listaParametros;
     struct ListaFunciones *sig;
 } ListaFunciones;
 
@@ -58,17 +53,17 @@ void imprimirErrores(Error **);
 ListaVariables* buscarVariable(ListaVariables **,char *);
 void agregarVariable(ListaVariables**, char* , char*, char*, int, char, char, int);
 void imprimirVariables(ListaVariables **, char*);
-char* tipoVariable(TablaDeSimbolos, ListaParametros **, char*);
+char* tipo(TablaDeSimbolos, ListaVariables **, char*);
 char esArrayVariable(TablaDeSimbolos , char*);
 void agregarVariablesExternas(ListaVariables**, char*);
 void agregarVariablesExternasBis(ListaVariables **, char*, char*);
-void agregarParametro(ListaParametros**, char*, char*, int, char);
-ListaParametros* buscarParametro(ListaParametros **, char *);
-void imprimirParametros(ListaParametros **, int, int, int, int, int, char);
-ListaParametros* parametrosIguales(ListaParametros**);
-void eliminarParametro(ListaParametros **, char*);
+void agregarParametro(ListaVariables**, char*, char*, int, char);
+ListaVariables* buscarParametro(ListaVariables **, char *);
+void imprimirParametros(ListaVariables **, int, int, int, int, int, char);
+ListaVariables* parametrosIguales(ListaVariables**);
+void eliminarParametro(ListaVariables **, char*);
 
-void agregarFuncion(ListaFunciones** , ListaFunciones** , char* , char*, ListaParametros**, int, int);
+void agregarFuncion(ListaFunciones** , ListaFunciones** , char* , char*, ListaVariables**, int, int);
 ListaFunciones* buscarFuncion(ListaFunciones **,char *);
 void imprimirFunciones(ListaFunciones**, char*);
 char* tipoFuncion(TablaDeSimbolos, char*);
@@ -204,8 +199,8 @@ void agregarVariable(ListaVariables** variables, char* nombre, char* tipo, char*
         }
         else {
             ListaVariables *nodoNuevo = (ListaVariables *)malloc(sizeof(ListaVariables));
-            nodoNuevo->tipoVariable = strdup(tipo);
-            nodoNuevo->nombreVariable =  strdup(nombre);
+            nodoNuevo->tipo = strdup(tipo);
+            nodoNuevo->nombre =  strdup(nombre);
             nodoNuevo->flagArray = flagArray;
             nodoNuevo->sig = NULL;
             if(*variables == NULL){
@@ -274,9 +269,9 @@ void imprimirVariables(ListaVariables **variables, char *titulo){
 
         while(aux != NULL){
             printf("%c", 186);
-            printf("%s", centrar(aux->nombreVariable, anchoC1));
+            printf("%s", centrar(aux->nombre, anchoC1));
             printf("%c", 186);
-            printf("%s", centrar(aux->tipoVariable, anchoC2));
+            printf("%s", centrar(aux->tipo, anchoC2));
             printf("%c", 186);
             if(aux->flagArray) printf("%s", centrar("SI", anchoC3));
             else printf("%s", centrar("NO", anchoC3));
@@ -296,22 +291,22 @@ void imprimirVariables(ListaVariables **variables, char *titulo){
 
 ListaVariables* buscarVariable(ListaVariables **variables,char *nombre){
     ListaVariables* aux = *variables;
-    while((aux != NULL) && (strcmp(aux->nombreVariable,nombre) != 0)){
+    while((aux != NULL) && (strcmp(aux->nombre,nombre) != 0)){
         aux = aux->sig;        
     }
     return aux;
 }
 
-char* tipoVariable(TablaDeSimbolos tabla, ListaParametros **parametros, char* nombre ) {
-    ListaParametros* parametro = buscarParametro(&*parametros,nombre);
+char* tipoVariable(TablaDeSimbolos tabla, ListaVariables **parametros, char* nombre ) {
+    ListaVariables* parametro = buscarParametro(&*parametros,nombre);
     ListaVariables *variable = buscarVariable(&tabla.listaVariables,nombre);
     ListaVariables *variableExterna = buscarVariable(&tabla.listaVariablesExternas,nombre);
     if(variable) {
-        return variable->tipoVariable;
+        return variable->tipo;
     } else if(parametro){
-        return parametro->tipoParametro;
+        return parametro->tipo;
     } else if(variableExterna){
-        return variableExterna->tipoVariable;
+        return variableExterna->tipo;
     } else{
         return "";
     }
@@ -335,10 +330,10 @@ void agregarVariablesExternas(ListaVariables ** listaVariables, char* nombreBis)
         while(strcmp(nombre,"$\n")) fgets(nombre, 20, (FILE*) archivo);
         while(fgets(nombre, 20, (FILE*) archivo)) {
             ListaVariables *nodoNuevo = (ListaVariables* )malloc(sizeof(ListaVariables));
-            nodoNuevo->tipoVariable = strdup(nombre);
+            nodoNuevo->tipo = strdup(nombre);
             aux = strtok(nombre, "\n");
             strcpy(nombre,aux);
-            nodoNuevo->nombreVariable = "-";
+            nodoNuevo->nombre = "-";
             nodoNuevo->flagArray = 0;
             nodoNuevo->sig = NULL;
             if(*listaVariables==NULL){
@@ -359,8 +354,8 @@ void agregarVariablesExternas(ListaVariables ** listaVariables, char* nombreBis)
 
 void agregarVariablesExternasBis(ListaVariables ** listaVariables, char* variable, char* tipo){
     ListaVariables *nodoNuevo = (ListaVariables *)malloc(sizeof(ListaVariables));
-    nodoNuevo->tipoVariable = strdup(tipo);
-    nodoNuevo->nombreVariable =  strdup(variable);
+    nodoNuevo->tipo = strdup(tipo);
+    nodoNuevo->nombre =  strdup(variable);
     nodoNuevo->flagArray = 0;
     nodoNuevo->sig = NULL;
     if(*listaVariables == NULL){
@@ -379,17 +374,17 @@ void agregarVariablesExternasBis(ListaVariables ** listaVariables, char* variabl
 //LISTA DE PARAMETROS//
 ///////////////////////
 
-void agregarParametro(ListaParametros** parametros, char* nombre, char* tipo, int linea, char flagArray) {
-    ListaParametros *nodoNuevo = (ListaParametros* )malloc(sizeof(ListaParametros));
-    nodoNuevo->nombreParametro =  strdup(nombre);
-    nodoNuevo->tipoParametro = strdup(tipo);
+void agregarParametro(ListaVariables** parametros, char* nombre, char* tipo, int linea, char flagArray) {
+    ListaVariables *nodoNuevo = (ListaVariables* )malloc(sizeof(ListaVariables));
+    nodoNuevo->nombre =  strdup(nombre);
+    nodoNuevo->tipo = strdup(tipo);
     nodoNuevo->flagArray = flagArray;
     nodoNuevo->sig = NULL;
     if(*parametros==NULL){
         *parametros = nodoNuevo;
     }
     else{
-        ListaParametros* aux = *parametros;
+        ListaVariables* aux = *parametros;
         while(aux->sig != NULL){
             aux = aux->sig;
         }
@@ -397,11 +392,11 @@ void agregarParametro(ListaParametros** parametros, char* nombre, char* tipo, in
     }
 }
 
-ListaParametros* parametrosIguales(ListaParametros** parametros) {
-    ListaParametros *aux = *parametros;
+ListaVariables* parametrosIguales(ListaVariables** parametros) {
+    ListaVariables *aux = *parametros;
     while(aux != NULL) {
-        char * buscado = aux->nombreParametro;
-        eliminarParametro(&aux,aux->nombreParametro);
+        char * buscado = aux->nombre;
+        eliminarParametro(&aux,aux->nombre);
         if(buscarParametro(&aux,buscado)) {
             return buscarParametro(&aux,buscado);
         }
@@ -409,17 +404,17 @@ ListaParametros* parametrosIguales(ListaParametros** parametros) {
     return NULL;
 }
 
-ListaParametros* buscarParametro(ListaParametros **parametros, char *nombre){
-    ListaParametros* aux = *parametros;
-    while((aux != NULL) && (strcmp(aux->nombreParametro,nombre) != 0 || strcmp(aux->nombreParametro,"-") == 0 || strcmp(aux->nombreParametro,"*-") == 0)){
+ListaVariables* buscarParametro(ListaVariables **parametros, char *nombre){
+    ListaVariables* aux = *parametros;
+    while((aux != NULL) && (strcmp(aux->nombre,nombre) != 0 || strcmp(aux->nombre,"-") == 0 || strcmp(aux->nombre,"*-") == 0)){
         aux = aux->sig;        
     }
     return aux;
 }
 
-int longitudParametros(ListaParametros **parametros){
+int longitudParametros(ListaVariables **parametros){
     int longitud = 0;
-    ListaParametros *aux = *parametros;
+    ListaVariables *aux = *parametros;
     while(aux != NULL){
         aux = aux->sig;
         longitud++;
@@ -427,10 +422,10 @@ int longitudParametros(ListaParametros **parametros){
     return longitud;
 }
 
-void eliminarParametro(ListaParametros **parametros, char* v){
-    ListaParametros* aux = *parametros;
-    ListaParametros* ant = NULL;
-    while((aux != NULL) && (strcmp(aux->nombreParametro, v))){
+void eliminarParametro(ListaVariables **parametros, char* v){
+    ListaVariables* aux = *parametros;
+    ListaVariables* ant = NULL;
+    while((aux != NULL) && (strcmp(aux->nombre, v))){
         ant = aux;
         aux = aux->sig;
     }
@@ -448,8 +443,8 @@ void eliminarParametro(ListaParametros **parametros, char* v){
 //LISTA DE FUNCIONES//
 //////////////////////
 
-void agregarFuncion(ListaFunciones** funcionesDeclaradas, ListaFunciones** funcionesDefinidas, char* nombre, char* tipo, ListaParametros** parametros, int linea, int tipoFuncion) {
-    ListaParametros *parametroIgual = parametrosIguales(parametros);
+void agregarFuncion(ListaFunciones** funcionesDeclaradas, ListaFunciones** funcionesDefinidas, char* nombre, char* tipo, ListaVariables** parametros, int linea, int tipoFuncion) {
+    ListaVariables *parametroIgual = parametrosIguales(parametros);
 
     ListaFunciones *funciones;
     if(tipoFuncion) funciones = *funcionesDefinidas;
@@ -457,19 +452,19 @@ void agregarFuncion(ListaFunciones** funcionesDeclaradas, ListaFunciones** funci
 
     int i = 0, flag = 0;
     if(parametroIgual) {
-        char *error = (char *)malloc(strlen("Error Semantico en la funcion ") + strlen(nombre) + strlen(": Doble declaracion del parametro ") + strlen(parametroIgual->nombreParametro) + 1);
+        char *error = (char *)malloc(strlen("Error Semantico en la funcion ") + strlen(nombre) + strlen(": Doble declaracion del parametro ") + strlen(parametroIgual->nombre) + 1);
         strcpy(error, "Error Semantico en la funcion ");
         strcat(error, nombre);
         strcat(error,": Doble declaracion del parametro ");
-        strcat(error, parametroIgual->nombreParametro);
+        strcat(error, parametroIgual->nombre);
         agregarError(&errores, error, linea);
         flag = 1;
     } 
     else if(buscarFuncion(funcionesDeclaradas, nombre)){
         ListaFunciones *funcionBIS = buscarFuncion(funcionesDeclaradas, nombre);
-        ListaParametros *parametrosBIS = funcionBIS->listaParametros;
+        ListaVariables *parametrosBIS = funcionBIS->listaParametros;
         
-        ListaParametros *parametrosBIS1 = *parametros;
+        ListaVariables *parametrosBIS1 = *parametros;
 
         if(longitudParametros(&parametrosBIS1) != longitudParametros(&parametrosBIS)) {
             char longitud1[100];
@@ -489,16 +484,16 @@ void agregarFuncion(ListaFunciones** funcionesDeclaradas, ListaFunciones** funci
         }
         else{
             while(parametrosBIS != NULL) {
-                    if(strcmp(parametrosBIS->tipoParametro,parametrosBIS1->tipoParametro) || (strcmp(parametrosBIS->tipoParametro,"char*") && strcmp(parametrosBIS1->tipoParametro, "char") && parametrosBIS1->flagArray==1)) {
+                    if(strcmp(parametrosBIS->tipo,parametrosBIS1->tipo) || (strcmp(parametrosBIS->tipo,"char*") && strcmp(parametrosBIS1->tipo, "char") && parametrosBIS1->flagArray==1)) {
                         char numeroParametro[100];
                         sprintf(numeroParametro, "%d", i);
-                        char *error = malloc(strlen("Error semantico en la definición de la funcion ") + strlen(nombre) + strlen(": El parametro ") + strlen(" no es de tipo ") + strlen(parametrosBIS->tipoParametro) + 2);
+                        char *error = malloc(strlen("Error semantico en la definición de la funcion ") + strlen(nombre) + strlen(": El parametro ") + strlen(" no es de tipo ") + strlen(parametrosBIS->tipo) + 2);
                         strcpy(error, "Error Semantico en la definicion de la funcion ");
                         strcat(error, nombre);
                         strcat(error, ": El parametro ");
                         strcat(error, numeroParametro);
                         strcat(error, " no es de tipo ");
-                        strcat(error, parametrosBIS->tipoParametro);
+                        strcat(error, parametrosBIS->tipo);
                         agregarError(&errores,error,linea);
                         flag = 1;
                     }
@@ -695,8 +690,8 @@ void imprimirFunciones(ListaFunciones **funciones, char* titulo){
     }
 }
 
-void imprimirParametros(ListaParametros **parametros, int anchoC1, int anchoC2, int ancho1, int ancho2, int ancho3, char ultimo){
-    ListaParametros *aux = *parametros;
+void imprimirParametros(ListaVariables **parametros, int anchoC1, int anchoC2, int ancho1, int ancho2, int ancho3, char ultimo){
+    ListaVariables *aux = *parametros;
     int i = 1;
     char snum[10];
     while(aux != NULL){
@@ -704,9 +699,9 @@ void imprimirParametros(ListaParametros **parametros, int anchoC1, int anchoC2, 
         if(i==1){
             printf("%s", centrar(snum, ancho1));
             printf("%c", 186);
-            printf("%s", centrar(aux->nombreParametro, ancho2));
+            printf("%s", centrar(aux->nombre, ancho2));
             printf("%c", 186);
-            printf("%s", centrar(aux->tipoParametro, ancho3));
+            printf("%s", centrar(aux->tipo, ancho3));
             printf("%c\n", 186);
         }
         else{
@@ -717,9 +712,9 @@ void imprimirParametros(ListaParametros **parametros, int anchoC1, int anchoC2, 
             printf("%c", 186);
             printf("%s", centrar(snum, ancho1));
             printf("%c", 186);
-            printf("%s", centrar(aux->nombreParametro, ancho2));
+            printf("%s", centrar(aux->nombre, ancho2));
             printf("%c", 186);
-            printf("%s", centrar(aux->tipoParametro, ancho3));
+            printf("%s", centrar(aux->tipo, ancho3));
             printf("%c\n", 186);
         }
         aux = aux->sig;
@@ -781,11 +776,12 @@ char* tipoFuncion(TablaDeSimbolos tabla, char* nombre) {
 /////////////////////
 
 void imprimirTabla(TablaDeSimbolos tabla) {
-    imprimirVariables(&tabla.listaVariables, "LISTA DE VARIABLES");
+    imprimirVariables(&tabla.listaVariables, "LISTA DE VARIABLES DECLARADAS");
     imprimirFunciones(&tabla.listaFuncionesDeclaradas, "LISTA DE FUNCIONES DECLARADAS");
     imprimirFunciones(&tabla.listaFuncionesDefinidas, "LISTA DE FUNCIONES DEFINIDAS");
-    //imprimirFunciones(&tabla.listaFuncionesExternas, "LISTA DE FUNCIONES EXTERNAS");
-   // imprimirVariables(&tabla.listaVariablesExternas, "LISTA DE VARIABLES EXTERNAS");
+    imprimirFunciones(&tabla.listaFuncionesExternas, "LISTA DE FUNCIONES EXTERNAS");
+    imprimirVariables(&tabla.listaVariablesExternas, "LISTA DE VARIABLES EXTERNAS");
+    imprimirVariables(&tabla.listaVariablesAuxiliares, "LISTA DE VARIABLES AUXILIARES");
 }
 
 void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDeDato, int linea) {
@@ -802,7 +798,7 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
         strcat(error, " no existe");
         agregarError(&errores, error, linea);
     } else {
-        ListaParametros *parametros;
+        ListaVariables *parametros;
         if(funcionDeclaradasInvocada) parametros = funcionDeclaradasInvocada->listaParametros;
         else if(funcionDeclaradasInvocada) parametros = funcionDefinidasInvocada->listaParametros;
         else return;
@@ -832,17 +828,17 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
                     strcat(error, numeroParametro);
                     strcat(error, " no existe");
                     agregarError(&errores,error,linea);
-                } else if(strcmp(parametros->tipoParametro,tiposDeDato->tipo) && (strcmp(parametros->tipoParametro,"char*") || strcmp(tiposDeDato->tipo, "char") || !(tiposDeDato->flagArray==1))) {
+                } else if(strcmp(parametros->tipo,tiposDeDato->tipo) && (strcmp(parametros->tipo,"char*") || strcmp(tiposDeDato->tipo, "char") || !(tiposDeDato->flagArray==1))) {
                     char numeroParametro[100];
                     sprintf(numeroParametro, "%d", i);
                     printf("%s", tiposDeDato->tipo);
-                    char *error = malloc(strlen("Error semantico en la invocacion de la funcion ") + strlen(nombreFuncion) + strlen(": El parametro ") + strlen(" no es de tipo ") + strlen(parametros->tipoParametro) + 2);
+                    char *error = malloc(strlen("Error semantico en la invocacion de la funcion ") + strlen(nombreFuncion) + strlen(": El parametro ") + strlen(" no es de tipo ") + strlen(parametros->tipo) + 2);
                     strcpy(error, "Error Semantico en la invocacion de la funcion ");
                     strcat(error, nombreFuncion);
                     strcat(error, ": El parametro ");
                     strcat(error, numeroParametro);
                     strcat(error, " no es de tipo ");
-                    strcat(error, parametros->tipoParametro);
+                    strcat(error, parametros->tipo);
                     agregarError(&errores,error,linea);
                 }
                 i++;

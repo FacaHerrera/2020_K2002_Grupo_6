@@ -43,9 +43,8 @@ int tipDecla = 0;
 int cantidad = 0;
 int cantidadPuntero = 0;
 int contadorVariableExpresion = 0;
-
+int jerarquia = 0;
 Nodo *parametrosInvocacion;
-ListaParametros *listaParametros;
 TablaDeSimbolos tabla;
 
 
@@ -125,7 +124,7 @@ line: '\n'
                          strcat(error, $<cval>1);
                          agregarError(&errores, error, yylineno);
                     }
-    | error '\n' {agregarError(&errores,"Error Sintactico",yylineno); listaParametros = NULL; cantidadPuntero = 0; contadorParametros = 0;}
+    | error '\n' {agregarError(&errores,"Error Sintactico",yylineno); tabla.listaParametros = NULL; cantidadPuntero = 0; contadorParametros = 0;}
 ;
 
 lineaControl: DEFINE ID expPrimaria {agregarVariablesExternasBis(&tabla.listaVariablesExternas, $<cval>2, tipoInicializador);}
@@ -344,12 +343,12 @@ listaParametros: declaracionParametro {contadorParametros++; }
                | listaParametros ',' declaracionParametro {contadorParametros++; }
 ;
 
-declaracionParametro: especDeclaracion {agregarParametro(&listaParametros, "-", $<cval>1,yylineno, flagArray); }
+declaracionParametro: especDeclaracion {agregarParametro(&tabla.listaParametros, "-", $<cval>1,yylineno, flagArray); }
                     | especDeclaracion decla2 {
                                                   char* aux = (char*)malloc(strlen($<cval>1)+strlen(tipoDatoPuntero));
                                                   strcpy(aux, $<cval>1);
                                                   strcat(aux, tipoDatoPuntero);
-                                                  agregarParametro(&listaParametros, nombre, aux,yylineno, flagArray);
+                                                  agregarParametro(&tabla.listaParametros, nombre, aux,yylineno, flagArray);
                                                   cantidadPuntero = 0;
                                              }
                     | especDeclaracion declaradorAbstracto
@@ -367,7 +366,7 @@ declaradorAbstracto: puntero declaradorAbstractoDirecto
                                         strcat(tipoDatoPuntero, "*");
                                         cantidadPuntero--;
                                    }
-                                   agregarParametro(&listaParametros, "-", tipoDatoPuntero,yylineno, flagArray); 
+                                   agregarParametro(&tabla.listaParametros, "-", tipoDatoPuntero,yylineno, flagArray); 
                                    cantidadPuntero = 0;
                               }
 ;
@@ -469,8 +468,8 @@ sentSalto: RETURN expOp ';' opcionBarraN {/*printf("Se encontro una Sentencia de
 
 //EXPRESIONES 
 expPrimaria: ID               {    if(esArrayVariable(tabla,$<cval>1)!=2) flagArray = esArrayVariable(tabla,$<cval>1);
-                                   tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = tipoVariable(tabla, &listaParametros, $<cval>1); 
-                                   variableExpresion[contadorVariableExpresion] = strdup(tipoVariable(tabla, &listaParametros, $<cval>1));
+                                   tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = tipoVariable(tabla, &tabla.listaParametros, $<cval>1); 
+                                   variableExpresion[contadorVariableExpresion] = strdup(tipoVariable(tabla, &tabla.listaParametros, $<cval>1));
                                    contadorVariableExpresion++;
                                    tip = 0;
                               }
@@ -590,7 +589,7 @@ listaArgumentos:
 ;
 
 //DEFINICIONES EXTERNAS
-declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombreFuncion,valorTipoFuncion,&listaParametros,yylineno, 1); contadorParametros = 0; listaParametros = NULL; cantidadPuntero = 0; flagFuncion = 0;}
+declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombreFuncion,valorTipoFuncion,&tabla.listaParametros,yylineno, 1); contadorParametros = 0; tabla.listaParametros = NULL; cantidadPuntero = 0; flagFuncion = 0;}
                   | declaracion {
                        switch(tip){
                          case 1:
@@ -633,9 +632,9 @@ declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d 
                               if(tipDecla == 1){
                                    //printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
                                    contadorParametros = 0;
-                                   agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombre,tipoDatoFuncion,&listaParametros,yylineno, 0);
+                                   agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombre,tipoDatoFuncion,&tabla.listaParametros,yylineno, 0);
                                    cantidadPuntero = 0;
-                                   listaParametros = NULL;
+                                   tabla.listaParametros = NULL;
                                    flagFuncion = 0;
                               }
                               break;     
@@ -644,7 +643,7 @@ declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d 
                   }
 ;
 
-definicionFuncion: especDeclaracion decla2 {nombreFuncion = strdup($<cval>2); valorTipoFuncion = strdup($<cval>1);} listaDeclaracionesBis sentCompuesta {flagFuncion = 0;}
+definicionFuncion: especDeclaracion decla2 {nombreFuncion = strdup($<cval>2); valorTipoFuncion = strdup($<cval>1);} listaDeclaracionesBis sentCompuesta {flagFuncion = 0; }
 ;
 
 
@@ -665,11 +664,12 @@ void main(){
      yyin = fopen("entrada.txt", "r");
 
      tabla.listaVariables = NULL;
+     tabla.listaParametros = NULL;
+     tabla.listaVariablesAuxiliares = NULL;
      tabla.listaVariablesExternas = NULL;
      tabla.listaFuncionesDeclaradas = NULL;
      tabla.listaFuncionesDefinidas = NULL;
      tabla.listaFuncionesExternas = NULL;
-     listaParametros = NULL;
      parametrosInvocacion = NULL;
      tipoInicializador = strdup("vacio");
      tipoDato = strdup("");

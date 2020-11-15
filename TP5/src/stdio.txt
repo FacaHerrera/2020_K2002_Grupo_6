@@ -1,0 +1,8 @@
+printf-int
+scanf-int
+fputs-int
+fgetc-int
+fclose-int
+fopen-FILE*
+$
+FILE*

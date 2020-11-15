@@ -48,9 +48,9 @@ CARACTER_IMPRIMIBLE [ -~]
 
 %%
 
-#define(" ")+{IDENTIFICADOR}(" ")*({PALABRA_RESERVADA}|{CONSTANTE})? { return DEFINE;}
-#include(" ")+\<([\\\/\.]*{IDENTIFICADOR}[\\\/]*)+\.[a-z]*\> { return INCLUDE;}
-#include(" ")+\"([\\\/\.]*{IDENTIFICADOR}[\\\/]*)+\.[a-z]*\" { return INCLUDE;}
+#define {strcpy(yylval.cval,yytext); return DEFINE;}
+#include(" ")+\<([\\\/\.]*{IDENTIFICADOR}[\\\/]*)+\.[a-z]*\> {strcpy(yylval.cval,yytext); return INCLUDE;}
+#include(" ")+\"([\\\/\.]*{IDENTIFICADOR}[\\\/]*)+\.[a-z]*\" {strcpy(yylval.cval,yytext); return INCLUDE;}
 
 [1-9]{NUMERO_DECIMAL}* {yylval.ival = atoi(yytext); return ENTERO; }
 0{NUMERO_OCTAL}* {yylval.ival = strtol(yytext, NULL, 0); return ENTERO; }
@@ -78,7 +78,6 @@ default {return DEFAULT; }
 sizeof {return SIZEOF; }
 goto {return GOTO; }
 
-([A-Z]|"_")([a-zA-Z]|{NUMERO_DECIMAL}|"_")* {strcpy(yylval.cval,yytext); return IDBIS;}
 {IDENTIFICADOR} {strcpy(yylval.cval,yytext); return ID;}
 
 "+" {return '+'; }
@@ -104,6 +103,7 @@ goto {return GOTO; }
 "!" {return '!'; }
 "~" {return '~'; }
 "?" {return '?'; }
+"\n" {return '\n'; }
 
 "||" {return OR; }
 "&&" {return AND; }
@@ -120,8 +120,8 @@ goto {return GOTO; }
 "->" {return FLECHA; }
 
 
-{COMENTARIO_SIMPLE} { return COMENTARIO_SIMPLE;}
-{COMENTARIO_MULTIPLE} { return COMENTARIO_MULTIPLE;}
+{COMENTARIO_SIMPLE} {strcpy(yylval.cval,yytext); return COMENTARIO_SIMPLE;}
+{COMENTARIO_MULTIPLE} {strcpy(yylval.cval,yytext); return COMENTARIO_MULTIPLE;}
 
 [^\n\t' '] {/*char *error = malloc(strlen("Error Lexico: ") + strlen(yytext) + strlen(" ") + 1);
             strcpy(error, "Error Semantico en la invocacion de la funcion ");

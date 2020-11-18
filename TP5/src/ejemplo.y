@@ -109,15 +109,17 @@ TablaDeSimbolos tabla;
 
 %% 
 
-input: opcionBarraN
+input: opcionComentario opcionBarraN
      | input line
 ;
 
-line: '\n' 
-    | declaracionExterna opcionBarraN
-    | sentencia opcionBarraN
-    | INCLUDE '\n' {agregarFuncionesExternas(&tabla.listaFuncionesExternas, &tabla.listaVariablesExternas, $<cval>1);}
-    | lineaControl '\n' 
+line: '\n'
+    | declaracionExterna opcionComentario opcionBarraN
+    | sentencia opcionComentario opcionBarraN
+    | INCLUDE opcionComentario '\n' {agregarFuncionesExternas(&tabla.listaFuncionesExternas, &tabla.listaVariablesExternas, $<cval>1);}
+    | lineaControl opcionComentario '\n' 
+    | COMENTARIO_SIMPLE
+    | COMENTARIO_MULTIPLE
     | ERROR_LEXICO  {
                          char *error = malloc(strlen("Error Lexico: ") + strlen($<cval>1) + 1);
                          strcpy(error, "Error Lexico: ");
@@ -130,63 +132,19 @@ line: '\n'
 lineaControl: DEFINE ID expPrimaria {agregarVariablesExternasBis(&tabla.listaVariablesExternas, $<cval>2, tipoInicializador);}
 ;
 
+opcionComentario: 
+               | COMENTARIO_MULTIPLE
+               | COMENTARIO_SIMPLE
+;
+
 opcionBarraN: 
                | '\n' opcionBarraN
 ;
 
 //DECLARACIONES
-declaracion: especDeclaracion listaDeclaradoresBis ';' opcionBarraN {
+declaracion: especDeclaracion listaDeclaradoresBis ';' opcionComentario opcionBarraN {
           nombre = $<cval>2;
-          while(contadorVariableExpresion && !flagArray){
-               if(contadorVariableExpresion == 1 || !strcmp(variableExpresion[0],variableExpresion[contadorVariableExpresion-1])) {
-                    contadorVariableExpresion--;
-                    tipoInicializador = variableExpresion[0];
-               }
-               else if(flagOperacionBinaria==1) {
-
-                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere sumar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                    strcpy(error,"Se quiere sumar un valor de tipo ");
-                    strcat(error,variableExpresion[0]);
-                    strcat(error," a un valor de tipo ");
-                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                    agregarError(&errores, error, yylineno);
-                    flagError = 1;
-                    contadorVariableExpresion = 0;
-               }
-               else if(flagOperacionBinaria==2) {
-
-                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere restar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                    strcpy(error,"Se quiere restar un valor de tipo ");
-                    strcat(error,variableExpresion[0]);
-                    strcat(error," a un valor de tipo ");
-                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                    agregarError(&errores, error, yylineno);
-                    flagError = 1;
-                    contadorVariableExpresion = 0;
-               }
-               else if(flagOperacionBinaria==3) {
-
-                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere multiplicar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                    strcpy(error,"Se quiere multiplicar un valor de tipo ");
-                    strcat(error,variableExpresion[0]);
-                    strcat(error," a un valor de tipo ");
-                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                    agregarError(&errores, error, yylineno);
-                    flagError = 1;
-                    contadorVariableExpresion = 0;
-               }
-               else if(flagOperacionBinaria==4) {
-
-                    char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere dividir un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                    strcpy(error,"Se quiere dividir un valor de tipo ");
-                    strcat(error,variableExpresion[0]);
-                    strcat(error," a un valor de tipo ");
-                    strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                    agregarError(&errores, error, yylineno);
-                    flagError = 1;
-                    contadorVariableExpresion = 0;
-               } 
-          }
+          
 
           while(contadorVariables!=0 && tip != 3){
                contadorVariables--;
@@ -239,7 +197,7 @@ listaDeInicializadores: inicializador
 ;
 
 especTipo: TIPO_DATO 
-         | especStructUnion 
+         | especStructUnion
 ;
 
 especStructUnion: STRUCT_UNION ID opcionLista
@@ -250,7 +208,7 @@ listaDeclaracionesStruct: declaracionStruct
                         | listaDeclaracionesStruct declaracionStruct
 ;
 
-declaracionStruct: listaCalificadores declaradoresStruct ';' opcionBarraN
+declaracionStruct: listaCalificadores declaradoresStruct ';' opcionComentario opcionBarraN
 ;
 
 listaCalificadores: especTipo listaCalificadoresBis
@@ -389,15 +347,75 @@ sentencia: sentCompuesta
          | sentExpresion
          | sentSeleccion
          | sentIteracion
-         | sentSalto
+         | sentSalto opcionComentario opcionBarraN
          | sentEtiquetada
 ;
 
-sentExpresion: exp ';' opcionBarraN
-             | ';' opcionBarraN       
+sentExpresion: exp ';' opcionComentario opcionBarraN     {   
+                                             while(contadorVariableExpresion && !flagArray){
+                                                  
+                                                  if(contadorVariableExpresion == 1 || !strcmp(variableExpresion[0],variableExpresion[contadorVariableExpresion-1])) {
+                                                       contadorVariableExpresion--;
+                                                       tipoInicializador = variableExpresion[0];
+                                                  }
+                                                  else if(flagOperacionBinaria==1) {
+
+                                                       char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere sumar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                                                       strcpy(error,"Se quiere sumar un valor de tipo ");
+                                                       strcat(error,variableExpresion[0]);
+                                                       strcat(error," a un valor de tipo ");
+                                                       strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                                                       agregarError(&errores, error, yylineno);
+                                                       flagError = 1;
+                                                       contadorVariableExpresion = 0;
+                                                  }
+                                                  else if(flagOperacionBinaria==2) {
+
+                                                       char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere restar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                                                       strcpy(error,"Se quiere restar un valor de tipo ");
+                                                       strcat(error,variableExpresion[0]);
+                                                       strcat(error," a un valor de tipo ");
+                                                       strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                                                       agregarError(&errores, error, yylineno);
+                                                       flagError = 1;
+                                                       contadorVariableExpresion = 0;
+                                                  }
+                                                  else if(flagOperacionBinaria==3) {
+
+                                                       char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere multiplicar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                                                       strcpy(error,"Se quiere multiplicar un valor de tipo ");
+                                                       strcat(error,variableExpresion[0]);
+                                                       strcat(error," a un valor de tipo ");
+                                                       strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                                                       agregarError(&errores, error, yylineno);
+                                                       flagError = 1;
+                                                       contadorVariableExpresion = 0;
+                                                  }
+                                                  else if(flagOperacionBinaria==4) {
+
+                                                       char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere dividir un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
+                                                       strcpy(error,"Se quiere dividir un valor de tipo ");
+                                                       strcat(error,variableExpresion[0]);
+                                                       strcat(error," a un valor de tipo ");
+                                                       strcat(error, variableExpresion[contadorVariableExpresion-1]);
+                                                       agregarError(&errores, error, yylineno);
+                                                       flagError = 1;
+                                                       contadorVariableExpresion = 0;
+                                                  } 
+                                                  else if(!flagOperacionBinaria){
+                                                       contadorVariableExpresion = 0;
+                                                  }
+                                             }
+                                             contadorVariableExpresion = 0;
+                                             contadorVariables = 0;
+                                             flagArray = 0;
+                                             flagError = 0;
+                                             flagOperacionBinaria = 0;
+                                        }
+             | ';' opcionComentario opcionBarraN       
 ;
 
-sentCompuesta: '{' opcionBarraN decalracionOSentencia opcionBarraN'}' opcionBarraN {/*printf("Se encontro una Sentencia Compuesta. \n");*/ }
+sentCompuesta: '{' opcionComentario opcionBarraN decalracionOSentencia opcionComentario opcionBarraN'}' opcionComentario opcionBarraN {/*printf("Se encontro una Sentencia Compuesta. \n");*/ }
 ;
 
 decalracionOSentencia: 
@@ -430,16 +448,16 @@ sentSeleccion: IF '(' exp ')' sentencia                {/*printf("Se encontro un
 ;
 
 sentIteracion: WHILE '(' exp ')' sentencia               {/*printf("Se encontro una Sentencia de Iteracion WHILE.\n");*/ }
-             | DO sentencia WHILE '(' exp ')' ';'   opcionBarraN     {/*printf("Se encontro una Sentencia de Iteracion DO WHILE.\n");*/ }
-             | FOR '(' expOp ';' expOp ';' expOp ')' opcionBarraN sentencia {/*printf("Se encontro una Sentencia de Iteracion FOR.\n");*/ }
+             | DO sentencia WHILE '(' exp ')' ';'   opcionComentario opcionBarraN     {/*printf("Se encontro una Sentencia de Iteracion DO WHILE.\n");*/ }
+             | FOR '(' expOp ';' expOp ';' expOp ')' opcionComentario opcionBarraN sentencia {/*printf("Se encontro una Sentencia de Iteracion FOR.\n");*/ }
 ;
 
-sentEtiquetada: CASE expCondicional ':' opcionBarraN sentencia {/*printf("Se encontro una Sentencia de Etiqueta CASE.\n");*/ }
-              | DEFAULT ':' opcionBarraN sentencia  {/*printf("Se encontro una Sentencia de Etiqueta DEFAULT.\n");*/ }
+sentEtiquetada: CASE expCondicional ':' opcionComentario opcionBarraN sentencia {/*printf("Se encontro una Sentencia de Etiqueta CASE.\n");*/ }
+              | DEFAULT ':' opcionComentario opcionBarraN sentencia  {/*printf("Se encontro una Sentencia de Etiqueta DEFAULT.\n");*/ }
               | ID ':' sentencia
 ;
 
-sentSalto: RETURN expOp ';' opcionBarraN {/*printf("Se encontro una Sentencia de Salto RETURN. \n"); */
+sentSalto: RETURN expOp ';' {/*printf("Se encontro una Sentencia de Salto RETURN. \n"); */
                                    if(strcmp(tipoInicializadorFuncion,valorTipoFuncion)){
                                         if(!strcmp(tipoInicializadorFuncion,"")){
                                              char *error = (char *)malloc(strlen("Error Semantico en la devolucion de la funcion ") + strlen(nombreFuncion) + strlen(": El parametro no existe ") + 1);
@@ -461,9 +479,9 @@ sentSalto: RETURN expOp ';' opcionBarraN {/*printf("Se encontro una Sentencia de
                                    }
                                    flagReturn = 0;
                               }
-         | BREAK ';'  opcionBarraN    {/*printf("Se encontro una Sentencia de Salto BREAK.\n"); */}
-         | CONTINUE ';'  opcionBarraN {/*printf("Se encontro una Sentencia de Salto CONTINUE.\n"); */}
-         | GOTO ID ';'  opcionBarraN  {/*printf("Se encontro una Sentencia de Salto GOTO. \n"); */}
+         | BREAK ';'     {/*printf("Se encontro una Sentencia de Salto BREAK.\n"); */}
+         | CONTINUE ';' {/*printf("Se encontro una Sentencia de Salto CONTINUE.\n"); */}
+         | GOTO ID ';'  {/*printf("Se encontro una Sentencia de Salto GOTO. \n"); */}
 ;
 
 //EXPRESIONES 

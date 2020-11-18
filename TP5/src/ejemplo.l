@@ -124,4 +124,5 @@ goto {return GOTO; }
 {COMENTARIO_MULTIPLE} {strcpy(yylval.cval,yytext); return COMENTARIO_MULTIPLE;}
 
 [^\t' '] {strcpy(yylval.cval,yytext); return ERROR_LEXICO;}
+
 %%

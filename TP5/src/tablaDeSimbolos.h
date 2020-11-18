@@ -781,7 +781,7 @@ void imprimirTabla(TablaDeSimbolos tabla) {
     imprimirFunciones(&tabla.listaFuncionesDefinidas, "LISTA DE FUNCIONES DEFINIDAS");
     imprimirFunciones(&tabla.listaFuncionesExternas, "LISTA DE FUNCIONES EXTERNAS");
     imprimirVariables(&tabla.listaVariablesExternas, "LISTA DE VARIABLES EXTERNAS");
-    imprimirVariables(&tabla.listaVariablesAuxiliares, "LISTA DE VARIABLES AUXILIARES");
+    //imprimirVariables(&tabla.listaVariablesAuxiliares, "LISTA DE VARIABLES AUXILIARES");
 }
 
 void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDeDato, int linea) {

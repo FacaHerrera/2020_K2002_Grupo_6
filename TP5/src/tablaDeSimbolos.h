@@ -3,6 +3,11 @@
 #include<stdio.h>
 #include<string.h>
 
+ #define min(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a < _b ? _a : _b; })
+
 typedef struct TablaDeSimbolos {
     struct ListaVariables *listaVariables;
     struct ListaVariables *listaParametros;
@@ -246,15 +251,12 @@ void escribirAuxiliares(ListaVariables **variablesAuxiliares, char* tipo, char* 
 }
 
 void sacarVariables(ListaVariables **variables, int jerarquia){
-    ListaVariables* nodo;
-	nodo = *variables;
-	if (nodo) {
-        while(nodo->jerarquia==jerarquia){
-            nodo = nodo->sig;
+	if ((*variables)) {
+        while((*variables)->jerarquia==jerarquia){
+            (*variables) = (*variables)->sig;
+            if((*variables) == NULL) break;
         }
     }
-    *variables = nodo;
-    free(nodo);
 }
 
 void imprimirVariables(ListaVariables **variables, char *titulo){
@@ -882,7 +884,7 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
                     strcat(error, numeroParametro);
                     strcat(error, " no existe");
                     agregarError(&errores,error,linea);
-                } else if(strcmp(parametros->tipo,tiposDeDato->tipo) && (strcmp(parametros->tipo,"char*") || strcmp(tiposDeDato->tipo, "char") || !(tiposDeDato->flagArray==1)) && (!(flagAnd==1) || strncmp(tiposDeDato->tipo, parametros->tipo, strlen(tiposDeDato->tipo)))) {
+                } else if(strcmp(parametros->tipo,tiposDeDato->tipo) && (strcmp(parametros->tipo,"char*") || strcmp(tiposDeDato->tipo, "char") || !(tiposDeDato->flagArray==1)) && (!(flagAnd==1) || strncmp(tiposDeDato->tipo, parametros->tipo, 1))) {
                     char numeroParametro[100];
                     sprintf(numeroParametro, "%d", i);
                     char *error = malloc(strlen("Error semantico en la invocacion de la funcion ") + strlen(nombreFuncion) + strlen(": El parametro ") + strlen(" no es de tipo ") + strlen(parametros->tipo) + 2);

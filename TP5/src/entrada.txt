@@ -4,205 +4,107 @@
 #define ERROR 0
 #define OK 1
 
-typedef struct{
-	char dato;
-	struct nodo *siguiente;
-}Nodo;
-
-
 void mostrar_menu(void);
-int automata(char *, char *);
-int mostrar_consigna(char *, char *);
-void escribirPila($Pila *, char);
-char leerPila($Pila *);
-void evaluaError(int, int, int, char *, char *);
-void suprimirEspacios (char *);
+int verificar_txt(char *);
+int escanear_archivo(char *, $FILE*);
+void guardar(int, char *, $FILE*);
+int automata(char *);
+int mostrar_consigna($FILE*);
 
 int main() {
-	char condicion = 'S', expresion[50], error[120]; //70 son para el detalle del error
-	strcpy(error, "");
-	while (condicion == 'S' || condicion == 's'){
-		system("CLS");
-		switch(mostrar_consigna(error, expresion)){
-			case 0:
-			case 3:
-				printf("\n-----------------------------------------------------------------------------\n\n%s\n%s", expresion, error);
-				printf("\n\nLa expresion es INCORRECTA\n");
-				break;
-			default:
-				printf("\n\nLa expresion es CORRECTA\n\n");
-		}
-		printf("\nDesea ingresar una nueva expresion? (S para si | CUALQUIER OTRA para no)\n\n");
-		fflush(stdin);
-		scanf("%c", &condicion);
-	}	
+	$FILE *archivo;
+	archivo = fopen("RESULTADOS.txt", "wt");
+	if (mostrar_consigna(archivo)){
+		printf("\n\nProceso satisfactorio.\n\n");
+	}
+	else{
+		printf("\n\nEl Proceso no se pudo realizar porque el archivo no existe.\n");
+	}
+	fclose(archivo);
 	return 0;
 }
 
-int mostrar_consigna(char *error, char *expresion){
-	printf("Trabajo Practico Nro 2 - Automata Finito de Pila para Constantes Enteras Decimales\n\nIngrese la expresion a escanear: \n\n");
-	fflush(stdin);
-	scanf("%49[^\n]", expresion);
-	suprimirEspacios(expresion);
-	return automata(expresion, error);
+int mostrar_consigna($FILE * archivoSalida){
+	char archivo[20];
+	printf("Trabajo Practico Nro 1 - Automata Finito Deterministico para Constantes Enteras\n\nIngrese el nombre del archivo a escanear: ");
+	scanf("%s", archivo);
+	verificar_txt(archivo);
+	return escanear_archivo(archivo, archivoSalida);
 }
 
-void suprimirEspacios(char *expresion){
-	int len = 0, lenAux = 0;
-	char auxiliar[50];
-	
-	while(expresion[len] != '\0'){
-		if (expresion[len] != ' '){
-			auxiliar[lenAux] = expresion[len];
-			lenAux++;
-		} 
-		len++;	
-	}
-	auxiliar[lenAux] = '\0';
-	strcpy(expresion, auxiliar);
-}
-
-int automata(char *expresion, char *error){
-	char tipoError[70];
-	int len = 0, inicio = 0, estado = 0, columna = 0, vPila = 0;
-	struct recorrido 	estado00 = {0,0}, estado01 = {0,1}, 
-						estado10 = {1,0}, estado11 = {1,1}, 
-						estado02 = {0,2}, estado03 = {0,3}, 
-						estado24 = {2,4}, 
-						error1 = {3,1}, 
-						error2 = {3,2}, 
-						error3 = {3,3}, 
-						error4 = {3,4}, 
-						error5 = {3,5}, 
-						error6 = {3,6}, 
-						error7 = {3,7};
-	struct recorrido automata[2][3][6]={{{error1,estado10,error2,estado02,error2,error3},{estado10,estado10,estado00,error4,error4,error3},{error5,error5,estado00,error5,error5,error3}},
-							  			{{error1,estado11,error2,estado03,error2,error3},{estado11,estado11,estado01,error6,estado24,error3},{error7,error7,estado01,error7,estado24,error3}}};
-	$Pila pila = NULL;
-	escribirPila(&pila,'$');
-	while(expresion[len] != '\0'){
-		if (estado!=3){
-			switch(leerPila(&pila)){
-				case '$':
-					inicio = 0;
-					break;
-				case 'R':
-					inicio = 1;
-					break;
-			}
-			if(expresion[len] == '0'){
-				columna = 0;
-			}
-			else if(expresion[len]>='1' && expresion[len]<='9'){
-				columna = 1;
-			}
-			else if(expresion[len]=='+' || expresion[len]=='-' || expresion[len]=='*' || expresion[len]=='/'){
-				columna = 2;
-			}
-			else if(expresion[len]=='('){
-				columna = 3;
-			}
-			else if(expresion[len]==')'){
-				columna = 4;
-			}
-			else{
-				columna = 5;
-			}
-			vPila = automata[inicio][estado][columna].pila;
-			switch (vPila){
-				case 0:
-					escribirPila(&pila, '$');
-				break;
-				case 1:
-					escribirPila(&pila, 'R');
-				break;
-				case 2:
-					escribirPila(&pila, '$');
-					escribirPila(&pila, 'R');
-				break;
-				case 3:
-					escribirPila(&pila, 'R');
-					escribirPila(&pila, 'R');
-				break;
-			}
-			estado = automata[inicio][estado][columna].estado;
+int escanear_archivo(char *archivo, $FILE* archivoSalida){
+	$FILE *datos;
+	datos=fopen(archivo, "rt");
+	char caracter, cadena[50];
+	int len;
+	if (datos==NULL) return ERROR;
+	do{	
+		strcpy(cadena, "");
+		len = 0;
+		caracter = fgetc(datos);
+		while(caracter != ',' && caracter != EOF){
+			cadena[len] = caracter;
+			caracter = fgetc(datos);
+			len++;
 		}
-		evaluaError(len, estado, vPila, tipoError, error);
-		len++;
+		cadena[len] = '\0';
+		guardar(automata(cadena), cadena, archivoSalida);
+	}while(caracter!=EOF);
+	fclose(datos);
+	return OK;	
+}
+
+int verificar_txt(char *archivo){
+	if (strstr(archivo, ".txt") == NULL){
+		strcat(archivo, ".txt");
 	}
-	error[len]='\0';
-	switch (estado){
-		case 0:
-			strcpy(tipoError,"^->Se esperaba un numero o un '(' (Parentesis de apertura).");
-			break;
-		case 1:
-		case 2:
-			if (leerPila(&pila) == 'R'){
-				strcpy(tipoError,"^->Se esperaba un ')' (Parentesis de cierre).");
-				estado = 3;
-			} 
-			break;	
-	}
-	free(pila);
-	strcat(error, tipoError);
-	return estado;
 }
 
-void escribirPila($Pila *pila, char valor){
-	punteroNodo nodo;
-	nodo = (Nodo *)malloc(sizeof(Nodo));
-	nodo->dato = valor;
-	nodo->siguiente = *pila;
-	*pila = nodo;
-}
-
-char leerPila($Pila *pila){
-	punteroNodo nodo;
-	char valor;
-	nodo = *pila;
-	if (!nodo) return ERROR;
-	*pila = nodo->siguiente;
-	valor = nodo->dato;
-	free(nodo);
-	return valor;
-}
-
-void evaluaError (int len, int estado, int vPila, char *tipoError, char *error){
-	if (estado == 3 && len > 0){
-		if (error[len-1]=='^' || error[len-1]=='-'){
-			error[len] = '-';
+int automata(char *cadena){
+	int len = 0, inicio = 0, recorrido = 0;
+	int automata[7][6]={{2,1,1,6,6,6},{1,1,1,6,6,6},{5,5,6,3,6,6},{4,4,4,6,4,6},{4,4,4,6,4,6},{5,5,6,6,6,6},{6,6,6,6,6,6}};
+	while(cadena[len] != '\0'){
+		if(cadena[len] == '0'){
+			recorrido = 0;
+		}
+		else if(cadena[len]>='1' && cadena[len]<='7'){
+			recorrido = 1;
+		}
+		else if(cadena[len]=='8' || cadena[len]=='9'){
+			recorrido = 2;
+		}
+		else if(cadena[len]>='x' || cadena[len]<='X'){
+			recorrido = 3;
+		}
+		else if((cadena[len]>='a' && cadena[len]<='f') || (cadena[len]>='A' && cadena[len]<='F')){
+			recorrido = 4;
 		}
 		else{
-			error[len] = '^';
+			recorrido = 5;
 		}
+		inicio = automata[inicio][recorrido];
+		len++;
 	}
-	else if (estado == 3 && len == 0){
-		error[len] = '^';
-	}
-	else{
-		error[len] = ' ';
-	}
-	switch(vPila){
-		case 1:
-			strcpy(tipoError,"->No se puede comenzar con 0.");
-		break;
+	return inicio;
+}
+
+void guardar(int base, char *cadena, $FILE* archivoSalida){
+	fputs(cadena, archivoSalida);
+	switch(base){
 		case 2:
-			strcpy(tipoError,"->Se esperaba un numero o un '(' (Parentesis de apertura).");
-		break;
-		case 3:
-			strcpy(tipoError,"->Caracter no valido.");
-		break;
-		case 4:
-			strcpy(tipoError,"->Se esperaba un operador o un numero.");
-		break;
 		case 5:
-			strcpy(tipoError,"->Se esperaba un operador.");
-		break;
-		case 6:
-			strcpy(tipoError,"->Se esperaba un operador o un numero o un ')' (Parentesis de cierre).");
-		break;
-		case 7:
-			strcpy(tipoError,"->Se esperaba un operador o un ')' (Parentesis de cierre).");
-		break;
+			fputs(" - OCTAL\n", archivoSalida);
+			break;	
+		case 1:
+			fputs(" - DECIMAL\n", archivoSalida);
+			break;
+		case 4:
+			fputs(" - HEXADECIMAL\n", archivoSalida);
+			break;	
+		case 0: 
+			fputs(" - PALABRA NULA\n", archivoSalida);
+			break;	
+		default:
+			fputs(" - INCORRECTO\n", archivoSalida);
 	}
 }

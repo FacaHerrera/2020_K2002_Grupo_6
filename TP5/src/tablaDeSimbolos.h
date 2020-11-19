@@ -44,7 +44,7 @@ typedef struct ListaFunciones{
 Error *errores = NULL;
 
 void imprimirTabla(TablaDeSimbolos);
-void validarInvocacion(TablaDeSimbolos , char* tete, Nodo *, int);
+void validarInvocacion(TablaDeSimbolos , char* tete, Nodo *, int, char);
 
 int longitudNodo(Nodo **);
 void agregarNodo(Nodo **, char*, char);
@@ -249,11 +249,12 @@ void sacarVariables(ListaVariables **variables, int jerarquia){
     ListaVariables* nodo;
 	nodo = *variables;
 	if (nodo) {
-        if(nodo->jerarquia==jerarquia){
-            *variables = nodo->sig;
-            free(nodo);
+        while(nodo->jerarquia==jerarquia){
+            nodo = nodo->sig;
         }
     }
+    *variables = nodo;
+    free(nodo);
 }
 
 void imprimirVariables(ListaVariables **variables, char *titulo){
@@ -315,7 +316,7 @@ void imprimirVariables(ListaVariables **variables, char *titulo){
             printf("%c", 186);
             if(aux->flagArray) printf("%s", centrar("SI", anchoC3));
             else printf("%s", centrar("NO", anchoC3));
-            itoa(aux->linea, snum, 10);
+            itoa(aux->jerarquia, snum, 10);
             printf("%c", 186);
             printf("%s", centrar(snum, anchoC4));
             printf("%c\n", 186);
@@ -837,7 +838,7 @@ void imprimirTabla(TablaDeSimbolos tabla) {
     //imprimirVariables(&tabla.listaVariablesAuxiliares, "LISTA DE VARIABLES AUXILIARES");
 }
 
-void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDeDato, int linea) {
+void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDeDato, int linea, char flagAnd) {
     ListaFunciones *funcionDeclaradasInvocada = buscarFuncion(&tabla.listaFuncionesDeclaradas,nombreFuncion);
     ListaFunciones *funcionDefinidasInvocada = buscarFuncion(&tabla.listaFuncionesDefinidas,nombreFuncion);
     ListaFunciones *funcionExternasInvocada = buscarFuncion(&tabla.listaFuncionesExternas,nombreFuncion);
@@ -881,7 +882,7 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
                     strcat(error, numeroParametro);
                     strcat(error, " no existe");
                     agregarError(&errores,error,linea);
-                } else if(strcmp(parametros->tipo,tiposDeDato->tipo) && (strcmp(parametros->tipo,"char*") || strcmp(tiposDeDato->tipo, "char") || !(tiposDeDato->flagArray==1))) {
+                } else if(strcmp(parametros->tipo,tiposDeDato->tipo) && (strcmp(parametros->tipo,"char*") || strcmp(tiposDeDato->tipo, "char") || !(tiposDeDato->flagArray==1)) && (!(flagAnd==1) || strncmp(tiposDeDato->tipo, parametros->tipo, strlen(tiposDeDato->tipo)))) {
                     char numeroParametro[100];
                     sprintf(numeroParametro, "%d", i);
                     char *error = malloc(strlen("Error semantico en la invocacion de la funcion ") + strlen(nombreFuncion) + strlen(": El parametro ") + strlen(" no es de tipo ") + strlen(parametros->tipo) + 2);

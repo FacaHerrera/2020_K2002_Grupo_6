@@ -4,5 +4,7 @@ fputs-int
 fgetc-char
 fclose-int
 fopen-$FILE*
+fflush-int
+free-int
 $
 FILE*

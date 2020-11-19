@@ -39,6 +39,7 @@ char flagArray = 0;
 char flagArrayBis = 0;
 char flagReturn = 0;
 char flagFuncion = 0;
+char flagAnd = 0;
 
 int lineaVariable[10];
 int jerarquia = 0;
@@ -184,7 +185,7 @@ listaDeclaradoresBis:
 ;
 
 listaDeclaradores: declarador {cantidad = 1; }
-                 | listaDeclaradores ',' declarador {cantidad = 2;}
+                 | listaDeclaradores ',' opcionBarraN declarador {cantidad = 2;}
 ;
 
 declarador: decla1 { tipDecla = 1; }
@@ -196,7 +197,7 @@ inicializador: expAsignacion
 ;
 
 listaDeInicializadores: inicializador
-                      | listaDeInicializadores ',' inicializador
+                      | listaDeInicializadores ',' opcionBarraN inicializador
 ;
 
 especTipo: TIPO_DATO 
@@ -209,7 +210,7 @@ especTipoBis: TIPO_DATO
 ;
 
 especStructUnion: STRUCT_UNION ID opcionLista
-                | STRUCT_UNION '{' listaDeclaracionesStruct '}'
+                | STRUCT_UNION '{' opcionBarraN listaDeclaracionesStruct '}'
 ;
 
 listaDeclaracionesStruct: declaracionStruct
@@ -227,7 +228,7 @@ listaCalificadoresBis:
 ;
 
 opcionLista: 
-           | '{' listaDeclaracionesStruct '}'
+           | '{' opcionBarraN listaDeclaracionesStruct '}'
 ;
 
 declaradoresStruct: declaStruct
@@ -600,15 +601,24 @@ expUnaria: expSufijo
          | '+' expUnaria            {$<dval>$ = + $<dval>2; }
          | '~' expUnaria            {$<dval>$ = $<dval>2; } // DUDA
          | '!' expUnaria            {$<dval>$ = ! $<dval>2; }
-         | '&' expUnaria            {$<dval>$ = $<dval>2; }
+         | '&' {flagAnd = 1;} expUnaria            {$<dval>$ = $<dval>2; }
          | puntero expUnaria        {$<dval>$ = $<dval>2; }
          | SIZEOF '(' expUnaria ')' {$<dval>$ = sizeof($<dval>3); }
          | SIZEOF '(' nombreTipo ')' {$<dval>$ = sizeof($<dval>3); }
 ;
 
-expSufijo: expPrimaria {if (tip!=3 && !flagArrayBis) tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia));}
+expSufijo: expPrimaria   {    if (tip!=3 && !flagArrayBis) {
+                                   /*if(flagAnd){
+                                        tipoVariable = (char*)malloc(strlen(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia))+1);
+                                        strcpy(tipoVariable, tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia));
+                                        strcat(tipoVariable, "*");
+                                        flagAnd = 0;
+                                   }
+                                   else */tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia));
+                              }
+                         }
          | expSufijo {tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia)); flagArrayBis = 1;} '[' exp ']'             {$<dval>$ = 0; flagArray = 1;}
-         | expSufijo {tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia)); tip = 3;} '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno); parametrosInvocacion = NULL; tipoInicializadorFuncion = strdup(tipoFuncion(tabla, $<cval>1)); contadorVariableExpresion = 0; tip = 3;}
+         | expSufijo {tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia)); tip = 3;} '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno, flagAnd); parametrosInvocacion = NULL; tipoInicializadorFuncion = strdup(tipoFuncion(tabla, $<cval>1)); contadorVariableExpresion = 0; tip = 3;}
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }

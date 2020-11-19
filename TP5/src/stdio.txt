@@ -3,6 +3,6 @@ scanf-int
 fputs-int
 fgetc-int
 fclose-int
-fopen-FILE*
+fopen-$FILE*
 $
 FILE*

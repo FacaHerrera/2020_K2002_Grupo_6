@@ -19,6 +19,7 @@ extern FILE* yyout;
 char* tipoInicializador;
 char* tipoInicializadorFuncion;
 char* tipoDato;
+char* tipoDatoAuxiliar;
 char* tipoDatoFuncion;
 char* tipoDatoPuntero;
 char* nombre;
@@ -36,6 +37,8 @@ char flagArray = 0;
 char flagReturn = 0;
 char flagFuncion = 0;
 
+int lineaVariable[10];
+int jerarquia = 0;
 int contadorVariables = 0;
 int contadorParametros = 0;
 int tip = 0;
@@ -43,8 +46,8 @@ int tipDecla = 0;
 int cantidad = 0;
 int cantidadPuntero = 0;
 int contadorVariableExpresion = 0;
-int jerarquia = 0;
 Nodo *parametrosInvocacion;
+ListaVariables *listaVariablesAuxiliares;
 TablaDeSimbolos tabla;
 
 
@@ -91,6 +94,7 @@ TablaDeSimbolos tabla;
 %token <cval> CLASE_ALMACENAMIENTO
 %token <cval> STRUCT_UNION
 %token <cval> ID
+%token <cval> IDBIS
 %token <cval> SIZEOF
 %token <cval> CTE_CARACTER
 %token <cval> INCLUDE
@@ -116,20 +120,18 @@ input: opcionComentario opcionBarraN
 line: '\n'
     | declaracionExterna opcionComentario opcionBarraN
     | sentencia opcionComentario opcionBarraN
-    | INCLUDE opcionComentario '\n' {agregarFuncionesExternas(&tabla.listaFuncionesExternas, &tabla.listaVariablesExternas, $<cval>1);}
+    | INCLUDE opcionComentario '\n' {agregarFuncionesExternas(&tabla.listaFuncionesExternas, &tabla.listaVariablesExternas, $<cval>1, yylineno-1);}
     | lineaControl opcionComentario '\n' 
-    | COMENTARIO_SIMPLE
-    | COMENTARIO_MULTIPLE
     | ERROR_LEXICO  {
                          char *error = malloc(strlen("Error Lexico: ") + strlen($<cval>1) + 1);
                          strcpy(error, "Error Lexico: ");
                          strcat(error, $<cval>1);
                          agregarError(&errores, error, yylineno);
                     }
-    | error '\n' {agregarError(&errores,"Error Sintactico",yylineno); tabla.listaParametros = NULL; cantidadPuntero = 0; contadorParametros = 0;}
+    | error '\n' {agregarError(&errores,"Error Sintactico",yylineno-1); tabla.listaParametros = NULL; cantidadPuntero = 0; contadorParametros = 0;}
 ;
 
-lineaControl: DEFINE ID expPrimaria {agregarVariablesExternasBis(&tabla.listaVariablesExternas, $<cval>2, tipoInicializador);}
+lineaControl: DEFINE ID expPrimaria {agregarVariablesExternasBis(&tabla.listaVariablesExternas, $<cval>2, tipoInicializador, yylineno);}
 ;
 
 opcionComentario: 
@@ -145,11 +147,9 @@ opcionBarraN:
 declaracion: especDeclaracion listaDeclaradoresBis ';' opcionComentario opcionBarraN {
           nombre = $<cval>2;
           
-
           while(contadorVariables!=0 && tip != 3){
                contadorVariables--;
-               agregarVariable(&tabla.listaVariables, variable[contadorVariables], tipoDato, tipoInicializador, yylineno, flagError, esArray[contadorVariables], tipDecla);
-               tipoInicializador = "vacio";
+               agregarVariable(&tabla.listaVariables, &listaVariablesAuxiliares, variable[contadorVariables], tipoDato, tipoInicializador, yylineno-1, flagError, esArray[contadorVariables], tipDecla, jerarquia, lineaVariable[contadorVariables]);               tipoInicializador = "vacio";
           }
           strcpy(tipoDato, "");
           contadorVariableExpresion = 0;
@@ -198,6 +198,11 @@ listaDeInicializadores: inicializador
 
 especTipo: TIPO_DATO 
          | especStructUnion
+         | IDBIS
+;
+
+especTipoBis: TIPO_DATO 
+         | especStructUnion
 ;
 
 especStructUnion: STRUCT_UNION ID opcionLista
@@ -211,7 +216,7 @@ listaDeclaracionesStruct: declaracionStruct
 declaracionStruct: listaCalificadores declaradoresStruct ';' opcionComentario opcionBarraN
 ;
 
-listaCalificadores: especTipo listaCalificadoresBis
+listaCalificadores: especTipoBis listaCalificadoresBis
 ;
 
 listaCalificadoresBis: 
@@ -238,6 +243,7 @@ decla1: puntero declaradorDirecto   {
                                                   cantidadPuntero--;
                                              }
                                              variable[contadorVariables] = $<cval>2;
+                                             lineaVariable[contadorVariables] = yylineno;
                                              esArray[contadorVariables] = flagArray;
                                              contadorVariables++;
 
@@ -255,6 +261,7 @@ decla1: puntero declaradorDirecto   {
      | declaradorDirecto { 
                               if(tip!=3){
                                    variable[contadorVariables] = strdup($<cval>1); 
+                                   lineaVariable[contadorVariables] = yylineno;
                                    esArray[contadorVariables] = flagArray;
                                    contadorVariables++;
                               }
@@ -262,7 +269,7 @@ decla1: puntero declaradorDirecto   {
 ;
 
 decla2: puntero declaradorDirecto   {
-                                        tipoDatoPuntero = (char*)realloc(tipoDatoPuntero, cantidadPuntero);
+                                        tipoDatoPuntero = (char*)malloc(cantidadPuntero);
                                         strcpy(tipoDatoPuntero, "");
                                         while(cantidadPuntero!=0){
                                              strcat(tipoDatoPuntero, "*");
@@ -301,12 +308,12 @@ listaParametros: declaracionParametro {contadorParametros++; }
                | listaParametros ',' declaracionParametro {contadorParametros++; }
 ;
 
-declaracionParametro: especDeclaracion {agregarParametro(&tabla.listaParametros, "-", $<cval>1,yylineno, flagArray); }
+declaracionParametro: especDeclaracion {agregarParametro(&tabla.listaParametros, "-", $<cval>1,yylineno-1, flagArray); }
                     | especDeclaracion decla2 {
                                                   char* aux = (char*)malloc(strlen($<cval>1)+strlen(tipoDatoPuntero));
                                                   strcpy(aux, $<cval>1);
                                                   strcat(aux, tipoDatoPuntero);
-                                                  agregarParametro(&tabla.listaParametros, nombre, aux,yylineno, flagArray);
+                                                  agregarParametro(&tabla.listaParametros, nombre, aux,yylineno-1, flagArray);
                                                   cantidadPuntero = 0;
                                              }
                     | especDeclaracion declaradorAbstracto
@@ -315,31 +322,20 @@ declaracionParametro: especDeclaracion {agregarParametro(&tabla.listaParametros,
 nombreTipo: listaCalificadores declaradorAbstractoBis
 ;
 
-declaradorAbstracto: puntero declaradorAbstractoDirecto 
-                   | declaradorAbstractoDirecto
-                   | puntero  {
+declaradorAbstracto: puntero  {
                                    tipoDatoPuntero = (char*)realloc(tipoDatoPuntero, strlen($<cval>1)+cantidadPuntero);
                                    strcpy(tipoDatoPuntero, $<cval>1);
                                    while(cantidadPuntero!=0){
                                         strcat(tipoDatoPuntero, "*");
                                         cantidadPuntero--;
                                    }
-                                   agregarParametro(&tabla.listaParametros, "-", tipoDatoPuntero,yylineno, flagArray); 
+                                   agregarParametro(&tabla.listaParametros, "-", tipoDatoPuntero,yylineno-1, flagArray); 
                                    cantidadPuntero = 0;
                               }
 ;
 
 declaradorAbstractoBis:
                       | declaradorAbstracto
-;
-
-declaradorAbstractoDirecto: '(' declaradorAbstracto ')'
-                          | declaradorAbstractoDirecto opcionExpresion
-                          | opcionExpresion
-;
-
-opcionExpresion: '['expCondicionalBis ']'
-               | '(' listaTiposParametrosBis ')'
 ;
 
 //SENTENCIAS
@@ -365,7 +361,7 @@ sentExpresion: exp ';' opcionComentario opcionBarraN     {
                                                        strcat(error,variableExpresion[0]);
                                                        strcat(error," a un valor de tipo ");
                                                        strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                                                       agregarError(&errores, error, yylineno);
+                                                       agregarError(&errores, error, yylineno-1);
                                                        flagError = 1;
                                                        contadorVariableExpresion = 0;
                                                   }
@@ -376,7 +372,7 @@ sentExpresion: exp ';' opcionComentario opcionBarraN     {
                                                        strcat(error,variableExpresion[0]);
                                                        strcat(error," a un valor de tipo ");
                                                        strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                                                       agregarError(&errores, error, yylineno);
+                                                       agregarError(&errores, error, yylineno-1);
                                                        flagError = 1;
                                                        contadorVariableExpresion = 0;
                                                   }
@@ -387,7 +383,7 @@ sentExpresion: exp ';' opcionComentario opcionBarraN     {
                                                        strcat(error,variableExpresion[0]);
                                                        strcat(error," a un valor de tipo ");
                                                        strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                                                       agregarError(&errores, error, yylineno);
+                                                       agregarError(&errores, error, yylineno-1);
                                                        flagError = 1;
                                                        contadorVariableExpresion = 0;
                                                   }
@@ -398,7 +394,7 @@ sentExpresion: exp ';' opcionComentario opcionBarraN     {
                                                        strcat(error,variableExpresion[0]);
                                                        strcat(error," a un valor de tipo ");
                                                        strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                                                       agregarError(&errores, error, yylineno);
+                                                       agregarError(&errores, error, yylineno-1);
                                                        flagError = 1;
                                                        contadorVariableExpresion = 0;
                                                   } 
@@ -415,12 +411,15 @@ sentExpresion: exp ';' opcionComentario opcionBarraN     {
              | ';' opcionComentario opcionBarraN       
 ;
 
-sentCompuesta: '{' opcionComentario opcionBarraN decalracionOSentencia opcionComentario opcionBarraN'}' opcionComentario opcionBarraN {/*printf("Se encontro una Sentencia Compuesta. \n");*/ }
+sentCompuesta: '{' {jerarquia++;} opcionComentario opcionBarraN decalracionOSentencia opcionComentario opcionBarraN'}' opcionComentario opcionBarraN {/*printf("Se encontro una Sentencia Compuesta. \n");*/sacarVariables(&listaVariablesAuxiliares, jerarquia); jerarquia--;}
 ;
 
 decalracionOSentencia: 
-                     | decalracionOSentencia listaDeclaraciones
-                     | decalracionOSentencia listaSentencias
+                     | decalracionOSentenciaBis decalracionOSentencia 
+;
+
+decalracionOSentenciaBis: listaDeclaraciones
+                        | listaSentencias
 ;
 
 listaDeclaraciones: declaracionExterna
@@ -485,9 +484,9 @@ sentSalto: RETURN expOp ';' {/*printf("Se encontro una Sentencia de Salto RETURN
 ;
 
 //EXPRESIONES 
-expPrimaria: ID               {    if(esArrayVariable(tabla,$<cval>1)!=2) flagArray = esArrayVariable(tabla,$<cval>1);
-                                   tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = tipoVariable(tabla, &tabla.listaParametros, $<cval>1); 
-                                   variableExpresion[contadorVariableExpresion] = strdup(tipoVariable(tabla, &tabla.listaParametros, $<cval>1));
+expPrimaria: ID               {    if(esArrayVariable(&listaVariablesAuxiliares,$<cval>1, jerarquia)!=2) flagArray = esArrayVariable(&listaVariablesAuxiliares,$<cval>1, jerarquia);
+                                   tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia); 
+                                   variableExpresion[contadorVariableExpresion] = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia));
                                    contadorVariableExpresion++;
                                    tip = 0;
                               }
@@ -530,7 +529,18 @@ expOp:
 ;
 
 expAsignacion: expCondicional 
-             | expUnaria operAsignacion expAsignacion {$<dval>$ = $<dval>3; }
+             | expUnaria operAsignacion expAsignacion {
+                                                            $<dval>$ = $<dval>3; 
+                                                            if(tip==3) variableExpresion[1] = strdup(tipoInicializadorFuncion);
+                                                            if(strcmp(variableExpresion[0],variableExpresion[1])){
+                                                                 char *error = (char *)malloc(strlen("Error Semantico: Se quiere asignar un valor de tipo ") + strlen(variableExpresion[1]) + strlen(" a un valor de tipo ") + strlen(variableExpresion[0]) + 1);
+                                                                 strcpy(error, "Error Semantico: Se quiere asignar un valor de tipo ");
+                                                                 strcat(error, variableExpresion[1]);
+                                                                 strcat(error, " a un valor de tipo ");
+                                                                 strcat(error, variableExpresion[0]);
+                                                                 agregarError(&errores, error, yylineno);
+                                                            };
+                                                       }
 ;
 
 expCondicional: expOr
@@ -575,7 +585,7 @@ expAditiva: expMultiplicativa
 
 expMultiplicativa: expUnaria
                  | expMultiplicativa '*' expUnaria {$<dval>$ = $<dval>1 * $<dval>3;  flagOperacionBinaria = 3;}
-                 | expMultiplicativa '/' expUnaria {if($<dval>3 == 0) {agregarError(&errores,"ERROR/: No se puede dividir por 0",yylineno);} else {$<dval>$ = $<dval>1 / $<dval>3;  flagOperacionBinaria = 4;}}
+                 | expMultiplicativa '/' expUnaria {if($<dval>3 == 0) {agregarError(&errores,"ERROR/: No se puede dividir por 0",yylineno-1);} else {$<dval>$ = $<dval>1 / $<dval>3;  flagOperacionBinaria = 4;}}
                  | expMultiplicativa '%' expUnaria {$<dval>$ = $<ival>1 % $<ival>3; }
 ;
 
@@ -594,20 +604,19 @@ expUnaria: expSufijo
 
 expSufijo: expPrimaria 
          | expSufijo '[' exp ']'             {$<dval>$ = 0; flagArray = 1;}
-         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno); parametrosInvocacion = NULL; tipoInicializadorFuncion = strdup(tipoFuncion(tabla,$<cval>1)); contadorVariableExpresion = 0; tip = 3;}
+         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno); parametrosInvocacion = NULL; tipoInicializadorFuncion = strdup(tipoFuncion(tabla, $<cval>1)); contadorVariableExpresion = 0; tip = 3;}
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
          | expSufijo DECREMENTO              {$<dval>$ = $<dval>2 --; }
 ;
 
-listaArgumentos: 
-               | expAsignacion {agregarNodo(&parametrosInvocacion,tipoInicializadorFuncion, flagArray);}
+listaArgumentos: expAsignacion {agregarNodo(&parametrosInvocacion,tipoInicializadorFuncion, flagArray);}
                | listaArgumentos ',' expAsignacion {agregarNodo(&parametrosInvocacion,tipoInicializadorFuncion, flagArray);}
 ;
 
 //DEFINICIONES EXTERNAS
-declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombreFuncion,valorTipoFuncion,&tabla.listaParametros,yylineno, 1); contadorParametros = 0; tabla.listaParametros = NULL; cantidadPuntero = 0; flagFuncion = 0;}
+declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombreFuncion,valorTipoFuncion,&tabla.listaParametros,yylineno-1, 1); contadorParametros = 0; tabla.listaParametros = NULL; cantidadPuntero = 0; flagFuncion = 0;}
                   | declaracion {
                        switch(tip){
                          case 1:
@@ -650,7 +659,7 @@ declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d 
                               if(tipDecla == 1){
                                    //printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
                                    contadorParametros = 0;
-                                   agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombre,tipoDatoFuncion,&tabla.listaParametros,yylineno, 0);
+                                   agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombre,tipoDatoFuncion,&tabla.listaParametros,yylineno-1, 0);
                                    cantidadPuntero = 0;
                                    tabla.listaParametros = NULL;
                                    flagFuncion = 0;
@@ -661,7 +670,17 @@ declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d 
                   }
 ;
 
-definicionFuncion: especDeclaracion decla2 {nombreFuncion = strdup($<cval>2); valorTipoFuncion = strdup($<cval>1);} listaDeclaracionesBis sentCompuesta {flagFuncion = 0; }
+definicionFuncion: especDeclaracion decla2 {nombreFuncion = strdup($<cval>2); valorTipoFuncion = strdup($<cval>1); if(strcmp(valorTipoFuncion,"void")) flagReturn = 1;} listaDeclaracionesBis sentCompuesta {
+               flagFuncion = 0; 
+               if(flagReturn){
+                    char *error = (char *)malloc(strlen("Error Semantico en la funcion ") + strlen(nombreFuncion) + strlen(": Deberia utilizar return.") + 1);
+                    strcpy(error, "Warning: En la funcion ");
+                    strcat(error, nombreFuncion);
+                    strcat(error, " deberia utilizar return.");
+                    agregarError(&errores, error, yylineno);
+               }
+               flagReturn = 0;
+     }
 ;
 
 
@@ -683,12 +702,12 @@ void main(){
 
      tabla.listaVariables = NULL;
      tabla.listaParametros = NULL;
-     tabla.listaVariablesAuxiliares = NULL;
      tabla.listaVariablesExternas = NULL;
      tabla.listaFuncionesDeclaradas = NULL;
      tabla.listaFuncionesDefinidas = NULL;
      tabla.listaFuncionesExternas = NULL;
      parametrosInvocacion = NULL;
+     listaVariablesAuxiliares = NULL;
      tipoInicializador = strdup("vacio");
      tipoDato = strdup("");
 

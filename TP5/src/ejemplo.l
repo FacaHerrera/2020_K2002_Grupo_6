@@ -78,6 +78,7 @@ default {return DEFAULT; }
 sizeof {return SIZEOF; }
 goto {return GOTO; }
 
+${IDENTIFICADOR} {strcpy(yylval.cval,yytext); return IDBIS;}
 {IDENTIFICADOR} {strcpy(yylval.cval,yytext); return ID;}
 
 "+" {return '+'; }

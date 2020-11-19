@@ -1,7 +1,7 @@
 printf-int
 scanf-int
 fputs-int
-fgetc-int
+fgetc-char
 fclose-int
 fopen-$FILE*
 $

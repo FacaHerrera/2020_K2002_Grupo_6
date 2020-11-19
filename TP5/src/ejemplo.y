@@ -22,6 +22,8 @@ char* tipoDato;
 char* tipoDatoAuxiliar;
 char* tipoDatoFuncion;
 char* tipoDatoPuntero;
+char* tipoVariable;
+char* tipoVariableBis;
 char* nombre;
 char* nombreFuncion;
 char* variable[20];
@@ -34,6 +36,7 @@ char esArray[20];
 char flagError = 0;
 char flagOperacionBinaria = 0; 
 char flagArray = 0;
+char flagArrayBis = 0;
 char flagReturn = 0;
 char flagFuncion = 0;
 
@@ -405,13 +408,14 @@ sentExpresion: exp ';' opcionComentario opcionBarraN     {
                                              contadorVariableExpresion = 0;
                                              contadorVariables = 0;
                                              flagArray = 0;
+                                             flagArrayBis = 0;
                                              flagError = 0;
                                              flagOperacionBinaria = 0;
                                         }
              | ';' opcionComentario opcionBarraN       
 ;
 
-sentCompuesta: '{' {jerarquia++;} opcionComentario opcionBarraN decalracionOSentencia opcionComentario opcionBarraN'}' opcionComentario opcionBarraN {/*printf("Se encontro una Sentencia Compuesta. \n");*/sacarVariables(&listaVariablesAuxiliares, jerarquia); jerarquia--;}
+sentCompuesta: '{' {jerarquia++; contadorVariableExpresion = 0; contadorVariables = 0; flagArrayBis = 0;} opcionComentario opcionBarraN decalracionOSentencia opcionComentario opcionBarraN'}' opcionComentario opcionBarraN {/*printf("Se encontro una Sentencia Compuesta. \n");*/sacarVariables(&listaVariablesAuxiliares, jerarquia); jerarquia--;}
 ;
 
 decalracionOSentencia: 
@@ -529,15 +533,15 @@ expOp:
 ;
 
 expAsignacion: expCondicional 
-             | expUnaria operAsignacion expAsignacion {
+             | expUnaria {tipoVariableBis = strdup(tipoVariable);} operAsignacion expAsignacion {
                                                             $<dval>$ = $<dval>3; 
-                                                            if(tip==3) variableExpresion[1] = strdup(tipoInicializadorFuncion);
-                                                            if(strcmp(variableExpresion[0],variableExpresion[1])){
-                                                                 char *error = (char *)malloc(strlen("Error Semantico: Se quiere asignar un valor de tipo ") + strlen(variableExpresion[1]) + strlen(" a un valor de tipo ") + strlen(variableExpresion[0]) + 1);
+                                                            
+                                                            if(strcmp(tipoVariableBis,variableExpresion[0])){
+                                                                 char *error = (char *)malloc(strlen("Error Semantico: Se quiere asignar un valor de tipo ") + strlen(variableExpresion[0]) + strlen(" a un valor de tipo ") + strlen(tipoVariableBis) + 1);
                                                                  strcpy(error, "Error Semantico: Se quiere asignar un valor de tipo ");
-                                                                 strcat(error, variableExpresion[1]);
-                                                                 strcat(error, " a un valor de tipo ");
                                                                  strcat(error, variableExpresion[0]);
+                                                                 strcat(error, " a un valor de tipo ");
+                                                                 strcat(error, tipoVariableBis);
                                                                  agregarError(&errores, error, yylineno);
                                                             };
                                                        }
@@ -602,9 +606,9 @@ expUnaria: expSufijo
          | SIZEOF '(' nombreTipo ')' {$<dval>$ = sizeof($<dval>3); }
 ;
 
-expSufijo: expPrimaria 
-         | expSufijo '[' exp ']'             {$<dval>$ = 0; flagArray = 1;}
-         | expSufijo '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno); parametrosInvocacion = NULL; tipoInicializadorFuncion = strdup(tipoFuncion(tabla, $<cval>1)); contadorVariableExpresion = 0; tip = 3;}
+expSufijo: expPrimaria {if (tip!=3 && !flagArrayBis) tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia));}
+         | expSufijo {tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia)); flagArrayBis = 1;} '[' exp ']'             {$<dval>$ = 0; flagArray = 1;}
+         | expSufijo {tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia)); tip = 3;} '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno); parametrosInvocacion = NULL; tipoInicializadorFuncion = strdup(tipoFuncion(tabla, $<cval>1)); contadorVariableExpresion = 0; tip = 3;}
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
@@ -670,7 +674,7 @@ declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d 
                   }
 ;
 
-definicionFuncion: especDeclaracion decla2 {nombreFuncion = strdup($<cval>2); valorTipoFuncion = strdup($<cval>1); if(strcmp(valorTipoFuncion,"void")) flagReturn = 1;} listaDeclaracionesBis sentCompuesta {
+definicionFuncion: especDeclaracion decla2 {nombreFuncion = strdup($<cval>2); valorTipoFuncion = strdup($<cval>1); if(strcmp(valorTipoFuncion,"void")) flagReturn = 1;} listaDeclaracionesBis {contadorVariableExpresion = 0; contadorVariables = 0;} sentCompuesta {
                flagFuncion = 0; 
                if(flagReturn){
                     char *error = (char *)malloc(strlen("Error Semantico en la funcion ") + strlen(nombreFuncion) + strlen(": Deberia utilizar return.") + 1);

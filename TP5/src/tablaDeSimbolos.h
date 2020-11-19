@@ -343,7 +343,6 @@ ListaVariables* buscarVariable(ListaVariables **variables, char *nombre, int jer
 }
 
 char* tipo(TablaDeSimbolos tabla, ListaVariables **listaVariables, ListaVariables **parametros, char* nombre, int jerarquia ) {
-    printf("%s", nombre);
     ListaVariables* parametro = buscarParametro(parametros,nombre);
     ListaVariables *variable = buscarVariable(listaVariables,nombre, jerarquia);
     ListaVariables *variableExterna = buscarVariable(&tabla.listaVariablesExternas,nombre, 0);
@@ -833,8 +832,8 @@ void imprimirTabla(TablaDeSimbolos tabla) {
     imprimirVariables(&tabla.listaVariables, "LISTA DE VARIABLES DECLARADAS");
     imprimirFunciones(&tabla.listaFuncionesDeclaradas, "LISTA DE FUNCIONES DECLARADAS");
     imprimirFunciones(&tabla.listaFuncionesDefinidas, "LISTA DE FUNCIONES DEFINIDAS");
-    imprimirFunciones(&tabla.listaFuncionesExternas, "LISTA DE FUNCIONES EXTERNAS");
-    imprimirVariables(&tabla.listaVariablesExternas, "LISTA DE VARIABLES EXTERNAS");
+    //imprimirFunciones(&tabla.listaFuncionesExternas, "LISTA DE FUNCIONES EXTERNAS");
+    //imprimirVariables(&tabla.listaVariablesExternas, "LISTA DE VARIABLES EXTERNAS");
     //imprimirVariables(&tabla.listaVariablesAuxiliares, "LISTA DE VARIABLES AUXILIARES");
 }
 

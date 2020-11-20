@@ -40,7 +40,9 @@ char flagArrayBis = 0;
 char flagReturn = 0;
 char flagFuncion = 0;
 char flagAnd = 0;
+char esID = 0;
 
+int lineaAux;
 int lineaVariable[10];
 int jerarquia = 0;
 int contadorVariables = 0;
@@ -126,13 +128,10 @@ line: '\n'
     | sentencia opcionComentario opcionBarraN
     | INCLUDE opcionComentario '\n' {agregarFuncionesExternas(&tabla.listaFuncionesExternas, &tabla.listaVariablesExternas, $<cval>1, yylineno-1);}
     | lineaControl opcionComentario '\n' 
-    | ERROR_LEXICO  {
-                         char *error = malloc(strlen("Error Lexico: ") + strlen($<cval>1) + 1);
-                         strcpy(error, "Error Lexico: ");
-                         strcat(error, $<cval>1);
-                         agregarError(&errores, error, yylineno);
+    | ERROR_LEXICO  {    
+                         agregarErrores(&errores, yylineno, 1, "Error Lexico: $", $<cval>1);
                     }
-    | error '\n' {agregarError(&errores,"Error Sintactico",yylineno-1); tabla.listaParametros = NULL; cantidadPuntero = 0; contadorParametros = 0;}
+    | error '\n' {agregarErrores(&errores, yylineno, 0, "Error Sintactico"); tabla.listaParametros = NULL; cantidadPuntero = 0; contadorParametros = 0;}
 ;
 
 lineaControl: DEFINE ID expPrimaria {agregarVariablesExternasBis(&tabla.listaVariablesExternas, $<cval>2, tipoInicializador, yylineno);}
@@ -175,6 +174,7 @@ especDeclaracion: CLASE_ALMACENAMIENTO especDeclaracionBis
                                                             strcpy(tipoDatoFuncion, tipoDato);
                                                             flagFuncion = 1;
                                                        }
+                                                       tipoVariable = strdup($<cval>1);
                                                        tipoDato = strdup($<cval>1);
                                                   }
                
@@ -351,72 +351,11 @@ sentencia: sentCompuesta
          | sentEtiquetada
 ;
 
-sentExpresion: exp ';' opcionComentario opcionBarraN     {   
-                                             while(contadorVariableExpresion && !flagArray){
-                                                  
-                                                  if(contadorVariableExpresion == 1 || !strcmp(variableExpresion[0],variableExpresion[contadorVariableExpresion-1])) {
-                                                       contadorVariableExpresion--;
-                                                       tipoInicializador = variableExpresion[0];
-                                                  }
-                                                  else if(flagOperacionBinaria==1) {
-
-                                                       char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere sumar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                                                       strcpy(error,"Se quiere sumar un valor de tipo ");
-                                                       strcat(error,variableExpresion[0]);
-                                                       strcat(error," a un valor de tipo ");
-                                                       strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                                                       agregarError(&errores, error, yylineno-1);
-                                                       flagError = 1;
-                                                       contadorVariableExpresion = 0;
-                                                  }
-                                                  else if(flagOperacionBinaria==2) {
-
-                                                       char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere restar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                                                       strcpy(error,"Se quiere restar un valor de tipo ");
-                                                       strcat(error,variableExpresion[0]);
-                                                       strcat(error," a un valor de tipo ");
-                                                       strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                                                       agregarError(&errores, error, yylineno-1);
-                                                       flagError = 1;
-                                                       contadorVariableExpresion = 0;
-                                                  }
-                                                  else if(flagOperacionBinaria==3) {
-
-                                                       char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere multiplicar un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                                                       strcpy(error,"Se quiere multiplicar un valor de tipo ");
-                                                       strcat(error,variableExpresion[0]);
-                                                       strcat(error," a un valor de tipo ");
-                                                       strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                                                       agregarError(&errores, error, yylineno-1);
-                                                       flagError = 1;
-                                                       contadorVariableExpresion = 0;
-                                                  }
-                                                  else if(flagOperacionBinaria==4) {
-
-                                                       char *error = malloc(strlen(variableExpresion[0])+strlen(variableExpresion[contadorVariableExpresion-1])+strlen("Error Semantico: Se quiere dividir un valor de tipo ")+strlen(" a un valor de tipo ") + 1);
-                                                       strcpy(error,"Se quiere dividir un valor de tipo ");
-                                                       strcat(error,variableExpresion[0]);
-                                                       strcat(error," a un valor de tipo ");
-                                                       strcat(error, variableExpresion[contadorVariableExpresion-1]);
-                                                       agregarError(&errores, error, yylineno-1);
-                                                       flagError = 1;
-                                                       contadorVariableExpresion = 0;
-                                                  } 
-                                                  else if(!flagOperacionBinaria){
-                                                       contadorVariableExpresion = 0;
-                                                  }
-                                             }
-                                             contadorVariableExpresion = 0;
-                                             contadorVariables = 0;
-                                             flagArray = 0;
-                                             flagArrayBis = 0;
-                                             flagError = 0;
-                                             flagOperacionBinaria = 0;
-                                        }
+sentExpresion: exp ';' opcionComentario opcionBarraN     
              | ';' opcionComentario opcionBarraN       
 ;
 
-sentCompuesta: '{' {jerarquia++; contadorVariableExpresion = 0; contadorVariables = 0; flagArrayBis = 0;} opcionComentario opcionBarraN decalracionOSentencia opcionComentario opcionBarraN'}' opcionComentario opcionBarraN {/*printf("Se encontro una Sentencia Compuesta. \n");*/sacarVariables(&listaVariablesAuxiliares, jerarquia); jerarquia--;}
+sentCompuesta: '{' {jerarquia++; contadorVariableExpresion = 0; contadorVariables = 0; flagArrayBis = 0;} opcionComentario opcionBarraN decalracionOSentencia opcionComentario opcionBarraN {lineaAux = yylineno;} '}' opcionComentario opcionBarraN {/*printf("Se encontro una Sentencia Compuesta. \n");*/sacarVariables(&listaVariablesAuxiliares, jerarquia); jerarquia--; contadorVariableExpresion = 0;}
 ;
 
 decalracionOSentencia: 
@@ -464,21 +403,10 @@ sentEtiquetada: CASE expCondicional ':' opcionComentario opcionBarraN sentencia 
 sentSalto: RETURN expOp ';' {/*printf("Se encontro una Sentencia de Salto RETURN. \n"); */
                                    if(strcmp(tipoInicializadorFuncion,valorTipoFuncion)){
                                         if(!strcmp(tipoInicializadorFuncion,"")){
-                                             char *error = (char *)malloc(strlen("Error Semantico en la devolucion de la funcion ") + strlen(nombreFuncion) + strlen(": El parametro no existe ") + 1);
-                                             strcpy(error, "Error Semantico en la devolucion de la funcion ");
-                                             strcat(error, nombreFuncion);
-                                             strcat(error, ": El parametro no existe ");
-                                             agregarError(&errores, error, yylineno);
+                                             agregarErrores(&errores, yylineno, 1, "Error Semantico en la devolucion de la funcion $ : El parametro no existe.", nombreFuncion);
                                         }
                                         else{
-                                             char *error = (char *)malloc(strlen("Error Semantico en la devolucion de la funcion ") + strlen(nombreFuncion) + strlen(": Se quiere devolver el parametro de tipo ") + strlen(tipoInicializadorFuncion) + strlen(", mientras que la funcion devuelve ") +strlen(valorTipoFuncion) + 1);
-                                             strcpy(error, "Error Semantico en la devolucion de la funcion ");
-                                             strcat(error, nombreFuncion);
-                                             strcat(error, ": Se quiere devolver el parametro de tipo ");
-                                             strcat(error, tipoInicializadorFuncion);
-                                             strcat(error, ", mientras que la funcion devuelve ");
-                                             strcat(error, valorTipoFuncion);
-                                             agregarError(&errores, error, yylineno);
+                                             agregarErrores(&errores, yylineno, 3, "Error Semantico en la devolucion de la funcion $: Se quiere devolver el parametro de tipo $, mientras que la funcion devuelve $.", nombreFuncion, tipoInicializadorFuncion, valorTipoFuncion);
                                         }
                                    }
                                    flagReturn = 0;
@@ -493,33 +421,29 @@ expPrimaria: ID               {    if(esArrayVariable(&listaVariablesAuxiliares,
                                    tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia); 
                                    variableExpresion[contadorVariableExpresion] = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia));
                                    contadorVariableExpresion++;
-                                   tip = 0;
+                                   esID = 1;
                               }
            | ENTERO           {
                                    $<dval>$ = $<ival>1; 
                                    tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = "int"; 
                                    variableExpresion[contadorVariableExpresion] = strdup("int");
                                    contadorVariableExpresion++;
-                                   tip = 0;
                               } 
            | REAL             {
                                    $<dval>$ = $<dval>1; 
                                    tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = "double"; 
                                    variableExpresion[contadorVariableExpresion] = strdup("double");
                                    contadorVariableExpresion++;
-                                   tip = 0;
                               }
            | CTE_CARACTER     {
                                    tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = "char"; 
                                    variableExpresion[contadorVariableExpresion] = strdup("char");
                                    contadorVariableExpresion++;
-                                   tip = 0;
                               }
            | LITERAL_CADENA   {
                                    tipoParametroInvocacion = tipoInicializadorFuncion = "char*"; 
                                    variableExpresion[contadorVariableExpresion] = strdup("char*");
                                    contadorVariableExpresion++;
-                                   tip = 0;
                               }
            | NULL1
            | '(' exp ')'      {$<dval>$ = ( $<dval>2 ); }
@@ -533,18 +457,50 @@ expOp:
      | exp
 ;
 
-expAsignacion: expCondicional 
-             | expUnaria {tipoVariableBis = strdup(tipoVariable);} operAsignacion expAsignacion {
+expAsignacion: expCondicional {
+                         while(contadorVariableExpresion && !flagArray){
+                                                  
+                              if(contadorVariableExpresion == 1 || !strcmp(variableExpresion[0],variableExpresion[contadorVariableExpresion-1])) {
+                                   contadorVariableExpresion--;
+                                   tipoInicializador = variableExpresion[0];
+                              }
+                              else if(flagOperacionBinaria==1) {
+                                   agregarErrores(&errores, yylineno, 2, "Se quiere sumar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   flagError = 1;
+                                   contadorVariableExpresion = 0;
+                              }
+                              else if(flagOperacionBinaria==2) {
+                                   agregarErrores(&errores, yylineno, 2, "Se quiere restar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   flagError = 1;
+                                   contadorVariableExpresion = 0;
+                              }
+                              else if(flagOperacionBinaria==3) {
+                                   agregarErrores(&errores, yylineno, 2, "Se quiere multiplicar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   flagError = 1;
+                                   contadorVariableExpresion = 0;
+                              }
+                              else if(flagOperacionBinaria==4) {
+                                   agregarErrores(&errores, yylineno, 2, "Se quiere dividir un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   flagError = 1;
+                                   contadorVariableExpresion = 0;
+                              } 
+                              else if(!flagOperacionBinaria){
+                                   contadorVariableExpresion = 0;
+                              }
+                         }
+                         contadorVariableExpresion = 0;
+                         flagArrayBis = 0;
+                         flagError = 0;
+                         flagOperacionBinaria = 0;
+                    }
+             | expUnaria {tipoVariableBis = strdup(tipoVariable); contadorVariableExpresion = 0;} operAsignacion expAsignacion {
                                                             $<dval>$ = $<dval>3; 
-                                                            
+                                                            if(!strcmp(tipoVariableBis,"")) agregarErrores(&errores, yylineno, 1, "Error Semantico: La variable $ no existe.", $<cval>1);
+                                                            if(tip == 3) variableExpresion[0] = strdup(tipoVariable);
                                                             if(strcmp(tipoVariableBis,variableExpresion[0])){
-                                                                 char *error = (char *)malloc(strlen("Error Semantico: Se quiere asignar un valor de tipo ") + strlen(variableExpresion[0]) + strlen(" a un valor de tipo ") + strlen(tipoVariableBis) + 1);
-                                                                 strcpy(error, "Error Semantico: Se quiere asignar un valor de tipo ");
-                                                                 strcat(error, variableExpresion[0]);
-                                                                 strcat(error, " a un valor de tipo ");
-                                                                 strcat(error, tipoVariableBis);
-                                                                 agregarError(&errores, error, yylineno);
+                                                                 agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere asignar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], tipoVariableBis);
                                                             };
+                                                            tip = 0;
                                                        }
 ;
 
@@ -590,7 +546,7 @@ expAditiva: expMultiplicativa
 
 expMultiplicativa: expUnaria
                  | expMultiplicativa '*' expUnaria {$<dval>$ = $<dval>1 * $<dval>3;  flagOperacionBinaria = 3;}
-                 | expMultiplicativa '/' expUnaria {if($<dval>3 == 0) {agregarError(&errores,"ERROR/: No se puede dividir por 0",yylineno-1);} else {$<dval>$ = $<dval>1 / $<dval>3;  flagOperacionBinaria = 4;}}
+                 | expMultiplicativa '/' expUnaria {if($<dval>3 == 0) {agregarErrores(&errores, yylineno, 0, "ERROR/: No se puede dividir por 0.");} else {$<dval>$ = $<dval>1 / $<dval>3;  flagOperacionBinaria = 4;}}
                  | expMultiplicativa '%' expUnaria {$<dval>$ = $<ival>1 % $<ival>3; }
 ;
 
@@ -607,25 +563,22 @@ expUnaria: expSufijo
          | SIZEOF '(' nombreTipo ')' {$<dval>$ = sizeof($<dval>3); }
 ;
 
-expSufijo: expPrimaria   {    if (tip!=3 && !flagArrayBis) {
-                                   /*if(flagAnd){
-                                        tipoVariable = (char*)malloc(strlen(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia))+1);
-                                        strcpy(tipoVariable, tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia));
-                                        strcat(tipoVariable, "*");
-                                        flagAnd = 0;
-                                   }
-                                   else */tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia));
+expSufijo: expPrimaria   {    
+                              if (tip!=3 && !flagArrayBis && esID) {
+                                   tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia));
                               }
+                              esID = 0;
                          }
          | expSufijo {tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia)); flagArrayBis = 1;} '[' exp ']'             {$<dval>$ = 0; flagArray = 1;}
-         | expSufijo {tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, $<cval>1, jerarquia)); tip = 3;} '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno, flagAnd); parametrosInvocacion = NULL; tipoInicializadorFuncion = strdup(tipoFuncion(tabla, $<cval>1)); contadorVariableExpresion = 0; tip = 3;}
+         | expSufijo {tipoVariable = strdup(tipoFuncion(tabla, $<cval>1)); tip = 3;} '(' listaArgumentos ')' {$<dval>$ = 0; validarInvocacion(tabla,$<cval>1,parametrosInvocacion,yylineno, flagAnd); parametrosInvocacion = NULL; tipoInicializadorFuncion = strdup(tipoFuncion(tabla, $<cval>1)); contadorVariableExpresion = 0; tip = 3;}
          | expSufijo '.' ID                  {$<dval>$ = 0; }
          | expSufijo FLECHA ID               {$<dval>$ = 0; }
          | expSufijo INCREMENTO              {$<dval>$ = $<dval>2 ++; }
          | expSufijo DECREMENTO              {$<dval>$ = $<dval>2 --; }
 ;
 
-listaArgumentos: expAsignacion {agregarNodo(&parametrosInvocacion,tipoInicializadorFuncion, flagArray);}
+listaArgumentos: 
+               |  expAsignacion {agregarNodo(&parametrosInvocacion,tipoInicializadorFuncion, flagArray);}
                | listaArgumentos ',' expAsignacion {agregarNodo(&parametrosInvocacion,tipoInicializadorFuncion, flagArray);}
 ;
 
@@ -687,11 +640,7 @@ declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d 
 definicionFuncion: especDeclaracion decla2 {nombreFuncion = strdup($<cval>2); valorTipoFuncion = strdup($<cval>1); if(strcmp(valorTipoFuncion,"void")) flagReturn = 1;} listaDeclaracionesBis {contadorVariableExpresion = 0; contadorVariables = 0;} sentCompuesta {
                flagFuncion = 0; 
                if(flagReturn){
-                    char *error = (char *)malloc(strlen("Error Semantico en la funcion ") + strlen(nombreFuncion) + strlen(": Deberia utilizar return.") + 1);
-                    strcpy(error, "Warning: En la funcion ");
-                    strcat(error, nombreFuncion);
-                    strcat(error, " deberia utilizar return.");
-                    agregarError(&errores, error, yylineno);
+                    agregarErrores(&errores, lineaAux, 1, "Warning: La funcion $ deberia utilizar return.", nombreFuncion);
                }
                flagReturn = 0;
      }

@@ -37,6 +37,7 @@ int escanear_archivo(char *archivo, $FILE* archivoSalida){
 	datos=fopen(archivo, "rt");
 	char caracter, cadena[50];
 	int len;
+	len = 5 + "fofo" + 2;
 	if (datos==NULL) return ERROR;
 	do{	
 		strcpy(cadena, "");
@@ -80,7 +81,7 @@ int automata(char *cadena){
 			recorrido = 4;
 		}
 		else{
-			recorrido = 5;
+			recorrido = "hola";
 		}
 		inicio = automata[inicio][recorrido];
 		len++;

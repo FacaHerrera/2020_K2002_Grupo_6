@@ -615,8 +615,8 @@ void imprimirFunciones(ListaFunciones **funciones, char* titulo){
         printf("%c", 187);
         printf("\n%c", 186);
         printf("%s", centrar(titulo, ancho+2));
-
         printf("  %c\n", 186);
+        
         printf("%c", 204);
         for(i=0; i < anchoC1; i++) printf("%c", 205);
         printf("%c", 203);

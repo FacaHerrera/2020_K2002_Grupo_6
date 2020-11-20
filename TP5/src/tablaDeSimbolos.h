@@ -767,7 +767,7 @@ void imprimirTitulo(int columnas, int ancho, char* titulo){
 }
 
 void imprimirContenido(int fin, int columnas, ...){
-	int i, j, ancho;
+	int i, j;
 	int formato[10];
 	char* titulos[10];
 	char opcion, opcion1, opcion2;

@@ -127,8 +127,8 @@ line: '\n'
     | sentencia opcionComentario opcionBarraN
     | INCLUDE opcionComentario '\n' {agregarFuncionesExternas(&tabla.listaFuncionesExternas, &tabla.listaVariablesExternas, $<cval>1, yylineno-1);}
     | lineaControl opcionComentario '\n' 
-    | ERROR_LEXICO  {    
-                         agregarErrores(&errores, yylineno, 1, "Error Lexico: $", $<cval>1);
+    | ERROR_LEXICO opcionBarraN {    
+                         agregarErrores(&errores, yylineno, 1, "Error Lexico: $.", $<cval>1);
                     }
     | error '\n' {agregarErrores(&errores, yylineno, 0, "Error Sintactico"); tabla.listaParametros = NULL; cantidadPuntero = 0; contadorParametros = 0;}
 ;
@@ -139,6 +139,9 @@ lineaControl: DEFINE ID expPrimaria {agregarVariablesExternasBis(&tabla.listaVar
 opcionComentario: 
                | COMENTARIO_MULTIPLE
                | COMENTARIO_SIMPLE
+               | ERROR_LEXICO {    
+                                   agregarErrores(&errores, yylineno, 1, "Error Lexico: $.", $<cval>1);
+                              }
 ;
 
 opcionBarraN: 
@@ -360,6 +363,7 @@ decalracionOSentencia:
 
 decalracionOSentenciaBis: listaDeclaraciones
                         | listaSentencias
+                        
 ;
 
 listaDeclaraciones: declaracionExterna

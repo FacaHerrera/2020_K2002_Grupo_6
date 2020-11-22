@@ -58,7 +58,7 @@ CARACTER_IMPRIMIBLE [ -~]
 {FRACCION}{EXPONENTE}?{SUFIJO_REAL}?|{SECUENCIA_DE_DIGITOS}{EXPONENTE}{SUFIJO_REAL}? {yylval.dval = atof(yytext); return REAL; }
 null|NULL {strcpy(yylval.cval,yytext); return NULL1; }
 \'{CONSTANTE_CARACTER}?\' {strcpy(yylval.cval,yytext); return CTE_CARACTER; }
-\"([^\"]|$)*\" {strcpy(yylval.cval,yytext); return LITERAL_CADENA; }
+\"([^\"])*\" {strcpy(yylval.cval,yytext); return LITERAL_CADENA; }
 
 void|char|float|int|long|short|double {strcpy(yylval.cval,yytext); return TIPO_DATO; }
 typedef|static|auto|register|extern {strcpy(yylval.cval,yytext); return CLASE_ALMACENAMIENTO; }
@@ -78,7 +78,7 @@ default {return DEFAULT; }
 sizeof {return SIZEOF; }
 goto {return GOTO; }
 
-${IDENTIFICADOR} {strcpy(yylval.cval,yytext); return IDBIS;}
+
 {IDENTIFICADOR} {strcpy(yylval.cval,yytext); return ID;}
 
 "+" {return '+'; }
@@ -124,6 +124,6 @@ ${IDENTIFICADOR} {strcpy(yylval.cval,yytext); return IDBIS;}
 {COMENTARIO_SIMPLE} {strcpy(yylval.cval,yytext); return COMENTARIO_SIMPLE;}
 {COMENTARIO_MULTIPLE} {strcpy(yylval.cval,yytext); return COMENTARIO_MULTIPLE;}
 
-[^\t' '] {strcpy(yylval.cval,yytext); return ERROR_LEXICO;}
+[^\t' '] {strcpy(yylval.cval,yytext); return ERROR_LEXICO; }
 
 %%

@@ -3,7 +3,7 @@ scanf-int
 fputs-int
 fgetc-char
 fclose-int
-fopen-$FILE*
+fopen-char*
 fflush-int
 free-int
 $

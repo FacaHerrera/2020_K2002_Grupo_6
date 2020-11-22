@@ -6,14 +6,15 @@
 
 void mostrar_menu(void);
 int verificar_txt(char *);
-int escanear_archivo(char *, $FILE*);
-void guardar(int, char *, $FILE*);
+int escanear_archivo(char *, char*);
+void guardar(int, char *, char*);
 int automata(char *);
-int mostrar_consigna($FILE*);
+int mostrar_consigna(char*);
 
 int main() {
-	$FILE *archivo;
+	char *archivo;
 	archivo = fopen("RESULTADOS.txt", "wt");
+	$
 	if (mostrar_consigna(archivo)){
 		printf("\n\nProceso satisfactorio.\n\n");
 	}
@@ -24,7 +25,7 @@ int main() {
 	return 0;
 }
 
-int mostrar_consigna($FILE * archivoSalida){
+int mostrar_consigna(char * archivoSalida){
 	char archivo[20];
 	printf("Trabajo Practico Nro 1 - Automata Finito Deterministico para Constantes Enteras\n\nIngrese el nombre del archivo a escanear: ");
 	scanf("%s", archivo);
@@ -32,8 +33,8 @@ int mostrar_consigna($FILE * archivoSalida){
 	return escanear_archivo(archivo, archivoSalida);
 }
 
-int escanear_archivo(char *archivo, $FILE* archivoSalida){
-	$FILE *datos;
+int escanear_archivo(char *archivo, char* archivoSalida){
+	char *datos;
 	datos=fopen(archivo, "rt");
 	char caracter, cadena[50];
 	int len;
@@ -89,7 +90,7 @@ int automata(char *cadena){
 	return inicio;
 }
 
-void guardar(int base, char *cadena, $FILE* archivoSalida){
+void guardar(int base, char *cadena, char* archivoSalida){
 	fputs(cadena, archivoSalida);
 	switch(base){
 		case 2:

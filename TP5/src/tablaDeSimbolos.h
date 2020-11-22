@@ -115,9 +115,6 @@ void imprimirErrores(Error **errores){
     int i, ancho, columnas = 2, anchoC1 = 180, anchoC2 = 10;
     ancho = anchoC1 + anchoC2;
     char ultimo;
-    char titulo[20] = "LISTA DE ERRORES";
-    char titulo0[20] = "ERROR";
-    char titulo1[20] = "LINEA";
     char snum[10];
 
     Error *aux = *errores;

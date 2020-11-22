@@ -4,6 +4,7 @@
 #include<string.h>
 #include<stdarg.h>
 #include"impresion.h"
+#include<windows.h>
 
 typedef struct TablaDeSimbolos {
     struct ListaVariables *listaVariables;
@@ -50,6 +51,7 @@ void validarInvocacion(TablaDeSimbolos , char* tete, Nodo *, int, char);
 int longitudNodo(Nodo **);
 void agregarNodo(Nodo **, char*, char);
 
+void agregarErrores(Error **, int , int , char*, ...);
 void imprimirErrores(Error **);
 
 ListaVariables* buscarVariable(ListaVariables **,char *, int);
@@ -59,26 +61,26 @@ char* tipo(TablaDeSimbolos, ListaVariables **, ListaVariables **, char*, int);
 char esArrayVariable(ListaVariables ** , char*, int);
 void agregarVariablesExternas(ListaVariables**, char*, int);
 void agregarVariablesExternasBis(ListaVariables **, char*, char*, int);
-void agregarParametro(ListaVariables**, char*, char*, int, char);
+
 ListaVariables* buscarParametro(ListaVariables **, char *);
+void agregarParametro(ListaVariables**, char*, char*, int, char);
 void imprimirParametros(ListaVariables **, int, int, int, int, int, char);
 ListaVariables* parametrosIguales(ListaVariables**);
 void eliminarParametro(ListaVariables **, char*);
+
 void escribirAuxiliares(ListaVariables **, char* , char* , char , int , int );
 void sacarVariables(ListaVariables **, int );
 
-void agregarFuncion(ListaFunciones** , ListaFunciones** , char* , char*, ListaVariables**, int, int);
 ListaFunciones* buscarFuncion(ListaFunciones **,char *);
+void agregarFuncion(ListaFunciones** , ListaFunciones** , char* , char*, ListaVariables**, int, int);
 void imprimirFunciones(ListaFunciones**, char*);
 char* tipoFuncion(TablaDeSimbolos, char*);
 void agregarFuncionesExternas(ListaFunciones**, ListaVariables**, char*, int);
-void agregarErrores(Error **, int , int , char*, ...);
 
 ///////////////////
 //IDENTIFICADORES//
 ///////////////////
 
-//Devuelve la cantidad de parametros que tiene una funcion
 int longitudNodo(Nodo **p){
     int longitud = 0;
     Nodo *aux = *p;
@@ -130,6 +132,44 @@ void imprimirErrores(Error **errores){
             imprimirContenido(i, columnas, aux->error, anchoC1, snum, anchoC2);
             aux = aux->sig;
         }
+    }
+}
+void agregarErrores(Error **errores, int linea, int cantidad, char* entrada, ...) {
+	
+	char salida[200];
+	char cadena[200];
+	int i=0;
+	
+	strcpy(cadena, entrada);
+	const char caracterCorte[2] = "$";
+	char *token;
+	token = strtok(cadena, caracterCorte);
+	
+	va_list pa;
+    va_start(pa, entrada);
+    
+    strcpy(salida,"");
+	while( token != NULL ) {
+		strcat(salida, token);
+		if(i<cantidad) strcat(salida, va_arg(pa, char*));
+      	token = strtok(NULL, caracterCorte);
+      	i++;
+   	}
+    va_end(pa);
+
+    Error *nuevo = (Error *)malloc(sizeof(Error));
+    nuevo->error = strdup(salida);
+    nuevo->linea = linea;
+    nuevo->sig = NULL;
+    if(*errores==NULL){
+        *errores = nuevo;
+    }
+    else{
+        Error* aux = *errores;
+        while(aux->sig != NULL){
+            aux = aux->sig;
+        }
+        aux->sig = nuevo;
     }
 }
 
@@ -615,41 +655,22 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
     }
 }
 
-void agregarErrores(Error **errores, int linea, int cantidad, char* entrada, ...) {
-	
-	char salida[200];
-	char cadena[200];
-	int i=0;
-	
-	strcpy(cadena, entrada);
-	const char caracterCorte[2] = "$";
-	char *token;
-	token = strtok(cadena, caracterCorte);
-	
-	va_list pa;
-    va_start(pa, entrada);
-    
-    strcpy(salida,"");
-	while( token != NULL ) {
-		strcat(salida, token);
-		if(i<cantidad) strcat(salida, va_arg(pa, char*));
-      	token = strtok(NULL, caracterCorte);
-      	i++;
-   	}
-    va_end(pa);
-
-    Error *nuevo = (Error *)malloc(sizeof(Error));
-    nuevo->error = strdup(salida);
-    nuevo->linea = linea;
-    nuevo->sig = NULL;
-    if(*errores==NULL){
-        *errores = nuevo;
-    }
-    else{
-        Error* aux = *errores;
-        while(aux->sig != NULL){
-            aux = aux->sig;
-        }
-        aux->sig = nuevo;
-    }
-}
+void pantallaCompleta() {	//EJECUTA LA CONSOLA EN PANTALLA COMPLETA
+    keybd_event(VK_MENU,
+                0x38,
+                0,
+                0);
+    keybd_event(VK_RETURN,
+                0x1c,
+                0,
+                0);
+    keybd_event(VK_RETURN,
+                0x1c,
+                KEYEVENTF_KEYUP,
+                0);
+    keybd_event(VK_MENU,
+                0x38,
+                KEYEVENTF_KEYUP,
+                0);
+    return;
+} 

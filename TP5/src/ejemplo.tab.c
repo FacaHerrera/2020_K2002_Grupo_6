@@ -2875,7 +2875,7 @@ int yyerror (char *mensaje)
 }
 
 void main(){
-
+     pantallaCompleta(); 
      #ifdef BISON_DEBUG
           yydebug = 1;
      #endif 

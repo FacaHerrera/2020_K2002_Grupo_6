@@ -671,3 +671,52 @@ void pantallaCompleta() {	//EJECUTA LA CONSOLA EN PANTALLA COMPLETA
                 0);
     return;
 } 
+
+////////
+//MENU//
+////////
+
+int mostrarMenu(char *archivoE){	//MUESTRA EL MENU PRINCIPAL
+	int opcion;
+	while(1){
+		system("CLS");
+		printf("TP5 - INTEGRADOR\n\nQUE DESEA HACER?\n\n\t1-VER/MODIFICAR ARCHIVO DE ENTRADA (Actual: %s)\n\t2-CORRER ANALIZADOR\n\t3-SALIR\n", archivoE);
+		fflush(stdin);
+		scanf("%d", &opcion);
+		if(opcion>=1&&opcion<=3){
+			return opcion;
+			break;
+		}
+		printf("Ingrese opcion valida.\n\n");
+		system("PAUSE");
+	}
+}
+
+void modificarArchivo(char *archivo){	//CAMBIA EL NOMBRE DE UNA CADENA (EN ESTE CASO EL NOMBRE DEL ARCHIVO)
+	char opcion[200];
+	system("CLS");
+	if(strcmp(archivo, "VACIO")!=0){
+		printf("El siguiente es el archivo actual: \n");
+		system("PAUSE");
+		FILE *r = fopen(archivo, "r");
+		if(r==NULL){
+			printf("\nNO EXISTE EL ARCHIVO DE ENTRADA.\n\n");
+			system("PAUSE");
+			fclose(r);
+			exit;
+		}
+		else{
+			while (!feof (r))printf ("%c",  getc (r));
+			system("PAUSE");
+		}
+		
+	}
+	system("CLS");
+	printf("Ingrese el nombre del archivo o la ruta (1 para cancelar y 2 para borrar): ");
+	fflush(stdin);
+	scanf("%[^\n]", opcion);
+	if(strcmp(opcion,"2")==0) strcpy(archivo, "VACIO");
+	else if (strcmp(opcion,"1")!=0){
+		 strcpy(archivo, opcion);
+	}
+}

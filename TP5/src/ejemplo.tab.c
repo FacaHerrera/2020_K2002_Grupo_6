@@ -2852,22 +2852,55 @@ void main(){
      #ifdef BISON_DEBUG
           yydebug = 1;
      #endif 
-     yyout = fopen("salida.txt","w");
-     yyin = fopen("entrada.txt", "r");
+     char archivoE[200] = "entrada.txt", condicion = 'S';
 
-     tabla.listaVariables = NULL;
-     tabla.listaParametros = NULL;
-     tabla.listaVariablesExternas = NULL;
-     tabla.listaFuncionesDeclaradas = NULL;
-     tabla.listaFuncionesDefinidas = NULL;
-     tabla.listaFuncionesExternas = NULL;
-     parametrosInvocacion = NULL;
-     listaVariablesAuxiliares = NULL;
-     tipoInicializador = strdup("vacio");
-     tipoDato = strdup("");
+     while(toupper(condicion) == 'S'){
+        system("CLS");
+        switch(mostrarMenu(archivoE)){
+            case(1):
+                modificarArchivo(archivoE);
+                condicion='s';
+                break;
+            case(2):
+                system("CLS");
+                condicion='S';
+                if(strcmp(archivoE, "VACIO")==0) printf("NO CARGO UN NOMBRE PARA EL ARCHIVO DE ENTRADA.\n\n");
+                else{
+                    yyin = fopen(archivoE, "r");
+                    if(yyin==NULL){
+                        printf("\nNO EXISTE EL ARCHIVO DE ENTRADA.\n\n");
+                        fclose(yyin);
+                        break;
+                    }
+                    tabla.listaVariables = NULL;
+                    tabla.listaParametros = NULL;
+                    tabla.listaVariablesExternas = NULL;
+                    tabla.listaFuncionesDeclaradas = NULL;
+                    tabla.listaFuncionesDefinidas = NULL;
+                    tabla.listaFuncionesExternas = NULL;
+                    errores = NULL;
+                    parametrosInvocacion = NULL;
+                    listaVariablesAuxiliares = NULL;
+                    tipoInicializador = strdup("vacio");
+                    tipoDato = strdup("");
+                    yylineno = 1;
 
-     yyparse();
-     imprimirTabla(tabla);
-     imprimirErrores(&errores);
-     system("PAUSE");
+                    yyparse();
+                    imprimirTabla(tabla);
+                    imprimirErrores(&errores);
+                    system("PAUSE");
+                }
+                fclose(yyin);
+                break;
+            case(3):
+                condicion = 'n';
+                break;
+        }
+
+        if (condicion == 'S'){
+            printf("\nDesea realizar otra operacion? (S para si/ Cualquiera para no)");
+            fflush(stdin);
+            condicion = getc(stdin);
+        }
+    }
 }

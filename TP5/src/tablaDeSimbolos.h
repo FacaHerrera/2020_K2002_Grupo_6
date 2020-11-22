@@ -694,6 +694,8 @@ int mostrarMenu(char *archivoE){	//MUESTRA EL MENU PRINCIPAL
 
 void modificarArchivo(char *archivo){	//CAMBIA EL NOMBRE DE UNA CADENA (EN ESTE CASO EL NOMBRE DEL ARCHIVO)
 	char opcion[200];
+    char aux;
+    int i=1;
 	system("CLS");
 	if(strcmp(archivo, "VACIO")!=0){
 		printf("El siguiente es el archivo actual: \n");
@@ -706,7 +708,16 @@ void modificarArchivo(char *archivo){	//CAMBIA EL NOMBRE DE UNA CADENA (EN ESTE 
 			exit;
 		}
 		else{
-			while (!feof (r))printf ("%c",  getc (r));
+            printf ("%4d - %c ", i, 219);
+			while (!feof (r)){
+                aux = getc(r);
+                printf ("%c",  aux);
+                if(aux=='\n'){
+                    i++;
+                    printf ("%4d - %c ",  i, 219);
+                }
+            }
+            printf ("\n\n");
 			system("PAUSE");
 		}
 		

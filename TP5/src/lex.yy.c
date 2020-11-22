@@ -1207,7 +1207,7 @@ YY_RULE_SETUP
 case 67:
 YY_RULE_SETUP
 #line 127 "ejemplo.l"
-{strcpy(yylval.cval,yytext); return ERROR_LEXICO;}
+{strcpy(yylval.cval,yytext); return ERROR_LEXICO; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP

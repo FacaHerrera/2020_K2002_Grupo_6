@@ -589,23 +589,23 @@ static const yytype_uint16 yyrline[] =
 {
        0,   121,   121,   122,   125,   126,   127,   128,   129,   130,
      133,   136,   139,   140,   141,   142,   147,   148,   152,   168,
-     169,   172,   173,   185,   186,   189,   190,   193,   194,   197,
-     198,   201,   202,   205,   206,   207,   210,   211,   214,   215,
-     218,   219,   222,   225,   228,   229,   232,   233,   236,   237,
-     240,   241,   244,   259,   269,   278,   285,   286,   289,   290,
-     291,   291,   294,   295,   298,   302,   305,   306,   309,   310,
-     317,   320,   323,   335,   336,   340,   341,   342,   343,   344,
-     345,   348,   349,   352,   357,   352,   360,   361,   364,   365,
-     369,   370,   373,   374,   377,   378,   381,   384,   385,   388,
-     389,   390,   393,   394,   395,   398,   399,   400,   403,   414,
-     415,   416,   420,   426,   432,   438,   443,   448,   449,   452,
-     453,   456,   457,   460,   496,   496,   508,   509,   512,   513,
-     516,   517,   518,   519,   520,   523,   524,   527,   528,   531,
-     532,   533,   536,   537,   538,   539,   540,   543,   544,   545,
-     548,   549,   550,   551,   554,   555,   556,   557,   558,   559,
-     560,   561,   561,   562,   563,   564,   567,   573,   573,   574,
-     574,   575,   576,   577,   578,   581,   582,   583,   587,   588,
-     641,   641,   641
+     169,   172,   173,   185,   186,   189,   190,   193,   194,   203,
+     204,   207,   208,   211,   212,   213,   216,   217,   220,   221,
+     224,   225,   228,   231,   234,   235,   238,   239,   242,   243,
+     246,   247,   250,   265,   275,   284,   291,   292,   295,   296,
+     297,   297,   300,   301,   304,   308,   311,   312,   315,   316,
+     323,   326,   329,   341,   342,   346,   347,   348,   349,   350,
+     351,   354,   355,   358,   363,   358,   366,   367,   370,   371,
+     375,   376,   379,   380,   383,   384,   387,   390,   391,   394,
+     395,   396,   399,   400,   401,   404,   405,   406,   409,   420,
+     421,   422,   426,   432,   438,   444,   449,   454,   455,   458,
+     459,   462,   463,   466,   502,   502,   514,   515,   518,   519,
+     522,   523,   524,   525,   526,   529,   530,   533,   534,   537,
+     538,   539,   542,   543,   544,   545,   546,   549,   550,   551,
+     554,   555,   556,   557,   560,   561,   562,   563,   564,   565,
+     566,   567,   567,   568,   569,   570,   573,   579,   579,   580,
+     580,   581,   582,   583,   584,   587,   588,   589,   593,   594,
+     647,   647,   647
 };
 #endif
 
@@ -1895,20 +1895,26 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 194 "ejemplo.y"
-    {   tipDecla = 2; ;}
+    {    tipDecla = 2; 
+                                             if(!strcmp(tipoVariable,"")) agregarErrores(&errores, yylineno, 1, "Error Semantico: La variable $ no existe.", (yyvsp[(1) - (3)].cval));
+                                             else if(strcmp(tipoVariable,variableExpresion[0])){
+                                                  agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere asignar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], tipoVariable);
+                                             };
+                                             tip = 0;
+                                        ;}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 198 "ejemplo.y"
+#line 204 "ejemplo.y"
     {flagArray = 1;;}
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 244 "ejemplo.y"
+#line 250 "ejemplo.y"
     {
                                         if(tip!=3){
                                              tipoDato = (char*)realloc(tipoDato, strlen(tipoDato)+cantidadPuntero);
@@ -1929,7 +1935,7 @@ yyreduce:
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 259 "ejemplo.y"
+#line 265 "ejemplo.y"
     { 
                               if(tip!=3){
                                    variable[contadorVariables] = strdup((yyvsp[(1) - (1)].cval)); 
@@ -1943,7 +1949,7 @@ yyreduce:
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 269 "ejemplo.y"
+#line 275 "ejemplo.y"
     {
                                         tipoDatoPuntero = (char*)malloc(cantidadPuntero);
                                         strcpy(tipoDatoPuntero, "");
@@ -1958,7 +1964,7 @@ yyreduce:
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 278 "ejemplo.y"
+#line 284 "ejemplo.y"
     {
                               tipoDatoPuntero = (char*)malloc(strlen(""));
                               strcpy(tipoDatoPuntero, ""); 
@@ -1969,28 +1975,28 @@ yyreduce:
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 289 "ejemplo.y"
+#line 295 "ejemplo.y"
     {tip = 1;flagArray=0;;}
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 290 "ejemplo.y"
+#line 296 "ejemplo.y"
     {tip = 2; flagArray=1;;}
     break;
 
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 291 "ejemplo.y"
+#line 297 "ejemplo.y"
     {tip = 3;flagArray=0;;}
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 298 "ejemplo.y"
+#line 304 "ejemplo.y"
     {
                               tipoDatoFuncion = (char*)realloc(tipoDatoFuncion, strlen(tipoDato));
                               strcpy(tipoDatoFuncion, tipoDato);
@@ -2000,28 +2006,28 @@ yyreduce:
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 305 "ejemplo.y"
+#line 311 "ejemplo.y"
     {contadorParametros++; ;}
     break;
 
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 306 "ejemplo.y"
+#line 312 "ejemplo.y"
     {contadorParametros++; ;}
     break;
 
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 309 "ejemplo.y"
+#line 315 "ejemplo.y"
     {agregarParametro(&tabla.listaParametros, "-", (yyvsp[(1) - (1)].cval),yylineno-1, flagArray); ;}
     break;
 
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 310 "ejemplo.y"
+#line 316 "ejemplo.y"
     {
                                                   char* aux = (char*)malloc(strlen((yyvsp[(1) - (2)].cval))+strlen(tipoDatoPuntero));
                                                   strcpy(aux, (yyvsp[(1) - (2)].cval));
@@ -2034,7 +2040,7 @@ yyreduce:
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 323 "ejemplo.y"
+#line 329 "ejemplo.y"
     {
                                    tipoDatoPuntero = (char*)realloc(tipoDatoPuntero, strlen((yyvsp[(1) - (1)].cval))+cantidadPuntero);
                                    strcpy(tipoDatoPuntero, (yyvsp[(1) - (1)].cval));
@@ -2050,7 +2056,7 @@ yyreduce:
   case 83:
 
 /* Line 1455 of yacc.c  */
-#line 352 "ejemplo.y"
+#line 358 "ejemplo.y"
     {
                          jerarquia++; 
                          contadorVariableExpresion = 0; 
@@ -2062,91 +2068,91 @@ yyreduce:
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 357 "ejemplo.y"
+#line 363 "ejemplo.y"
     {lineaAux = yylineno;;}
     break;
 
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 357 "ejemplo.y"
+#line 363 "ejemplo.y"
     {sacarVariables(&listaVariablesAuxiliares, jerarquia); jerarquia--; contadorVariableExpresion = 0;;}
     break;
 
   case 96:
 
 /* Line 1455 of yacc.c  */
-#line 381 "ejemplo.y"
+#line 387 "ejemplo.y"
     {cantidadPuntero++;;}
     break;
 
   case 98:
 
 /* Line 1455 of yacc.c  */
-#line 385 "ejemplo.y"
+#line 391 "ejemplo.y"
     {cantidadPuntero++;;}
     break;
 
   case 99:
 
 /* Line 1455 of yacc.c  */
-#line 388 "ejemplo.y"
+#line 394 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Seleccion IF.\n");*/ ;}
     break;
 
   case 100:
 
 /* Line 1455 of yacc.c  */
-#line 389 "ejemplo.y"
+#line 395 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Seleccion IF/ELSE.\n");*/ ;}
     break;
 
   case 101:
 
 /* Line 1455 of yacc.c  */
-#line 390 "ejemplo.y"
+#line 396 "ejemplo.y"
     {/*printf("Se enconto una Sentencia de Seleccion SWITCH.\n");*/ ;}
     break;
 
   case 102:
 
 /* Line 1455 of yacc.c  */
-#line 393 "ejemplo.y"
+#line 399 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Iteracion WHILE.\n");*/ ;}
     break;
 
   case 103:
 
 /* Line 1455 of yacc.c  */
-#line 394 "ejemplo.y"
+#line 400 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Iteracion DO WHILE.\n");*/ ;}
     break;
 
   case 104:
 
 /* Line 1455 of yacc.c  */
-#line 395 "ejemplo.y"
+#line 401 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Iteracion FOR.\n");*/ ;}
     break;
 
   case 105:
 
 /* Line 1455 of yacc.c  */
-#line 398 "ejemplo.y"
+#line 404 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Etiqueta CASE.\n");*/ ;}
     break;
 
   case 106:
 
 /* Line 1455 of yacc.c  */
-#line 399 "ejemplo.y"
+#line 405 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Etiqueta DEFAULT.\n");*/ ;}
     break;
 
   case 108:
 
 /* Line 1455 of yacc.c  */
-#line 403 "ejemplo.y"
+#line 409 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Salto RETURN. \n"); */
                                    if(strcmp(tipoInicializadorFuncion,valorTipoFuncion)){
                                         if(!strcmp(tipoInicializadorFuncion,"")){
@@ -2163,28 +2169,28 @@ yyreduce:
   case 109:
 
 /* Line 1455 of yacc.c  */
-#line 414 "ejemplo.y"
+#line 420 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Salto BREAK.\n"); */;}
     break;
 
   case 110:
 
 /* Line 1455 of yacc.c  */
-#line 415 "ejemplo.y"
+#line 421 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Salto CONTINUE.\n"); */;}
     break;
 
   case 111:
 
 /* Line 1455 of yacc.c  */
-#line 416 "ejemplo.y"
+#line 422 "ejemplo.y"
     {/*printf("Se encontro una Sentencia de Salto GOTO. \n"); */;}
     break;
 
   case 112:
 
 /* Line 1455 of yacc.c  */
-#line 420 "ejemplo.y"
+#line 426 "ejemplo.y"
     {    if(esArrayVariable(&listaVariablesAuxiliares,(yyvsp[(1) - (1)].cval), jerarquia)!=2) flagArray = esArrayVariable(&listaVariablesAuxiliares,(yyvsp[(1) - (1)].cval), jerarquia);
                                    tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, (yyvsp[(1) - (1)].cval), jerarquia); 
                                    variableExpresion[contadorVariableExpresion] = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, (yyvsp[(1) - (1)].cval), jerarquia));
@@ -2196,7 +2202,7 @@ yyreduce:
   case 113:
 
 /* Line 1455 of yacc.c  */
-#line 426 "ejemplo.y"
+#line 432 "ejemplo.y"
     {
                                    (yyval.dval) = (yyvsp[(1) - (1)].ival); 
                                    tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = "int"; 
@@ -2208,7 +2214,7 @@ yyreduce:
   case 114:
 
 /* Line 1455 of yacc.c  */
-#line 432 "ejemplo.y"
+#line 438 "ejemplo.y"
     {
                                    (yyval.dval) = (yyvsp[(1) - (1)].dval); 
                                    tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = "double"; 
@@ -2220,7 +2226,7 @@ yyreduce:
   case 115:
 
 /* Line 1455 of yacc.c  */
-#line 438 "ejemplo.y"
+#line 444 "ejemplo.y"
     {
                                    tipoParametroInvocacion = tipoInicializador = tipoInicializadorFuncion = "char"; 
                                    variableExpresion[contadorVariableExpresion] = strdup("char");
@@ -2231,7 +2237,7 @@ yyreduce:
   case 116:
 
 /* Line 1455 of yacc.c  */
-#line 443 "ejemplo.y"
+#line 449 "ejemplo.y"
     {
                                    tipoParametroInvocacion = tipoInicializadorFuncion = "char*"; 
                                    variableExpresion[contadorVariableExpresion] = strdup("char*");
@@ -2242,14 +2248,14 @@ yyreduce:
   case 118:
 
 /* Line 1455 of yacc.c  */
-#line 449 "ejemplo.y"
+#line 455 "ejemplo.y"
     {(yyval.dval) = ( (yyvsp[(2) - (3)].dval) ); ;}
     break;
 
   case 123:
 
 /* Line 1455 of yacc.c  */
-#line 460 "ejemplo.y"
+#line 466 "ejemplo.y"
     {
                          while(contadorVariableExpresion && !flagArray){
                                                   
@@ -2258,22 +2264,22 @@ yyreduce:
                                    tipoInicializador = variableExpresion[0];
                               }
                               else if(flagOperacionBinaria==1) {
-                                   agregarErrores(&errores, yylineno, 2, "Se quiere sumar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere sumar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
                                    flagError = 1;
                                    contadorVariableExpresion = 0;
                               }
                               else if(flagOperacionBinaria==2) {
-                                   agregarErrores(&errores, yylineno, 2, "Se quiere restar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere restar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
                                    flagError = 1;
                                    contadorVariableExpresion = 0;
                               }
                               else if(flagOperacionBinaria==3) {
-                                   agregarErrores(&errores, yylineno, 2, "Se quiere multiplicar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere multiplicar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
                                    flagError = 1;
                                    contadorVariableExpresion = 0;
                               }
                               else if(flagOperacionBinaria==4) {
-                                   agregarErrores(&errores, yylineno, 2, "Se quiere dividir un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere dividir un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
                                    flagError = 1;
                                    contadorVariableExpresion = 0;
                               } 
@@ -2291,14 +2297,14 @@ yyreduce:
   case 124:
 
 /* Line 1455 of yacc.c  */
-#line 496 "ejemplo.y"
+#line 502 "ejemplo.y"
     {tipoVariableBis = strdup(tipoVariable); contadorVariableExpresion = 0;;}
     break;
 
   case 125:
 
 /* Line 1455 of yacc.c  */
-#line 496 "ejemplo.y"
+#line 502 "ejemplo.y"
     {
                                                             (yyval.dval) = (yyvsp[(3) - (4)].dval); 
                                                             
@@ -2314,182 +2320,182 @@ yyreduce:
   case 127:
 
 /* Line 1455 of yacc.c  */
-#line 509 "ejemplo.y"
+#line 515 "ejemplo.y"
     {(yyval.dval) = 0; ;}
     break;
 
   case 136:
 
 /* Line 1455 of yacc.c  */
-#line 524 "ejemplo.y"
+#line 530 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) || (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 138:
 
 /* Line 1455 of yacc.c  */
-#line 528 "ejemplo.y"
+#line 534 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) && (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 140:
 
 /* Line 1455 of yacc.c  */
-#line 532 "ejemplo.y"
+#line 538 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) == (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 141:
 
 /* Line 1455 of yacc.c  */
-#line 533 "ejemplo.y"
+#line 539 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) != (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 143:
 
 /* Line 1455 of yacc.c  */
-#line 537 "ejemplo.y"
+#line 543 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) < (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 144:
 
 /* Line 1455 of yacc.c  */
-#line 538 "ejemplo.y"
+#line 544 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) > (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 145:
 
 /* Line 1455 of yacc.c  */
-#line 539 "ejemplo.y"
+#line 545 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) <= (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 146:
 
 /* Line 1455 of yacc.c  */
-#line 540 "ejemplo.y"
+#line 546 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) >= (yyvsp[(3) - (3)].dval); ;}
     break;
 
   case 148:
 
 /* Line 1455 of yacc.c  */
-#line 544 "ejemplo.y"
+#line 550 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) + (yyvsp[(3) - (3)].dval); flagOperacionBinaria = 1;;}
     break;
 
   case 149:
 
 /* Line 1455 of yacc.c  */
-#line 545 "ejemplo.y"
+#line 551 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) - (yyvsp[(3) - (3)].dval); flagOperacionBinaria = 2; ;}
     break;
 
   case 151:
 
 /* Line 1455 of yacc.c  */
-#line 549 "ejemplo.y"
+#line 555 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].dval) * (yyvsp[(3) - (3)].dval);  flagOperacionBinaria = 3;;}
     break;
 
   case 152:
 
 /* Line 1455 of yacc.c  */
-#line 550 "ejemplo.y"
+#line 556 "ejemplo.y"
     {if((yyvsp[(3) - (3)].dval) == 0) {agregarErrores(&errores, yylineno, 0, "ERROR/: No se puede dividir por 0.");} else {(yyval.dval) = (yyvsp[(1) - (3)].dval) / (yyvsp[(3) - (3)].dval);  flagOperacionBinaria = 4;};}
     break;
 
   case 153:
 
 /* Line 1455 of yacc.c  */
-#line 551 "ejemplo.y"
+#line 557 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(1) - (3)].ival) % (yyvsp[(3) - (3)].ival); ;}
     break;
 
   case 155:
 
 /* Line 1455 of yacc.c  */
-#line 555 "ejemplo.y"
+#line 561 "ejemplo.y"
     {(yyval.dval) = ++ (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 156:
 
 /* Line 1455 of yacc.c  */
-#line 556 "ejemplo.y"
+#line 562 "ejemplo.y"
     {(yyval.dval) = -- (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 157:
 
 /* Line 1455 of yacc.c  */
-#line 557 "ejemplo.y"
+#line 563 "ejemplo.y"
     {(yyval.dval) = - (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 158:
 
 /* Line 1455 of yacc.c  */
-#line 558 "ejemplo.y"
+#line 564 "ejemplo.y"
     {(yyval.dval) = + (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 159:
 
 /* Line 1455 of yacc.c  */
-#line 559 "ejemplo.y"
+#line 565 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 160:
 
 /* Line 1455 of yacc.c  */
-#line 560 "ejemplo.y"
+#line 566 "ejemplo.y"
     {(yyval.dval) = ! (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 161:
 
 /* Line 1455 of yacc.c  */
-#line 561 "ejemplo.y"
+#line 567 "ejemplo.y"
     {flagAnd = 1;;}
     break;
 
   case 162:
 
 /* Line 1455 of yacc.c  */
-#line 561 "ejemplo.y"
+#line 567 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(2) - (3)].dval); ;}
     break;
 
   case 163:
 
 /* Line 1455 of yacc.c  */
-#line 562 "ejemplo.y"
+#line 568 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(2) - (2)].dval); ;}
     break;
 
   case 164:
 
 /* Line 1455 of yacc.c  */
-#line 563 "ejemplo.y"
+#line 569 "ejemplo.y"
     {(yyval.dval) = sizeof((yyvsp[(3) - (4)].dval)); ;}
     break;
 
   case 165:
 
 /* Line 1455 of yacc.c  */
-#line 564 "ejemplo.y"
+#line 570 "ejemplo.y"
     {(yyval.dval) = sizeof((yyvsp[(3) - (4)].dval)); ;}
     break;
 
   case 166:
 
 /* Line 1455 of yacc.c  */
-#line 567 "ejemplo.y"
+#line 573 "ejemplo.y"
     {    
                               if (tip!=3 && !flagArrayBis && esID) {
                                    tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, (yyvsp[(1) - (1)].cval), jerarquia));
@@ -2501,84 +2507,84 @@ yyreduce:
   case 167:
 
 /* Line 1455 of yacc.c  */
-#line 573 "ejemplo.y"
+#line 579 "ejemplo.y"
     {tipoVariable = strdup(tipo(tabla, &listaVariablesAuxiliares, &tabla.listaParametros, (yyvsp[(1) - (1)].cval), jerarquia)); flagArrayBis = 1;;}
     break;
 
   case 168:
 
 /* Line 1455 of yacc.c  */
-#line 573 "ejemplo.y"
+#line 579 "ejemplo.y"
     {(yyval.dval) = 0; flagArray = 1;;}
     break;
 
   case 169:
 
 /* Line 1455 of yacc.c  */
-#line 574 "ejemplo.y"
+#line 580 "ejemplo.y"
     {tipoVariable = strdup(tipoFuncion(tabla, (yyvsp[(1) - (1)].cval))); tip = 3;;}
     break;
 
   case 170:
 
 /* Line 1455 of yacc.c  */
-#line 574 "ejemplo.y"
+#line 580 "ejemplo.y"
     {(yyval.dval) = 0; validarInvocacion(tabla,(yyvsp[(1) - (5)].cval),parametrosInvocacion,yylineno, flagAnd); parametrosInvocacion = NULL; tipoInicializadorFuncion = strdup(tipoFuncion(tabla, (yyvsp[(1) - (5)].cval))); contadorVariableExpresion = 0; tip = 3;;}
     break;
 
   case 171:
 
 /* Line 1455 of yacc.c  */
-#line 575 "ejemplo.y"
+#line 581 "ejemplo.y"
     {(yyval.dval) = 0; ;}
     break;
 
   case 172:
 
 /* Line 1455 of yacc.c  */
-#line 576 "ejemplo.y"
+#line 582 "ejemplo.y"
     {(yyval.dval) = 0; ;}
     break;
 
   case 173:
 
 /* Line 1455 of yacc.c  */
-#line 577 "ejemplo.y"
+#line 583 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(2) - (2)].dval) ++; ;}
     break;
 
   case 174:
 
 /* Line 1455 of yacc.c  */
-#line 578 "ejemplo.y"
+#line 584 "ejemplo.y"
     {(yyval.dval) = (yyvsp[(2) - (2)].dval) --; ;}
     break;
 
   case 176:
 
 /* Line 1455 of yacc.c  */
-#line 582 "ejemplo.y"
+#line 588 "ejemplo.y"
     {agregarNodo(&parametrosInvocacion,tipoInicializadorFuncion, flagArray);;}
     break;
 
   case 177:
 
 /* Line 1455 of yacc.c  */
-#line 583 "ejemplo.y"
+#line 589 "ejemplo.y"
     {agregarNodo(&parametrosInvocacion,tipoInicializadorFuncion, flagArray);;}
     break;
 
   case 178:
 
 /* Line 1455 of yacc.c  */
-#line 587 "ejemplo.y"
+#line 593 "ejemplo.y"
     {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombreFuncion,valorTipoFuncion,&tabla.listaParametros,yylineno-1, 1); contadorParametros = 0; tabla.listaParametros = NULL; cantidadPuntero = 0; flagFuncion = 0;;}
     break;
 
   case 179:
 
 /* Line 1455 of yacc.c  */
-#line 588 "ejemplo.y"
+#line 594 "ejemplo.y"
     {
                        switch(tip){
                          case 1:
@@ -2635,21 +2641,21 @@ yyreduce:
   case 180:
 
 /* Line 1455 of yacc.c  */
-#line 641 "ejemplo.y"
+#line 647 "ejemplo.y"
     {nombreFuncion = strdup((yyvsp[(2) - (2)].cval)); valorTipoFuncion = strdup((yyvsp[(1) - (2)].cval)); if(strcmp(valorTipoFuncion,"void")) flagReturn = 1;;}
     break;
 
   case 181:
 
 /* Line 1455 of yacc.c  */
-#line 641 "ejemplo.y"
+#line 647 "ejemplo.y"
     {contadorVariableExpresion = 0; contadorVariables = 0;;}
     break;
 
   case 182:
 
 /* Line 1455 of yacc.c  */
-#line 641 "ejemplo.y"
+#line 647 "ejemplo.y"
     {
                flagFuncion = 0; 
                if(flagReturn){
@@ -2662,7 +2668,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2666 "ejemplo.tab.c"
+#line 2672 "ejemplo.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2874,7 +2880,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 652 "ejemplo.y"
+#line 658 "ejemplo.y"
  
 
 int yyerror (char *mensaje) 

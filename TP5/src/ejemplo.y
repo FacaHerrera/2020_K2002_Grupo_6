@@ -191,7 +191,13 @@ listaDeclaradores: declarador {cantidad = 1; }
 ;
 
 declarador: decla1 { tipDecla = 1; }
-          | decla1 '=' inicializador {   tipDecla = 2; }
+          | decla1 '=' inicializador    {    tipDecla = 2; 
+                                             if(!strcmp(tipoVariable,"")) agregarErrores(&errores, yylineno, 1, "Error Semantico: La variable $ no existe.", $<cval>1);
+                                             else if(strcmp(tipoVariable,variableExpresion[0])){
+                                                  agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere asignar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], tipoVariable);
+                                             };
+                                             tip = 0;
+                                        }
 ;
 
 inicializador: expAsignacion 
@@ -465,22 +471,22 @@ expAsignacion: expCondicional {
                                    tipoInicializador = variableExpresion[0];
                               }
                               else if(flagOperacionBinaria==1) {
-                                   agregarErrores(&errores, yylineno, 2, "Se quiere sumar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere sumar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
                                    flagError = 1;
                                    contadorVariableExpresion = 0;
                               }
                               else if(flagOperacionBinaria==2) {
-                                   agregarErrores(&errores, yylineno, 2, "Se quiere restar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere restar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
                                    flagError = 1;
                                    contadorVariableExpresion = 0;
                               }
                               else if(flagOperacionBinaria==3) {
-                                   agregarErrores(&errores, yylineno, 2, "Se quiere multiplicar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere multiplicar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
                                    flagError = 1;
                                    contadorVariableExpresion = 0;
                               }
                               else if(flagOperacionBinaria==4) {
-                                   agregarErrores(&errores, yylineno, 2, "Se quiere dividir un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
+                                   agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere dividir un valor de tipo $ a un valor de tipo $.", variableExpresion[0], variableExpresion[contadorVariableExpresion-1]);
                                    flagError = 1;
                                    contadorVariableExpresion = 0;
                               } 

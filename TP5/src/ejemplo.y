@@ -590,55 +590,14 @@ listaArgumentos:
 ;
 
 //DEFINICIONES EXTERNAS
-declaracionExterna: definicionFuncion {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombreFuncion,valorTipoFuncion,&tabla.listaParametros,yylineno-1, 1); contadorParametros = 0; tabla.listaParametros = NULL; cantidadPuntero = 0; flagFuncion = 0;}
+declaracionExterna: definicionFuncion {agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombreFuncion,valorTipoFuncion,&tabla.listaParametros,yylineno-1, 1); contadorParametros = 0; tabla.listaParametros = NULL; cantidadPuntero = 0; flagFuncion = 0;}
                   | declaracion {
-                       switch(tip){
-                         case 1:
-                              if(tipDecla == 1){
-                                   if(cantidad == 1){
-                                        //printf("Se declara la variable %s de tipo %s  \n",nombre,tipoDato);
-                                   }
-                                   else if(cantidad == 2){
-                                        //printf("Se declaran variables de tipo %s  \n",tipoDato);
-                                   } 
-                              }
-                              else if(tipDecla == 2){
-                                   if(cantidad == 1){
-                                        //printf("Se inicializa la variable %s de tipo %s \n",nombre,tipoDato);
-                                   }
-                                   else if(cantidad == 2){
-                                        //printf("Se inicializan variables de tipo %s \n",tipoDato);
-                                   } 
-                              }
-                              break;
-                         case 2:
-                              if(tipDecla == 1){
-                                   if(cantidad == 1){
-                                        //printf("Se declara el arreglo %s de tipo %s  \n",nombre,tipoDato);
-                                   }
-                                   else if(cantidad == 2){
-                                        //printf("Se declaran arreglos de tipo %s \n",tipoDato);
-                                   }  
-                              }
-                              else if(tipDecla == 2){
-                                   if(cantidad == 1){
-                                        //printf("Se inicializa el arreglo %s de tipo %s \n",nombre,tipoDato);
-                                   }
-                                   else if(cantidad == 2){
-                                        //printf("Se inicializan arreglos de tipo %s \n",tipoDato);
-                                   }   
-                              }
-                              break;
-                         case 3:
-                              if(tipDecla == 1){
-                                   //printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
-                                   contadorParametros = 0;
-                                   agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombre,tipoDatoFuncion,&tabla.listaParametros,yylineno-1, 0);
-                                   cantidadPuntero = 0;
-                                   tabla.listaParametros = NULL;
-                                   flagFuncion = 0;
-                              }
-                              break;     
+                       if(tip==3 && tipDecla == 1){
+                         contadorParametros = 0;
+                         agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombre,tipoDatoFuncion,&tabla.listaParametros,yylineno-1, 0);
+                         cantidadPuntero = 0;
+                         tabla.listaParametros = NULL;
+                         flagFuncion = 0;    
                        }
                        tip = 0;
                   }

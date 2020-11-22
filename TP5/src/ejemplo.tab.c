@@ -605,7 +605,7 @@ static const yytype_uint16 yyrline[] =
      554,   555,   556,   557,   560,   561,   562,   563,   564,   565,
      566,   567,   567,   568,   569,   570,   573,   579,   579,   580,
      580,   581,   582,   583,   584,   587,   588,   589,   593,   594,
-     647,   647,   647
+     606,   606,   606
 };
 #endif
 
@@ -2578,7 +2578,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 593 "ejemplo.y"
-    {/*printf("Se define la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); contadorParametros = 0;*/ agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombreFuncion,valorTipoFuncion,&tabla.listaParametros,yylineno-1, 1); contadorParametros = 0; tabla.listaParametros = NULL; cantidadPuntero = 0; flagFuncion = 0;;}
+    {agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombreFuncion,valorTipoFuncion,&tabla.listaParametros,yylineno-1, 1); contadorParametros = 0; tabla.listaParametros = NULL; cantidadPuntero = 0; flagFuncion = 0;;}
     break;
 
   case 179:
@@ -2586,53 +2586,12 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 594 "ejemplo.y"
     {
-                       switch(tip){
-                         case 1:
-                              if(tipDecla == 1){
-                                   if(cantidad == 1){
-                                        //printf("Se declara la variable %s de tipo %s  \n",nombre,tipoDato);
-                                   }
-                                   else if(cantidad == 2){
-                                        //printf("Se declaran variables de tipo %s  \n",tipoDato);
-                                   } 
-                              }
-                              else if(tipDecla == 2){
-                                   if(cantidad == 1){
-                                        //printf("Se inicializa la variable %s de tipo %s \n",nombre,tipoDato);
-                                   }
-                                   else if(cantidad == 2){
-                                        //printf("Se inicializan variables de tipo %s \n",tipoDato);
-                                   } 
-                              }
-                              break;
-                         case 2:
-                              if(tipDecla == 1){
-                                   if(cantidad == 1){
-                                        //printf("Se declara el arreglo %s de tipo %s  \n",nombre,tipoDato);
-                                   }
-                                   else if(cantidad == 2){
-                                        //printf("Se declaran arreglos de tipo %s \n",tipoDato);
-                                   }  
-                              }
-                              else if(tipDecla == 2){
-                                   if(cantidad == 1){
-                                        //printf("Se inicializa el arreglo %s de tipo %s \n",nombre,tipoDato);
-                                   }
-                                   else if(cantidad == 2){
-                                        //printf("Se inicializan arreglos de tipo %s \n",tipoDato);
-                                   }   
-                              }
-                              break;
-                         case 3:
-                              if(tipDecla == 1){
-                                   //printf("Se declara la funcion %s con %d parametros y devolucion de tipo %s  \n",nombre,contadorParametros,tipoDato); 
-                                   contadorParametros = 0;
-                                   agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombre,tipoDatoFuncion,&tabla.listaParametros,yylineno-1, 0);
-                                   cantidadPuntero = 0;
-                                   tabla.listaParametros = NULL;
-                                   flagFuncion = 0;
-                              }
-                              break;     
+                       if(tip==3 && tipDecla == 1){
+                         contadorParametros = 0;
+                         agregarFuncion(&tabla.listaFuncionesDeclaradas, &tabla.listaFuncionesDefinidas,nombre,tipoDatoFuncion,&tabla.listaParametros,yylineno-1, 0);
+                         cantidadPuntero = 0;
+                         tabla.listaParametros = NULL;
+                         flagFuncion = 0;    
                        }
                        tip = 0;
                   ;}
@@ -2641,21 +2600,21 @@ yyreduce:
   case 180:
 
 /* Line 1455 of yacc.c  */
-#line 647 "ejemplo.y"
+#line 606 "ejemplo.y"
     {nombreFuncion = strdup((yyvsp[(2) - (2)].cval)); valorTipoFuncion = strdup((yyvsp[(1) - (2)].cval)); if(strcmp(valorTipoFuncion,"void")) flagReturn = 1;;}
     break;
 
   case 181:
 
 /* Line 1455 of yacc.c  */
-#line 647 "ejemplo.y"
+#line 606 "ejemplo.y"
     {contadorVariableExpresion = 0; contadorVariables = 0;;}
     break;
 
   case 182:
 
 /* Line 1455 of yacc.c  */
-#line 647 "ejemplo.y"
+#line 606 "ejemplo.y"
     {
                flagFuncion = 0; 
                if(flagReturn){
@@ -2668,7 +2627,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2672 "ejemplo.tab.c"
+#line 2631 "ejemplo.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2880,7 +2839,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 658 "ejemplo.y"
+#line 617 "ejemplo.y"
  
 
 int yyerror (char *mensaje) 

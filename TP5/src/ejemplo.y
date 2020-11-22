@@ -56,7 +56,6 @@ Nodo *parametrosInvocacion;
 ListaVariables *listaVariablesAuxiliares;
 TablaDeSimbolos tabla;
 
-
 %}
 
 %union {
@@ -251,14 +250,6 @@ decla1: puntero declaradorDirecto   {
                                              esArray[contadorVariables] = flagArray;
                                              contadorVariables++;
 
-                                             /*variable[contadorVariables] = (char*)malloc(strlen($<cval>2)+cantidadPuntero);
-                                             strcpy(variable[contadorVariables],"\0"); 
-                                             while(cantidadPuntero!=0){
-                                                  strcat(variable[contadorVariables], "*");
-                                                  cantidadPuntero--;
-                                             }
-                                             strcat(variable[contadorVariables],$<cval>2); 
-                                             contadorVariables++;*/
                                         }
 
                                    }                   
@@ -355,7 +346,12 @@ sentExpresion: exp ';' opcionComentario opcionBarraN
              | ';' opcionComentario opcionBarraN       
 ;
 
-sentCompuesta: '{' {jerarquia++; contadorVariableExpresion = 0; contadorVariables = 0; flagArrayBis = 0;} opcionComentario opcionBarraN decalracionOSentencia opcionComentario opcionBarraN {lineaAux = yylineno;} '}' opcionComentario opcionBarraN {/*printf("Se encontro una Sentencia Compuesta. \n");*/sacarVariables(&listaVariablesAuxiliares, jerarquia); jerarquia--; contadorVariableExpresion = 0;}
+sentCompuesta: '{' {
+                         jerarquia++; 
+                         contadorVariableExpresion = 0; 
+                         contadorVariables = 0; 
+                         flagArrayBis = 0;
+                    } opcionComentario opcionBarraN decalracionOSentencia opcionComentario opcionBarraN {lineaAux = yylineno;} '}' opcionComentario opcionBarraN {sacarVariables(&listaVariablesAuxiliares, jerarquia); jerarquia--; contadorVariableExpresion = 0;}
 ;
 
 decalracionOSentencia: 
@@ -495,9 +491,10 @@ expAsignacion: expCondicional {
                     }
              | expUnaria {tipoVariableBis = strdup(tipoVariable); contadorVariableExpresion = 0;} operAsignacion expAsignacion {
                                                             $<dval>$ = $<dval>3; 
-                                                            if(!strcmp(tipoVariableBis,"")) agregarErrores(&errores, yylineno, 1, "Error Semantico: La variable $ no existe.", $<cval>1);
+                                                            
                                                             if(tip == 3) variableExpresion[0] = strdup(tipoVariable);
-                                                            if(strcmp(tipoVariableBis,variableExpresion[0])){
+                                                            if(!strcmp(tipoVariableBis,"")) agregarErrores(&errores, yylineno, 1, "Error Semantico: La variable $ no existe.", $<cval>1);
+                                                            else if(strcmp(tipoVariableBis,variableExpresion[0])){
                                                                  agregarErrores(&errores, yylineno, 2, "Error Semantico: Se quiere asignar un valor de tipo $ a un valor de tipo $.", variableExpresion[0], tipoVariableBis);
                                                             };
                                                             tip = 0;

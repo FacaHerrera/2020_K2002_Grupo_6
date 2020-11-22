@@ -2,7 +2,8 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
-#include <stdarg.h>
+#include<stdarg.h>
+#include"impresion.h"
 
 typedef struct TablaDeSimbolos {
     struct ListaVariables *listaVariables;
@@ -71,11 +72,7 @@ ListaFunciones* buscarFuncion(ListaFunciones **,char *);
 void imprimirFunciones(ListaFunciones**, char*);
 char* tipoFuncion(TablaDeSimbolos, char*);
 void agregarFuncionesExternas(ListaFunciones**, ListaVariables**, char*, int);
-char *centrar(char *, int);
 void agregarErrores(Error **, int , int , char*, ...);
-
-void imprimirContenido(int , int , ...);
-void imprimirTitulo(int , int , char* );
 
 ///////////////////
 //IDENTIFICADORES//
@@ -91,7 +88,6 @@ int longitudNodo(Nodo **p){
     }
     return longitud;
 }
-
 void agregarNodo(Nodo ** tiposDeDato, char* tipo, char flagArray) {
     Nodo *nuevo = (Nodo *)malloc(sizeof(Nodo));
     nuevo->tipo = strdup(tipo);
@@ -212,7 +208,7 @@ void imprimirVariables(ListaVariables **variables, char *titulo){
         imprimirContenido(0, columnas, "NOMBRE VARIABLE", anchoC1, "TIPO VARIABLE", anchoC2, "ES ARRAY?", anchoC3, "LINEA", anchoC4);
         while(aux != NULL){
             itoa(aux->linea, snum, 10);
-            if(aux->sig) i=1;
+            if(aux->sig) i=4;
             else i=3;
             if(aux->flagArray) strcpy(array,"SI");
             else strcpy(array,"NO");
@@ -437,6 +433,7 @@ void agregarFuncion(ListaFunciones** funcionesDeclaradas, ListaFunciones** funci
             ListaFunciones* aux;
             if(tipoFuncion)aux = *funcionesDefinidas;
             else aux = *funcionesDeclaradas;
+            
             while(aux->sig != NULL){
                 aux = aux->sig;
             }
@@ -505,8 +502,10 @@ ListaFunciones* buscarFuncion(ListaFunciones **funciones,char *nombre){
 }
 
 void imprimirFunciones(ListaFunciones **funciones, char* titulo){
-    int i, ancho, columnas = 3, anchoC1 = 50, anchoC2 = 50, anchoC3 = 60, anchoC31 = 10, anchoC32 = 30, anchoC33 = 20;
+    int i = 0, condicion = 2, ancho, columnas = 3, anchoC1 = 50, anchoC2 = 50, anchoC3 = 60, anchoC31 = 10, anchoC32 = 30, anchoC33 = 20;
     ancho = anchoC1 + anchoC2 + anchoC3;
+    int div1 = 1, div2 = 1, div3 = 3;
+    int suma = div1 + div2 + div3 - 3;
     char ultimo;
     char titulo0[20] = "NOMBRE FUNCION";
     char titulo1[20] = "TIPO FUNCION";
@@ -514,153 +513,36 @@ void imprimirFunciones(ListaFunciones **funciones, char* titulo){
     char titulo21[20] = "N*";
     char titulo22[20] = "NOMBRE";
     char titulo23[20] = "TIPO";
-
-    ListaFunciones *aux = *funciones;
-
-    if(aux != NULL){
-        imprimirTitulo(columnas, ancho+2, "NOMBRE FUNCION");
-        
-        printf("%c", 204);
-        for(i=0; i < anchoC1; i++) printf("%c", 205);
-        printf("%c", 203);
-        for(i=0; i < anchoC2; i++) printf("%c", 205);
-        printf("%c", 203);
-        for(i=0; i < anchoC3+2; i++) printf("%c", 205);
-        printf("%c\n", 185);
-
-        printf("%c", 186);
-        printf("%s", centrar(" ", anchoC1));
-        printf("%c", 186);
-        printf("%s", centrar(" ", anchoC2));
-        printf("%c", 186);
-        printf("%s", centrar(titulo2, anchoC3+2));
-        printf("%c\n", 186);
-
-        printf("%c", 186);
-        printf("%s", centrar(titulo0, anchoC1));
-        printf("%c", 186);
-        printf("%s", centrar(titulo1, anchoC2));
-        printf("%c", 204);
-        for(i=0; i < anchoC31; i++) printf("%c", 205);
-        printf("%c", 203);
-        for(i=0; i < anchoC32; i++) printf("%c", 205);
-        printf("%c", 203);
-        for(i=0; i < anchoC33; i++) printf("%c", 205);
-        printf("%c\n", 185); 
-
-        printf("%c", 186);
-        printf("%s", centrar(" ", anchoC1));
-        printf("%c", 186);
-        printf("%s", centrar(" ", anchoC2));
-        printf("%c", 186);
-        printf("%s", centrar(titulo21, anchoC31));
-        printf("%c", 186);
-        printf("%s", centrar(titulo22, anchoC32));
-        printf("%c", 186);
-        printf("%s", centrar(titulo23, anchoC33));
-        printf("%c\n", 186);
-
-        printf("%c", 204);
-        for(i=0; i < anchoC1; i++) printf("%c", 205);
-        printf("%c", 206);
-        for(i=0; i < anchoC2; i++) printf("%c", 205);
-        printf("%c", 206);
-        for(i=0; i < anchoC31; i++) printf("%c", 205);
-        printf("%c", 206);
-        for(i=0; i < anchoC32; i++) printf("%c", 205);
-        printf("%c", 206);
-        for(i=0; i < anchoC33; i++) printf("%c", 205);
-        printf("%c\n", 185); 
-
-        while(aux != NULL){
-            printf("%c", 186);
-            printf("%s", centrar(aux->nombreFuncion, anchoC1));
-            printf("%c", 186);
-            printf("%s", centrar(aux->tipoFuncion, anchoC2));
-            printf("%c", 186);
-            if(aux->sig==NULL) ultimo = 1;
-            else ultimo = 0;
-            imprimirParametros(&aux->listaParametros, anchoC1, anchoC2 , anchoC31, anchoC32, anchoC33, ultimo);
-            aux = aux->sig;
-        }
-        printf("%c", 200);
-        for(i=0; i < anchoC1; i++) printf("%c", 205);
-        printf("%c", 202);
-        for(i=0; i < anchoC2; i++) printf("%c", 205);
-        printf("%c", 202);
-        for(i=0; i < anchoC31; i++) printf("%c", 205);
-        printf("%c", 202);
-        for(i=0; i < anchoC32; i++) printf("%c", 205);
-        printf("%c", 202);
-        for(i=0; i < anchoC33; i++) printf("%c", 205);
-        printf("%c\n", 188);
-        
-    }
-}
-
-void imprimirParametros(ListaVariables **parametros, int anchoC1, int anchoC2, int ancho1, int ancho2, int ancho3, char ultimo){
-    ListaVariables *aux = *parametros;
-    int i = 1;
     char snum[10];
-    while(aux != NULL){
-        itoa(i, snum, 10);
-        if(i==1){
-            printf("%s", centrar(snum, ancho1));
-            printf("%c", 186);
-            printf("%s", centrar(aux->nombre, ancho2));
-            printf("%c", 186);
-            printf("%s", centrar(aux->tipo, ancho3));
-            printf("%c\n", 186);
-        }
-        else{
-            printf("%c", 186);
-            printf("%s", centrar(" ", anchoC1));
-            printf("%c", 186);
-            printf("%s", centrar(" ", anchoC2));
-            printf("%c", 186);
-            printf("%s", centrar(snum, ancho1));
-            printf("%c", 186);
-            printf("%s", centrar(aux->nombre, ancho2));
-            printf("%c", 186);
-            printf("%s", centrar(aux->tipo, ancho3));
-            printf("%c\n", 186);
-        }
-        aux = aux->sig;
-        if(aux==NULL && !ultimo){
-            printf("%c", 204);
-            for(i=0; i < anchoC1; i++) printf("%c", 205);
-            printf("%c", 206);
-            for(i=0; i < anchoC2; i++) printf("%c", 205);
-            printf("%c", 206);
-            for(i=0; i < ancho1; i++) printf("%c", 205);
-            printf("%c", 206);
-            for(i=0; i < ancho2; i++) printf("%c", 205);
-            printf("%c", 206);
-            for(i=0; i < ancho3; i++) printf("%c", 205);
-            printf("%c\n", 185); 
-        }
-        i++;
-    }
-    if(i==1){
-        printf("%s", centrar("0", ancho1));
-        printf("%c", 186);
-        printf("%s", centrar("NO TIENE", ancho2));
-        printf("%c", 186);
-        printf("%s", centrar("NO TIENE", ancho3));
-        printf("%c\n", 186);
-        if(!ultimo){
-            printf("%c", 204);
-            for(i=0; i < anchoC1; i++) printf("%c", 205);
-            printf("%c", 206);
-            for(i=0; i < anchoC2; i++) printf("%c", 205);
-            printf("%c", 206);
-            for(i=0; i < ancho1; i++) printf("%c", 205);
-            printf("%c", 206);
-            for(i=0; i < ancho2; i++) printf("%c", 205);
-            printf("%c", 206);
-            for(i=0; i < ancho3; i++) printf("%c", 205);
-            printf("%c\n", 185); 
-        }
+
+    ListaFunciones *aux1 = *funciones;
+    ListaVariables *aux2;
+    if(aux1){
+        imprimirTitulo(columnas, ancho+suma, titulo);
+        imprimirSubtitulo(columnas, div1, anchoC1, titulo0, div2, anchoC2, titulo1, div3, anchoC31, anchoC32, anchoC33, titulo2, titulo21, titulo22, titulo23);
+
+        while(aux1){
+            aux2 = aux1->listaParametros;
+            while(aux2){
+                i++;
+                itoa(i, snum, 10);
+                strcpy(titulo0, aux1->nombreFuncion);
+                strcpy(titulo1, aux1->tipoFuncion);
+                if(aux2->sig) {
+                    condicion = 0;
+                    strcpy(titulo0, "");
+                    strcpy(titulo1, "");
+                }
+                else if(!aux1->sig) condicion = 1;
+                else condicion = 2;
+                imprimirContenidoBis(condicion, columnas, div1, anchoC1, titulo0, div2, anchoC2, titulo1, div3, anchoC31, anchoC32, anchoC33, snum, aux2->nombre, aux2->tipo);
+                aux2 = aux2->sig;
+            }
+            if(i==0) imprimirContenidoBis(condicion, columnas, div1, anchoC1, aux1->nombreFuncion, div2, anchoC2, aux1->tipoFuncion, div3, anchoC31, anchoC32, anchoC33, "0", "NO TIENE", "NO TIENE");
+            i = 0;
+            condicion = 2;
+            aux1 = aux1->sig;
+        } 
     }
 }
 
@@ -733,99 +615,6 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
     }
 }
 
-char *centrar(char *dato, int ancho){	//CENTRA UNA CADENA EN UN ANCHO DADO
-	int i, j=0, espacios;
-	char *auxiliar=(char *)malloc(1000);
-	
-	if(strlen(dato) % 2 == 1) espacios = (ancho - strlen(dato) - 1) / 2;
-	else espacios = (ancho - strlen(dato)) / 2;
-
-	for(i=0; i < espacios; i++) auxiliar[i]=' ';
-	while(dato[j]!='\0'){
-		auxiliar[i+j]=dato[j];
-		j++;
-	} 
-	for(i=0; i < espacios; i++){
-		auxiliar[i+espacios+j]=' ';	
-	} 
-	if(strlen(dato) % 2 == 1){
-		auxiliar[i+espacios+j++]=' ';
-	} 
-	if(ancho % 2) auxiliar[i+espacios+j++]=' ';
-	auxiliar[i+espacios+j++]='\0';
-	return auxiliar;
-}
-void imprimirTitulo(int columnas, int ancho, char* titulo){
-	int i;
-	ancho+=(columnas-1);
-	printf("\n\n\n%c", 201);
-    for(i=0; i < ancho; i++) printf("%c", 205);
-    printf("%c", 187);
-    printf("\n%c", 186);
-    printf("%s", centrar(titulo, ancho));
-    printf("%c\n", 186);
-}
-
-void imprimirContenido(int fin, int columnas, ...){
-	int i, j;
-	int formato[10];
-	char* titulos[10];
-	char opcion, opcion1, opcion2;
-	va_list pa;
-    va_start(pa, columnas);
-    for(i=0;i<columnas;i++) {
-    	titulos[i] = strdup(va_arg(pa, char*));
-    	formato[i] = va_arg(pa, int);
-	}
-	
-   	if(fin==0) opcion = 203;
-   	else if(fin==2) opcion = 206;
-   	else opcion = 'x';
-	
-	if(opcion!= 'x'){
-		printf("%c", 204);
-		for(i=0;i<columnas;i++) {
-			for(j=0; j < formato[i]; j++) printf("%c", 205);
-			if(i<columnas-1) printf("%c", opcion);
-			else printf("%c\n", 185);
-		}
-	}
-	
-	printf("%c", 186);
-   	for(i=0;i<columnas;i++) {
-		printf("%s", centrar(titulos[i], formato[i]));
-        printf("%c", 186);
-   	}
-   	printf("\n");
-   	
-   	switch(fin){
-   		case 0:
-   		case 1:
-   			opcion = 204;
-   			opcion1 = 206;
-   			opcion2 = 185;
-			break;
-		case 2:
-		case 3:
-			opcion = 200;
-   			opcion1 = 202;
-   			opcion2 = 188;
-			break;
-		default:
-			opcion = 'x';
-	}
-	
-	if(opcion!='x'){
-		printf("%c", opcion);
-		for(i=0;i<columnas;i++) {
-			for(j=0; j < formato[i]; j++) printf("%c", 205);
-			if(i<columnas-1) printf("%c", opcion1);
-			else printf("%c\n", opcion2);
-		}
-	}
-    va_end(pa);
-}
-
 void agregarErrores(Error **errores, int linea, int cantidad, char* entrada, ...) {
 	
 	char salida[200];
@@ -848,6 +637,7 @@ void agregarErrores(Error **errores, int linea, int cantidad, char* entrada, ...
       	i++;
    	}
     va_end(pa);
+
     Error *nuevo = (Error *)malloc(sizeof(Error));
     nuevo->error = strdup(salida);
     nuevo->linea = linea;

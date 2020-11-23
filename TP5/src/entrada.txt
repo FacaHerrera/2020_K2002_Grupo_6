@@ -11,8 +11,6 @@ void guardar(int, char *, char*);
 int automata(char *);
 int mostrar_consigna(char*);
 
-$
-
 int main() {
 	char *archivo;
 	archivo = fopen("RESULTADOS.txt", "wt");
@@ -27,7 +25,7 @@ int main() {
 }
 
 int mostrar_consigna(char * archivoSalida){
-	char archivo[20] = 3;
+	char archivo[20];
 	printf("Trabajo Practico Nro 1 - Automata Finito Deterministico para Constantes Enteras\n\nIngrese el nombre del archivo a escanear: ");
 	scanf("%s", archivo);
 	verificar_txt(archivo);
@@ -38,8 +36,7 @@ int escanear_archivo(char *archivo, char* archivoSalida){
 	char *datos;
 	datos=fopen(archivo, "rt");
 	char caracter, cadena[50];
-	int len = 3 +4+"fff";
-	len = 5 + 2;
+	int len;
 	if (datos==NULL) return ERROR;
 	do{	
 		strcpy(cadena, "");
@@ -54,7 +51,7 @@ int escanear_archivo(char *archivo, char* archivoSalida){
 		guardar(automata(cadena), cadena, archivoSalida);
 	}while(caracter!=EOF);
 	fclose(datos);
-	return "HOLA";	
+	return OK;	
 }
 
 int verificar_txt(char *archivo){
@@ -68,7 +65,7 @@ int automata(char *cadena){
 	int automata[7][6]={{2,1,1,6,6,6},{1,1,1,6,6,6},{5,5,6,3,6,6},{4,4,4,6,4,6},{4,4,4,6,4,6},{5,5,6,6,6,6},{6,6,6,6,6,6}};
 	while(cadena[len] != '\0'){
 		if(cadena[len] == '0'){
-			recorrido = 0 + (3*4) + 3;
+			recorrido = 0;
 		}
 		else if(cadena[len]>='1' && cadena[len]<='7'){
 			recorrido = 1;
@@ -83,7 +80,7 @@ int automata(char *cadena){
 			recorrido = 4;
 		}
 		else{
-			recorrido = 3;
+			recorrido = 5;
 		}
 		inicio = automata[inicio][recorrido];
 		len++;

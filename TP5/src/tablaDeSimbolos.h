@@ -46,7 +46,7 @@ typedef struct ListaFunciones{
 Error *errores = NULL;
 
 void imprimirTabla(TablaDeSimbolos);
-void validarInvocacion(TablaDeSimbolos , char* tete, Nodo *, int, char);
+void validarInvocacion(TablaDeSimbolos , char* , Nodo *, int, char);
 
 int longitudNodo(Nodo **);
 void agregarNodo(Nodo **, char*, char);
@@ -625,7 +625,7 @@ void validarInvocacion(TablaDeSimbolos tabla, char* nombreFuncion, Nodo *tiposDe
     } else {
         ListaVariables *parametros;
         if(funcionDeclaradasInvocada) parametros = funcionDeclaradasInvocada->listaParametros;
-        else if(funcionDeclaradasInvocada) parametros = funcionDefinidasInvocada->listaParametros;
+        else if(funcionDefinidasInvocada) parametros = funcionDefinidasInvocada->listaParametros;
         else return;
         if(longitudParametros(&parametros) != longitudNodo(&tiposDeDato)) {
             char longitud1[100];
